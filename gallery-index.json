@@ -6,7 +6,9 @@
       "id": "vernissage:utopias_piratas_2021",
       "name": "utopias_piratas_2021",
       "year": 2021,
-      "items": ["pikachu.png"]
+      "items": [
+        "Vernissages/utopias_piratas_2021/pikachu.png"
+      ]
     },
     {
       "id": "vernissage:hyperlinks, distorção e mormaço",
