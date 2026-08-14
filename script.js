@@ -1,35 +1,46 @@
 (() => {
   "use strict";
 
-  // Injetando CSS extra para grade de miniaturas, zoom e explosão 8-bits
+  // ==========================================
+  // CONFIGURAÇÃO DOS SEUS ANÚNCIOS (GIFS)
+  // Coloque seus gifs na pasta assets/ads/ e adicione os nomes aqui.
+  // ==========================================
+  const CUSTOM_ADS = [];
+
+  // Injetando CSS extra para grade, zoom, toolbar e EXPLOSÃO 8-BITS
   const extraStyles = document.createElement('style');
   extraStyles.textContent = `
     .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 15px; padding: 15px; }
-    .image-entry { display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid transparent; background: transparent; cursor: pointer; padding: 8px; border-radius: 4px; color: inherit; }
+    .image-entry { display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px dotted transparent; background: transparent; cursor: pointer; padding: 8px; border-radius: 4px; color: inherit; }
     .image-entry:hover { background: rgba(0, 120, 215, 0.15); border: 1px dotted #0078d7; }
     .work-thumb { width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; font-size: 50px; }
     .work-thumb img { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 2px 2px 5px rgba(0,0,0,0.3); }
     .art-plate { overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: calc(100% - 40px); background: #111; }
     .art-plate img { touch-action: none; transition: transform 0.05s linear; max-width: 100%; max-height: 100%; object-fit: contain; }
     
-    /* Estilos da Propaganda Quadrada */
-    .popup-ad { cursor: crosshair; border: none !important; box-shadow: 4px 4px 0px #000 !important; }
-    .popup-ad .titlebar { display: none; } /* Remove a barra superior da popup */
-    .popup-ad .window-body { padding: 0; margin: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; }
+    /* Propagandas */
+    .popup-ad { cursor: pointer; border: 2px outset #dfdfdf; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); }
+    .popup-ad .window-body { padding: 0; margin: 0; width: 100%; height: calc(100% - 25px); overflow: hidden; pointer-events: none; }
+    .popup-ad .titlebar { height: 25px; }
     
-    /* Efeito de Explosão 8-bits */
+    /* ANIMAÇÃO EXPLOSÃO 8-BITS (Fogo Pixelado) */
     @keyframes pixelExplosion {
-      0% { transform: scale(1); opacity: 1; filter: contrast(1); }
-      20% { transform: scale(1.3) skewX(15deg); filter: contrast(3) hue-rotate(-50deg) brightness(1.5); }
-      50% { transform: scale(0.6) skewX(-15deg); opacity: 0.8; }
-      100% { transform: scale(3); opacity: 0; filter: blur(2px) brightness(3); display: none; }
+      0% { box-shadow: inset 0 0 0 10px #ff6600, 0 0 0 0 transparent; background: #ffcc00; }
+      25% { box-shadow: inset 0 0 0 20px #ff0000, 15px 15px 0 #ffaa00, -15px -15px 0 #ffff00, 15px -15px 0 #ffaa00, -15px 15px 0 #ffff00; background: #ff6600; border: none; }
+      50% { box-shadow: 30px 30px 0 5px #ff5500, -30px -30px 0 5px #ffaa00, 30px -30px 0 5px #ffff00, -30px 30px 0 5px #ff5500, 0 40px 0 #ff0000, 0 -40px 0 #ffaa00, 40px 0 0 #ffff00, -40px 0 0 #ff0000; background: transparent; border: none; }
+      75% { box-shadow: 50px 50px 0 -5px #ff0000, -50px -50px 0 -5px #ff5500, 50px -50px 0 -5px #ff0000, -50px 50px 0 -5px #ffff00, 0 60px 0 -5px #ffaa00, 0 -60px 0 -5px #ff0000, 60px 0 0 -5px #ff5500, -60px 0 0 -5px #ffaa00; background: transparent; border: none; opacity: 0.8; }
+      100% { opacity: 0; display: none; background: transparent; border: none; box-shadow: none; }
     }
     .explode-anim {
-      animation: pixelExplosion 0.3s steps(3) forwards;
+      animation: pixelExplosion 0.4s steps(4) forwards;
       pointer-events: none;
     }
+    .explode-anim .titlebar, .explode-anim .window-body { display: none !important; }
   `;
   document.head.appendChild(extraStyles);
+
+  // Pasta Branca Vetorial (SVG)
+  const FOLDER_SVG = `<svg width="45" height="45" viewBox="0 0 24 24" fill="#ffffff" stroke="#000000" stroke-width="1" stroke-linejoin="round" style="drop-shadow: 2px 2px 2px rgba(0,0,0,0.3);"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>`;
 
   const IMAGE_EXTS = /\.(png|jpe?g|webp|gif|avif|svg)$/i;
   const LEGACY_MANIFEST = { version: 1, exhibitions: [], works: [] };
@@ -124,8 +135,10 @@
   function defaultGeometry(kind, work = null) {
     const W = innerWidth, H = innerHeight;
     if (kind === "folder") return { x: W * .09, y: H * .23, w: 600, h: 420 };
-    if (kind === "about") return { x: Math.max(96, W - 430), y: H * .33, w: 390, h: 392 };
-    if (kind === "contact") return { x: W * .24, y: H * .28, w: 372, h: 220 };
+    
+    // As janelas iniciais (About e Contact) que vão para o lado direito
+    if (kind === "contact") return { x: clamp(W - 460, 50, W - 370), y: clamp(H * 0.15, 50, H - 300), w: 372, h: 220 };
+    if (kind === "about") return { x: clamp(W - 420, 80, W - 390), y: clamp(H * 0.25, 80, H - 250), w: 390, h: 392 };
     
     if (kind === "art" && work) {
       const nw = Number(work.nw) || 800; const nh = Number(work.nh) || 600;
@@ -240,38 +253,45 @@
       </button>`;
   }
 
+  function browserBodyHTML(win) {
+    const current = currentBrowser(win); let content = "";
+    
+    if (current.kind === "root") {
+      content = `<div class="file-grid">` + folderEntries().map(entry => `
+        <button class="work-item image-entry" type="button" data-folder="${escapeHtml(entry.id)}">
+          <div class="work-thumb">${FOLDER_SVG}</div>
+          <strong>${escapeHtml(entry.name)}</strong>
+        </button>`).join("") + `</div>`;
+    } 
+    else if (current.kind === "vernissages") {
+      content = `<div class="file-grid">` + state.manifest.exhibitions.map(group => `
+        <button class="work-item image-entry" type="button" data-folder="${escapeHtml(`Vernissages/${group.name}`)}">
+          <div class="work-thumb">${FOLDER_SVG}</div>
+          <span>${escapeHtml(group.name)}</span>
+        </button>`).join("") + `</div>`;
+    } 
+    else if (current.kind === "exhibition") {
+      content = `<div class="file-grid">${current.group.items.map(item => imageCard(item)).join("")}</div>`;
+    } 
+    else if (current.kind === "obras") {
+      content = `<div class="file-grid">${state.manifest.works.map(item => imageCard(item)).join("")}</div>`;
+    }
+
+    // Resolvendo a sobreposição dos toolbars com layout Flexbox estrito
+    return `
+      <div class="folder-menu" style="display: flex; gap: 15px; padding: 6px 15px; border-bottom: 1px solid #ccc; background: #ece9d8; font-size: 13px;">
+        <span>File</span><span>Edit</span><span>View</span>
+      </div>
+      <div class="address toolbar-address" style="display: flex; align-items: center; gap: 10px; padding: 6px 15px; border-bottom: 1px solid #ccc; background: #fff; font-size: 13px;">
+        <button type="button" class="nav-btn" data-nav="back" style="padding: 2px 8px; cursor: pointer;">← Voltar</button>
+        <div class="address-breadcrumb" style="flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">C:\\h4wnee\\${current.path.join('\\')}</div>
+      </div>
+      <div class="folder-body browser-body" style="cursor: default; overflow-y:auto; height:calc(100% - 90px); background:#fff;">${content}</div>`;
+  }
+
   function windowBodyHTML(w) {
     if (w.kind === "folder") {
-      const current = currentBrowser(w); let content = "";
-      
-      if (current.kind === "root") {
-        content = `<div class="file-grid">` + folderEntries().map(entry => `
-          <button class="work-item image-entry" type="button" data-folder="${escapeHtml(entry.id)}">
-            <div class="work-thumb">📁</div>
-            <strong>${escapeHtml(entry.name)}</strong>
-          </button>`).join("") + `</div>`;
-      } 
-      else if (current.kind === "vernissages") {
-        content = `<div class="file-grid">` + state.manifest.exhibitions.map(group => `
-          <button class="work-item image-entry" type="button" data-folder="${escapeHtml(`Vernissages/${group.name}`)}">
-            <div class="work-thumb">📁</div>
-            <span>${escapeHtml(group.name)}</span>
-          </button>`).join("") + `</div>`;
-      } 
-      else if (current.kind === "exhibition") {
-        content = `<div class="file-grid">${current.group.items.map(item => imageCard(item)).join("")}</div>`;
-      } 
-      else if (current.kind === "obras") {
-        content = `<div class="file-grid">${state.manifest.works.map(item => imageCard(item)).join("")}</div>`;
-      }
-
-      return `
-        <div class="folder-menu"><span>File</span><span>Edit</span><span>View</span></div>
-        <div class="address toolbar-address">
-          <button type="button" class="nav-btn" data-nav="back">← Voltar</button>
-          <div class="address-breadcrumb" style="margin-left:10px;">C:\\h4wnee\\${current.path.join('\\')}</div>
-        </div>
-        <div class="folder-body browser-body" style="cursor: default; overflow-y:auto; height:calc(100% - 85px);">${content}</div>`;
+      return browserBodyHTML(w);
     }
 
     if (w.kind === "art") {
@@ -401,11 +421,11 @@
       el.appendChild(grip);
     }
     
-    // Ação de explosão para a propaganda
+    // Ação de explosão para a propaganda (Clica em qualquer lugar dela)
     if (w.kind === "popup") {
       el.addEventListener("mousedown", () => {
         el.classList.add("explode-anim");
-        setTimeout(() => closeWindow(w.id), 300);
+        setTimeout(() => closeWindow(w.id), 380); // Tempo exato para a janela sumir após a explosão
       });
     }
 
@@ -448,13 +468,12 @@
   function spawnAd() {
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
     
-    // Criando o visual da BET com verde escuro e letra em amarelo
-    const contentHtml = `<div style="background:#006400; width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#ffff00; font-size: 36px; font-family: 'Archivo Black', sans-serif; font-weight:900; text-shadow: 3px 3px 0px #000; letter-spacing: 2px;">BET</div>`;
+    const contentHtml = `<div style="background:#006400; width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#ffff00; font-size: 32px; font-family: 'Archivo Black', sans-serif; font-weight:900; text-shadow: 2px 2px 0px #000; letter-spacing: 2px;">BET</div>`;
 
     const ad = {
       id, kind: "popup", title: "AD", icon: "⚠",
-      x: Math.random() * (innerWidth - 100), y: Math.random() * (innerHeight - 100),
-      w: 100, h: 100, z: ++state.top, min: false, max: false,
+      x: Math.random() * (innerWidth - 130), y: Math.random() * (innerHeight - 155),
+      w: 130, h: 155, z: ++state.top, min: false, max: false, // 130x155 (Tamanho pequeno e corpo da janela perfeitamente quadrado)
       content: contentHtml, vx: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random()), vy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random())
     };
 
@@ -482,14 +501,17 @@
 
   async function init() {
     try { await loadGallery(); } catch (error) { state.manifest = normalizeManifest(LEGACY_MANIFEST); }
-    addWindow("folder");
+    
+    // Abertura Inicial Automática
+    addWindow("contact"); 
+    addWindow("about");   
 
-    // Lança propagandas a cada 8 segundos (Max 4 na tela ao mesmo tempo)
+    // Lança propagandas a cada 16 segundos (Max 3 na tela ao mesmo tempo)
     setInterval(() => {
-      if (state.wins.filter(w => w.kind === "popup").length < 4 && Math.random() > 0.2) {
+      if (state.wins.filter(w => w.kind === "popup").length < 3) {
         spawnAd();
       }
-    }, 8000);
+    }, 16000);
 
     render();
   }
