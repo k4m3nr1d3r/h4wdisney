@@ -1,26 +1,33 @@
 (() => {
   "use strict";
 
-  // ==========================================
-  // CONFIGURAÇÃO DOS SEUS ANÚNCIOS (GIFS)
-  // Coloque seus gifs na pasta assets/ads/ e adicione os nomes aqui.
-  // Exemplo: ["assets/ads/gif1.gif", "assets/ads/gif2.gif"]
-  // ==========================================
-  const CUSTOM_ADS = [
-    
-  ];
-
-  // Injetando CSS extra para garantir a grade de miniaturas e o zoom
+  // Injetando CSS extra para grade de miniaturas, zoom e explosão 8-bits
   const extraStyles = document.createElement('style');
   extraStyles.textContent = `
     .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 15px; padding: 15px; }
-    .image-entry { display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid transparent; background: transparent; cursor: pointer; padding: 8px; border-radius: 4px; }
+    .image-entry { display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid transparent; background: transparent; cursor: pointer; padding: 8px; border-radius: 4px; color: inherit; }
     .image-entry:hover { background: rgba(0, 120, 215, 0.15); border: 1px dotted #0078d7; }
-    .work-thumb { width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+    .work-thumb { width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; font-size: 50px; }
     .work-thumb img { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 2px 2px 5px rgba(0,0,0,0.3); }
     .art-plate { overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: calc(100% - 40px); background: #111; }
     .art-plate img { touch-action: none; transition: transform 0.05s linear; max-width: 100%; max-height: 100%; object-fit: contain; }
-    .popup-ad .window-body { padding: 0; margin: 0; width: 100%; height: 100%; overflow: hidden; }
+    
+    /* Estilos da Propaganda Quadrada */
+    .popup-ad { cursor: crosshair; border: none !important; box-shadow: 4px 4px 0px #000 !important; }
+    .popup-ad .titlebar { display: none; } /* Remove a barra superior da popup */
+    .popup-ad .window-body { padding: 0; margin: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; }
+    
+    /* Efeito de Explosão 8-bits */
+    @keyframes pixelExplosion {
+      0% { transform: scale(1); opacity: 1; filter: contrast(1); }
+      20% { transform: scale(1.3) skewX(15deg); filter: contrast(3) hue-rotate(-50deg) brightness(1.5); }
+      50% { transform: scale(0.6) skewX(-15deg); opacity: 0.8; }
+      100% { transform: scale(3); opacity: 0; filter: blur(2px) brightness(3); display: none; }
+    }
+    .explode-anim {
+      animation: pixelExplosion 0.3s steps(3) forwards;
+      pointer-events: none;
+    }
   `;
   document.head.appendChild(extraStyles);
 
@@ -133,12 +140,11 @@
   }
 
   function addWindow(kind, work = null, opts = {}) {
-    if (kind === "crash") { bsod.classList.remove("hidden"); return; }
     const existing = state.wins.find(w => w.kind === kind && (!work || (w.work && w.work.id === work.id)));
     if (existing) { focusWin(existing.id); return; }
 
     const id = `${kind}_${work ? work.id : Math.random().toString(36).slice(2, 8)}`;
-    const titleMap = { folder: "Explorador de Arquivos", about: "about_h4wnee.txt", contact: "contact.exe" };
+    const titleMap = { folder: "C:\\h4wnee", about: "about_h4wnee.txt", contact: "contact.exe" };
     
     const win = {
       id, kind, title: work ? (work.file || work.title) : titleMap[kind],
@@ -241,14 +247,14 @@
       if (current.kind === "root") {
         content = `<div class="file-grid">` + folderEntries().map(entry => `
           <button class="work-item image-entry" type="button" data-folder="${escapeHtml(entry.id)}">
-            <div class="work-thumb" style="font-size:40px;">📁</div>
+            <div class="work-thumb">📁</div>
             <strong>${escapeHtml(entry.name)}</strong>
           </button>`).join("") + `</div>`;
       } 
       else if (current.kind === "vernissages") {
         content = `<div class="file-grid">` + state.manifest.exhibitions.map(group => `
           <button class="work-item image-entry" type="button" data-folder="${escapeHtml(`Vernissages/${group.name}`)}">
-            <div class="work-thumb" style="font-size:40px;">📁</div>
+            <div class="work-thumb">📁</div>
             <span>${escapeHtml(group.name)}</span>
           </button>`).join("") + `</div>`;
       } 
@@ -265,7 +271,7 @@
           <button type="button" class="nav-btn" data-nav="back">← Voltar</button>
           <div class="address-breadcrumb" style="margin-left:10px;">C:\\h4wnee\\${current.path.join('\\')}</div>
         </div>
-        <div class="folder-body browser-body" style="cursor: default; overflow-y:auto; height:calc(100% - 85px); background:#fff; color:#000;">${content}</div>`;
+        <div class="folder-body browser-body" style="cursor: default; overflow-y:auto; height:calc(100% - 85px);">${content}</div>`;
     }
 
     if (w.kind === "art") {
@@ -279,12 +285,32 @@
           </div>
         </div>`;
     }
+
+    if (w.kind === "about") {
+      return `
+        <div class="about-body">
+          <h2>h4wnee</h2>
+          <p>is a Latin American transdisciplinary artist whose work explores the intersection of digital culture, popular imagination, and contemporary technologies.</p>
+          <div class="chronology">2021  utopias_piratas_2021<br>2021  n0_f*ture_(prime)<br>2022  hyperlinks, distorção e mormaço<br>2025  RAW 2025 (HOA+FDAG)</div>
+        </div>`;
+    }
+
+    if (w.kind === "contact") {
+      return `
+        <div class="contact-body">
+          <div class="prompt">C:\\&gt; whois h4wnee</div>
+          mail&nbsp;&nbsp;&nbsp; <a href="mailto:h4wnee@gmail.com">h4wnee@gmail.com</a><br>
+          insta&nbsp;&nbsp; <a href="https://instagram.com/h4wnee" target="_blank" rel="noopener">@h4wnee</a><br>
+          base&nbsp;&nbsp;&nbsp; <span style="color:#f2ff00">Cariri / Paraíba / BR</span><br><br>
+          <div class="prompt">C:\\&gt; <span class="blink">_</span></div>
+        </div>`;
+    }
+
     return "";
   }
 
   function bindWindowBody(el, w) {
     if (w.kind === "folder") {
-      // UM CLIQUE: Abre a imagem na hora (como você pediu)
       $$(".image-entry[data-work]", el).forEach(btn => {
         btn.addEventListener("click", e => {
           e.preventDefault(); e.stopPropagation();
@@ -293,7 +319,6 @@
         });
       });
 
-      // UM CLIQUE: Entra na pasta
       $$('[data-folder]', el).forEach(btn => {
         btn.addEventListener("click", e => {
           e.preventDefault(); e.stopPropagation();
@@ -310,18 +335,16 @@
       const img = $(".art-plate img", el);
       let scale = 1, panX = 0, panY = 0, isDragging = false, startX, startY;
 
-      // Mecânica do ZOOM (Alt + Scroll)
       img.addEventListener("wheel", e => {
         if (e.altKey) {
           e.preventDefault();
           scale += e.deltaY * -0.002;
-          scale = Math.min(Math.max(0.5, scale), 5); // Limites de zoom (50% a 500%)
+          scale = Math.min(Math.max(0.5, scale), 5);
           img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
           img.style.cursor = scale > 1 ? "grab" : "default";
         }
       });
 
-      // Mecânica de ARRASTAR (Pan)
       img.addEventListener("pointerdown", e => {
         if (scale > 1) {
           isDragging = true;
@@ -377,6 +400,15 @@
       grip.addEventListener("pointerdown", e => { e.stopPropagation(); beginPointer(e, w.id, "size"); });
       el.appendChild(grip);
     }
+    
+    // Ação de explosão para a propaganda
+    if (w.kind === "popup") {
+      el.addEventListener("mousedown", () => {
+        el.classList.add("explode-anim");
+        setTimeout(() => closeWindow(w.id), 300);
+      });
+    }
+
     bindWindowBody(el, w); return el;
   }
 
@@ -396,25 +428,33 @@
   }
   function render() { renderWindowLayer(); renderTasks(); }
 
+  // Restaura os atalhos de clique da área de trabalho
+  function openByKind(kind) {
+    if (kind === "folder") { addWindow("folder"); return; }
+    if (kind === "crash") { bsod.classList.remove("hidden"); return; }
+    if (kind === "about" || kind === "contact") addWindow(kind);
+  }
+
+  document.addEventListener("click", e => {
+    const open = e.target.closest("[data-open]");
+    if (open) openByKind(open.dataset.open);
+  });
+
+  bsod.addEventListener("click", () => bsod.classList.add("hidden"));
+
   // ==========================================
-  // SISTEMA DE PROPAGANDAS QUICANTES
+  // PROPAGANDA BET
   // ==========================================
   function spawnAd() {
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
-    const isBet = Math.random() > 0.4 || CUSTOM_ADS.length === 0;
     
-    let contentHtml = "";
-    if (isBet) {
-      contentHtml = `<div style="background:#00c800; width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#ffff00; font-size: 32px; font-family: 'Archivo Black', sans-serif; font-weight:900; text-shadow: 2px 2px 0px #000; letter-spacing: 2px;">BET</div>`;
-    } else {
-      const gif = CUSTOM_ADS[Math.floor(Math.random() * CUSTOM_ADS.length)];
-      contentHtml = `<img src="${gif}" style="width:100%; height:100%; object-fit:cover;">`;
-    }
+    // Criando o visual da BET com verde escuro e letra em amarelo
+    const contentHtml = `<div style="background:#006400; width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#ffff00; font-size: 36px; font-family: 'Archivo Black', sans-serif; font-weight:900; text-shadow: 3px 3px 0px #000; letter-spacing: 2px;">BET</div>`;
 
     const ad = {
-      id, kind: "popup", title: "ADVERTISEMENT", icon: "⚠",
-      x: Math.random() * (innerWidth - 180), y: Math.random() * (innerHeight - 150),
-      w: 180, h: 120, z: ++state.top, min: false, max: false,
+      id, kind: "popup", title: "AD", icon: "⚠",
+      x: Math.random() * (innerWidth - 100), y: Math.random() * (innerHeight - 100),
+      w: 100, h: 100, z: ++state.top, min: false, max: false,
       content: contentHtml, vx: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random()), vy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random())
     };
 
@@ -422,7 +462,7 @@
 
     function bounce() {
       const winData = state.wins.find(w => w.id === id);
-      if (!winData) return; // Se foi fechado no X
+      if (!winData) return; 
       
       winData.x += winData.vx;
       winData.y += winData.vy;
@@ -430,9 +470,11 @@
       if (winData.x <= 0 || winData.x + winData.w >= innerWidth) winData.vx *= -1;
       if (winData.y <= 0 || winData.y + winData.h >= innerHeight) winData.vy *= -1;
 
-      const el = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
-      if (el) { el.style.left = `${winData.x}px`; el.style.top = `${winData.y}px`; }
-      
+      const currentEl = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
+      if (currentEl && !currentEl.classList.contains("explode-anim")) { 
+        currentEl.style.left = `${winData.x}px`; 
+        currentEl.style.top = `${winData.y}px`; 
+      }
       requestAnimationFrame(bounce);
     }
     requestAnimationFrame(bounce);
@@ -451,8 +493,6 @@
 
     render();
   }
-
-  $("[data-open='folder']").addEventListener("click", () => addWindow("folder"));
   
   init();
 })();
