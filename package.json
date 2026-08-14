@@ -1,0 +1,12 @@
+{
+  "name": "h4wnee-portfolio",
+  "version": "2026.08.14",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-static.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "generatedAt": "2026-08-14T03:13:49.779Z",
+  "exhibitions": [
+    {
+      "id": "vernissage:utopias_piratas_2021",
+      "name": "utopias_piratas_2021",
+      "year": 2021,
+      "items": []
+    },
+    {
+      "id": "vernissage:hyperlinks, distorção e mormaço",
+      "name": "hyperlinks, distorção e mormaço",
+      "year": 2022,
+      "items": []
+    },
+    {
+      "id": "vernissage:RAW 2025 (HOA+FDAG)",
+      "name": "RAW 2025 (HOA+FDAG)",
+      "year": 2025,
+      "items": []
+    }
+  ],
+  "works": []
+}
