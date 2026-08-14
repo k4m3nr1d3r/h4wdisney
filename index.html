@@ -31,10 +31,22 @@
     </header>
 
     <nav class="desktop-icons" aria-label="Atalhos">
-      <button data-open="about"><span class="icon-tile txt">🗒</span><span>about.txt</span></button>
-      <button data-open="folder"><span class="icon-tile folder">📁</span><span>works</span></button>
-      <button data-open="contact"><span class="icon-tile contact">📟</span><span>contact.exe</span></button>
-      <button data-open="crash"><span class="icon-tile crash">☠</span><span>crash.exe</span></button>
+      <button data-open="about">
+        <img src="assets/icons/about.bmp" onerror="this.outerHTML='<span class=\\'icon-tile txt\\'>🗒</span>'" alt="about">
+        <span>about.txt</span>
+      </button>
+      <button data-open="folder">
+        <img src="assets/icons/folder.bmp" onerror="this.outerHTML='<span class=\\'icon-tile folder\\'>📁</span>'" alt="works">
+        <span>works</span>
+      </button>
+      <button data-open="contact">
+        <img src="assets/icons/contact.bmp" onerror="this.outerHTML='<span class=\\'icon-tile contact\\'>📟</span>'" alt="contact">
+        <span>contact.exe</span>
+      </button>
+      <button data-open="crash">
+        <img src="assets/icons/crash.bmp" onerror="this.outerHTML='<span class=\\'icon-tile crash\\'>☠</span>'" alt="crash">
+        <span>crash.exe</span>
+      </button>
     </nav>
 
     <section id="windows" aria-live="polite"></section>
