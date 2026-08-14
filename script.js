@@ -7,7 +7,7 @@
   // ==========================================
   const CUSTOM_ADS = [];
 
-  // Injetando CSS extra para grade, zoom, toolbar e EXPLOSÃO 8-BITS
+  // Injetando CSS extra para grade, zoom, toolbar e NOVA EXPLOSÃO 8-BITS
   const extraStyles = document.createElement('style');
   extraStyles.textContent = `
     .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 15px; padding: 15px; }
@@ -23,16 +23,23 @@
     .popup-ad .window-body { padding: 0; margin: 0; width: 100%; height: calc(100% - 25px); overflow: hidden; pointer-events: none; }
     .popup-ad .titlebar { height: 25px; }
     
-    /* ANIMAÇÃO EXPLOSÃO 8-BITS (Fogo Pixelado) */
+    /* ANIMAÇÃO EXPLOSÃO 8-BITS (Fogo Realista Centro e Bordas) */
     @keyframes pixelExplosion {
-      0% { box-shadow: inset 0 0 0 10px #ff6600, 0 0 0 0 transparent; background: #ffcc00; }
-      25% { box-shadow: inset 0 0 0 20px #ff0000, 15px 15px 0 #ffaa00, -15px -15px 0 #ffff00, 15px -15px 0 #ffaa00, -15px 15px 0 #ffff00; background: #ff6600; border: none; }
-      50% { box-shadow: 30px 30px 0 5px #ff5500, -30px -30px 0 5px #ffaa00, 30px -30px 0 5px #ffff00, -30px 30px 0 5px #ff5500, 0 40px 0 #ff0000, 0 -40px 0 #ffaa00, 40px 0 0 #ffff00, -40px 0 0 #ff0000; background: transparent; border: none; }
-      75% { box-shadow: 50px 50px 0 -5px #ff0000, -50px -50px 0 -5px #ff5500, 50px -50px 0 -5px #ff0000, -50px 50px 0 -5px #ffff00, 0 60px 0 -5px #ffaa00, 0 -60px 0 -5px #ff0000, 60px 0 0 -5px #ff5500, -60px 0 0 -5px #ffaa00; background: transparent; border: none; opacity: 0.8; }
-      100% { opacity: 0; display: none; background: transparent; border: none; box-shadow: none; }
+      0% { background: #ffff00; box-shadow: inset 0 0 0 15px #ff6600; transform: scale(1); opacity: 1; }
+      20% { background: #ffaa00; box-shadow: inset 0 0 5px 25px #ff0000, 0 0 0 4px #ffaa00; transform: scale(1.1); }
+      40% { background: #ff5500; 
+            box-shadow: 10px -10px 0 2px #ffaa00, -10px 10px 0 2px #ff0000, 10px 10px 0 2px #ff5500, -10px -10px 0 2px #ffff00,
+                        0 20px 0 4px #ff0000, 0 -20px 0 4px #ffaa00, 20px 0 0 4px #ff5500, -20px 0 0 4px #ff0000; 
+            border: none; opacity: 1; }
+      70% { background: transparent; 
+            box-shadow: 25px -25px 0 1px #ff0000, -25px 25px 0 1px #ffaa00, 25px 25px 0 1px #ff5500, -25px -25px 0 1px #ff0000,
+                        0 35px 0 2px #ffaa00, 0 -35px 0 2px #ff0000, 35px 0 0 2px #ff5500, -35px 0 0 2px #ffaa00,
+                        15px -40px 0 1px #ff0000, -15px 40px 0 1px #ffff00, 40px 10px 0 1px #ffaa00, -40px -10px 0 1px #ff5500;
+            border: none; opacity: 0.8; transform: scale(1.3); }
+      100% { opacity: 0; background: transparent; transform: scale(1.8); box-shadow: none; display: none; }
     }
     .explode-anim {
-      animation: pixelExplosion 0.4s steps(4) forwards;
+      animation: pixelExplosion 0.45s steps(5) forwards !important;
       pointer-events: none;
     }
     .explode-anim .titlebar, .explode-anim .window-body { display: none !important; }
@@ -136,7 +143,7 @@
     const W = innerWidth, H = innerHeight;
     if (kind === "folder") return { x: W * .09, y: H * .23, w: 600, h: 420 };
     
-    // As janelas iniciais (About e Contact) que vão para o lado direito
+    // As janelas iniciais (Contact por baixo, About por cima)
     if (kind === "contact") return { x: clamp(W - 460, 50, W - 370), y: clamp(H * 0.15, 50, H - 300), w: 372, h: 220 };
     if (kind === "about") return { x: clamp(W - 420, 80, W - 390), y: clamp(H * 0.25, 80, H - 250), w: 390, h: 392 };
     
@@ -144,7 +151,7 @@
       const nw = Number(work.nw) || 800; const nh = Number(work.nh) || 600;
       const scale = Math.min(clamp(W * .4, 300, 700) / nw, (H * 0.6) / nh, 1);
       return {
-        x: clamp(W * .2, 50, Math.max(50, W - 400)), y: clamp(H * .1, 50, Math.max(50, H - 300)),
+        x: clamp(W * .25, 50, Math.max(50, W - 400)), y: clamp(H * .15, 50, Math.max(50, H - 300)),
         w: Math.max(300, Math.round(nw * scale)) + 20, h: Math.round(nh * scale) + 90
       };
     }
@@ -277,7 +284,6 @@
       content = `<div class="file-grid">${state.manifest.works.map(item => imageCard(item)).join("")}</div>`;
     }
 
-    // Resolvendo a sobreposição dos toolbars com layout Flexbox estrito
     return `
       <div class="folder-menu" style="display: flex; gap: 15px; padding: 6px 15px; border-bottom: 1px solid #ccc; background: #ece9d8; font-size: 13px;">
         <span>File</span><span>Edit</span><span>View</span>
@@ -406,7 +412,20 @@
     el.style.zIndex = w.z;
     if (w.kind === "popup") el.style.position = "fixed";
     
-    el.addEventListener("pointerdown", () => focusWin(w.id));
+    // Para popups, um clique já garante a explosão IMEDIATA e impede bugs de foco
+    if (w.kind === "popup") {
+      el.addEventListener("pointerdown", (e) => {
+        focusWin(w.id);
+        if (!el.classList.contains("explode-anim")) {
+          e.stopPropagation();
+          el.classList.add("explode-anim");
+          setTimeout(() => closeWindow(w.id), 430);
+        }
+      });
+    } else {
+      el.addEventListener("pointerdown", () => focusWin(w.id));
+    }
+    
     el.appendChild(titlebar(w));
 
     const body = document.createElement("div");
@@ -421,14 +440,6 @@
       el.appendChild(grip);
     }
     
-    // Ação de explosão para a propaganda (Clica em qualquer lugar dela)
-    if (w.kind === "popup") {
-      el.addEventListener("mousedown", () => {
-        el.classList.add("explode-anim");
-        setTimeout(() => closeWindow(w.id), 380); // Tempo exato para a janela sumir após a explosão
-      });
-    }
-
     bindWindowBody(el, w); return el;
   }
 
@@ -448,7 +459,6 @@
   }
   function render() { renderWindowLayer(); renderTasks(); }
 
-  // Restaura os atalhos de clique da área de trabalho
   function openByKind(kind) {
     if (kind === "folder") { addWindow("folder"); return; }
     if (kind === "crash") { bsod.classList.remove("hidden"); return; }
@@ -463,17 +473,18 @@
   bsod.addEventListener("click", () => bsod.classList.add("hidden"));
 
   // ==========================================
-  // PROPAGANDA BET
+  // PROPAGANDA BET (Tamanho Miniatura)
   // ==========================================
   function spawnAd() {
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
     
-    const contentHtml = `<div style="background:#006400; width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#ffff00; font-size: 32px; font-family: 'Archivo Black', sans-serif; font-weight:900; text-shadow: 2px 2px 0px #000; letter-spacing: 2px;">BET</div>`;
+    // O texto foi ajustado para caber no quadrado menor
+    const contentHtml = `<div style="background:#006400; width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#ffff00; font-size: 24px; font-family: 'Archivo Black', sans-serif; font-weight:900; text-shadow: 2px 2px 0px #000; letter-spacing: 1px;">BET</div>`;
 
     const ad = {
       id, kind: "popup", title: "AD", icon: "⚠",
-      x: Math.random() * (innerWidth - 130), y: Math.random() * (innerHeight - 155),
-      w: 130, h: 155, z: ++state.top, min: false, max: false, // 130x155 (Tamanho pequeno e corpo da janela perfeitamente quadrado)
+      x: Math.random() * (innerWidth - 100), y: Math.random() * (innerHeight - 115),
+      w: 100, h: 115, z: ++state.top, min: false, max: false, // 100x115 (Título com 25px e Corpo com 90px = quadrado)
       content: contentHtml, vx: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random()), vy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random())
     };
 
@@ -502,16 +513,28 @@
   async function init() {
     try { await loadGallery(); } catch (error) { state.manifest = normalizeManifest(LEGACY_MANIFEST); }
     
-    // Abertura Inicial Automática
+    // 1. Abre a pasta Works (Explorador)
+    addWindow("folder"); 
+    
+    // 2. Abre a primeira imagem da pasta "Obras" (se existir)
+    if (state.manifest.works && state.manifest.works.length > 0) {
+      const firstWork = state.manifest.works[0];
+      loadDimensions(firstWork).then(() => addWindow("art", firstWork));
+    }
+
+    // 3. Abre About e Contact alinhados
     addWindow("contact"); 
     addWindow("about");   
 
-    // Lança propagandas a cada 16 segundos (Max 3 na tela ao mesmo tempo)
+    // 4. Injeta a primeira propaganda imediatamente
+    setTimeout(spawnAd, 800);
+
+    // Lança as próximas propagandas com intervalo bem mais demorado (25 segundos)
     setInterval(() => {
       if (state.wins.filter(w => w.kind === "popup").length < 3) {
         spawnAd();
       }
-    }, 16000);
+    }, 25000);
 
     render();
   }
