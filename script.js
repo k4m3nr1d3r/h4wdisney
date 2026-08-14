@@ -450,7 +450,7 @@
       content = state.manifest.exhibitions.length
         ? state.manifest.exhibitions.map(group => `
           <section class="exhibition-group">
-            <button class="group-title" type="button" data-folder="${escapeHtml(`Vernissages/${group.name}`)}">
+            <button class="work-item group-title" type="button" data-folder="${escapeHtml(`Vernissages/${group.name}`)}">
               <span>${escapeHtml(group.name)}</span>
               <small>${group.items.length} ${group.items.length === 1 ? "imagem" : "imagens"}</small>
             </button>
@@ -489,7 +489,7 @@
         <button type="button" class="nav-btn" data-nav="up" aria-label="Pasta acima">↑</button>
         <div class="address-breadcrumb">${breadcrumb(win)}</div>
       </div>
-      <div class="folder-body browser-body">${content}</div>
+      <div class="folder-body browser-body" style="cursor: default;">${content}</div>
       <div class="statusbar">
         <span>${current.kind === "root" ? "2 pastas" : current.kind === "vernissages" ? `${state.manifest.exhibitions.length} exposições` : current.kind === "exhibition" ? `${current.group.items.length} objetos` : `${state.manifest.works.length} objetos`}</span>
         <span>local / portfolio</span>
@@ -564,21 +564,43 @@
 
   function bindWindowBody(el, w) {
     if (w.kind === "folder") {
-      $$(".image-entry", el).forEach(btn => btn.addEventListener("click", () => {
-        const id = btn.dataset.work;
-        const work = findItem(id);
-        if (work) {
-          loadDimensions(work).then(() => addWindow("art", work));
-        } else {
-          alert(`Erro Interno: A imagem "${id}" está na memória, mas não foi possível vinculá-la ao clique.`);
-        }
-      }));
+      const browserBody = $(".browser-body", el);
+      if (browserBody) {
+        browserBody.addEventListener("click", () => {
+          $$(".work-item", el).forEach(i => i.classList.remove("selected"));
+        });
+      }
 
-      $$('[data-folder]', el).forEach(btn => btn.addEventListener("click", e => {
-        e.preventDefault();
-        e.stopPropagation();
-        navigateBrowser(w, btn.dataset.folder);
-      }));
+      $$(".work-item", el).forEach(btn => {
+        btn.addEventListener("click", e => {
+          e.preventDefault();
+          e.stopPropagation();
+          $$(".work-item", el).forEach(i => i.classList.remove("selected"));
+          btn.classList.add("selected");
+        });
+      });
+
+      $$(".image-entry", el).forEach(btn => {
+        btn.addEventListener("dblclick", e => {
+          e.preventDefault();
+          e.stopPropagation();
+          const id = btn.dataset.work;
+          const work = findItem(id);
+          if (work) {
+            loadDimensions(work).then(() => addWindow("art", work));
+          } else {
+            alert(`Erro Interno: A imagem "${id}" está na memória, mas não foi possível vinculá-la ao clique.`);
+          }
+        });
+      });
+
+      $$('[data-folder]', el).forEach(btn => {
+        btn.addEventListener("dblclick", e => {
+          e.preventDefault();
+          e.stopPropagation();
+          navigateBrowser(w, btn.dataset.folder);
+        });
+      });
 
       $$('[data-nav]', el).forEach(btn => btn.addEventListener("click", e => {
         e.preventDefault();
