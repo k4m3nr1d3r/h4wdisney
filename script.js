@@ -224,14 +224,25 @@
     render();
   }
 
-  function focusWin(id) {
+  function focusWin(id, forceRender = false) {
     const w = state.wins.find(x => x.id === id);
     if (!w) return;
+
+    const alreadyActive = (state.active === id && !w.min && !state.menuOpen);
     w.z = ++state.top;
     w.min = false;
     state.active = id;
     state.menuOpen = false;
-    render();
+
+    if (!alreadyActive || forceRender) {
+      render();
+    } else {
+      const el = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
+      if (el) {
+        el.style.zIndex = w.z;
+        $$(".window", windowsEl).forEach(win => win.classList.toggle("inactive", win.dataset.id !== id));
+      }
+    }
   }
 
   function toggleMin(id) {
@@ -259,7 +270,7 @@
       Object.assign(w, { x: w.px, y: w.py, w: w.pw, h: w.ph, max: false });
     }
 
-    focusWin(id);
+    focusWin(id, true);
   }
 
   function beginPointer(e, id, mode) {
@@ -293,7 +304,13 @@
         w.h = Math.max(180, start.height + dy);
       }
 
-      render(false);
+      const el = windowsEl.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
+      if (el) {
+        el.style.left = `${w.x}px`;
+        el.style.top = `${w.y}px`;
+        el.style.width = `${w.w}px`;
+        el.style.height = `${w.h}px`;
+      }
     };
 
     const up = () => {
@@ -399,14 +416,14 @@
     if (!Array.isArray(win.browserHistory) || !win.browserHistory.length) win.browserHistory = [current];
     win.browserHistory.push(next);
     win.browserPath = next;
-    focusWin(win.id);
+    focusWin(win.id, true);
   }
 
   function goBack(win) {
     if (!Array.isArray(win.browserHistory) || win.browserHistory.length <= 1) return;
     win.browserHistory.pop();
     win.browserPath = [...win.browserHistory.at(-1)];
-    focusWin(win.id);
+    focusWin(win.id, true);
   }
 
   function goUp(win) {
