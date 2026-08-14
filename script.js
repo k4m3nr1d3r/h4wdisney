@@ -92,56 +92,6 @@
     return { version: 1, exhibitions, works: normWorks };
   }
 
-  function localManifestFromFiles(files) {
-    const exhibitions = new Map();
-    const works = [];
-
-    for (const file of files) {
-      const rel = String(file.webkitRelativePath || file.name).replace(/\\/g, "/");
-      const parts = rel.split("/").filter(Boolean);
-      if (parts.length < 2 || !IMAGE_EXTS.test(file.name)) continue;
-
-      const rootIndex = parts.findIndex(p => p === "Vernissages" || p === "Obras");
-      if (rootIndex < 0) continue;
-
-      const area = parts[rootIndex];
-      const relativeFromProject = parts.slice(rootIndex).join("/");
-      const source = URL.createObjectURL(file);
-      const item = {
-        id: relativeFromProject,
-        file: relativeFromProject,
-        title: fileTitle(relativeFromProject),
-        year: (relativeFromProject.match(/(19|20)\\d{2}/) || [""])[0],
-        note: "",
-        source
-      };
-
-      if (area === "Obras") {
-        works.push(item);
-        continue;
-      }
-
-      const exhibitionName = parts[rootIndex + 1];
-      if (!exhibitionName) continue;
-      if (!exhibitions.has(exhibitionName)) {
-        const mappedYear = {"utopias_piratas_2021": 2021, "hyperlinks, distorção e mormaço": 2022, "RAW 2025 (HOA+FDAG)": 2025}[exhibitionName];
-        const yearMatch = exhibitionName.match(/(19|20)\\d{2}/);
-        exhibitions.set(exhibitionName, {
-          id: `vernissage:${exhibitionName}`,
-          name: exhibitionName,
-          year: mappedYear ?? (yearMatch ? Number(yearMatch[0]) : 9999),
-          items: []
-        });
-      }
-      exhibitions.get(exhibitionName).items.push(item);
-    }
-
-    const ordered = [...exhibitions.values()].sort((a,b) => a.year - b.year || a.name.localeCompare(b.name));
-    ordered.forEach(g => g.items.sort((a,b) => a.title.localeCompare(b.title)));
-    works.sort((a,b) => a.title.localeCompare(b.title));
-    return { version: 1, exhibitions: ordered, works };
-  }
-
   async function loadGallery() {
     if (window.__GALLERY_MANIFEST__) {
       state.manifest = normalizeManifest(window.__GALLERY_MANIFEST__);
@@ -378,10 +328,6 @@
     });
 
     $$(".window-buttons button", bar).forEach(btn => {
-      btn.addEventListener("pointerdown", e => {
-        e.preventDefault();
-        e.stopPropagation();
-      });
       btn.addEventListener("click", e => {
         e.preventDefault();
         e.stopPropagation();
@@ -481,7 +427,6 @@
           <span>${escapeHtml(entry.subtitle)}</span>
         </button>
       `).join("");
-
     }
 
     if (current.kind === "vernissages") {
@@ -555,7 +500,7 @@
           </div>
           <div class="caption">
             <b>${escapeHtml(w.work.title || fileTitle(w.work.file))}</b>${w.work.year ? ` · ${escapeHtml(w.work.year)}` : ""}
-            ${w.work.note ? `<div class="note">${escapeHtml(w.work.note)}</div>` : ""}
+            ${w.work.note ? `<div class="note" style="color:#ff4444; margin-top:8px;">${escapeHtml(w.work.note)}</div>` : ""}
           </div>
         </div>`;
     }
@@ -565,7 +510,6 @@
         <div class="about-body">
           <h2>h4wnee</h2>
           <p>is a Latin American transdisciplinary artist whose work explores the intersection of digital culture, popular imagination, and contemporary technologies.</p>
-          <p>Based in the Cariri region of Paraíba, he works with electronic waste and internet phenomena, transforming memes and pop culture into a poetic work that redefines the Caatinga as a territory of aesthetic innovation and political critique.</p>
           <div class="chronology">2021  utopias_piratas_2021
 2021  n0_f*ture_(prime)
 2022  hyperlinks, distorção e mormaço
@@ -604,8 +548,13 @@
   function bindWindowBody(el, w) {
     if (w.kind === "folder") {
       $$(".image-entry", el).forEach(btn => btn.addEventListener("click", () => {
-        const work = findItem(btn.dataset.work);
-        if (work) loadDimensions(work).then(() => addWindow("art", work));
+        const id = btn.dataset.work;
+        const work = findItem(id);
+        if (work) {
+          loadDimensions(work).then(() => addWindow("art", work));
+        } else {
+          alert(`Erro Interno: A imagem "${id}" está na memória, mas não foi possível vinculá-la ao clique.`);
+        }
       }));
 
       $$('[data-folder]', el).forEach(btn => btn.addEventListener("click", e => {
@@ -643,11 +592,13 @@
       img.onload = () => {
         work.nw = img.naturalWidth;
         work.nh = img.naturalHeight;
+        work.note = "";
         resolve(work);
       };
       img.onerror = () => {
         work.nw = 800;
         work.nh = 600;
+        work.note = "⚠ ERRO: Arquivo não encontrado. Verifique se o nome no código é idêntico ao do computador.";
         resolve(work);
       };
       img.src = imageSrc(work);
@@ -770,28 +721,21 @@
     try {
       await loadGallery();
     } catch (error) {
-      console.error("Falha ao carregar gallery-index.json", error);
+      console.error("Falha ao carregar", error);
       state.manifest = normalizeManifest(LEGACY_MANIFEST);
     }
     fixBackgroundCache();
-
-    const items = allItems();
-
     addWindow("folder");
 
     nowClock();
     state.clockTimer = setInterval(nowClock, 20000);
-    state.glitchTimer = setInterval(() => {
-      if (Math.random() < .55) glitchBurst();
-    }, 3000);
+    state.glitchTimer = setInterval(() => { if (Math.random() < .55) glitchBurst(); }, 3000);
 
     if (mobileWorks) {
-      mobileWorks.innerHTML = items.map(item => `
+      mobileWorks.innerHTML = allItems().map(item => `
         <article class="mobile-card" data-mobile-work="${escapeHtml(item.id)}">
           <img src="${imageSrc(item)}" alt="${escapeHtml(item.title)}" loading="lazy">
-          <div class="m-info">
-            <b>${escapeHtml(item.title || fileTitle(item.file))}</b>${item.year ? ` · ${escapeHtml(item.year)}` : ""}
-          </div>
+          <div class="m-info"><b>${escapeHtml(item.title || fileTitle(item.file))}</b></div>
         </article>
       `).join("");
 
@@ -802,22 +746,13 @@
         if (work) loadDimensions(work).then(() => addWindow("art", work));
       });
     }
-
     render();
   }
 
   function nowClock() {
     const d = new Date();
-    $("#clock").textContent =
-      String(d.getHours()).padStart(2, "0") + ":" +
-      String(d.getMinutes()).padStart(2, "0");
+    $("#clock").textContent = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
   }
 
   init();
-
-  window.addEventListener("beforeunload", () => {
-    clearInterval(state.clockTimer);
-    clearInterval(state.glitchTimer);
-    clearTimeout(state.errorTimer);
-  });
 })();
