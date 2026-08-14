@@ -55,6 +55,7 @@
   }
 
   function fileTitle(file) {
+    if (!file) return "";
     const name = file.split("/").pop() || file;
     return name.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
   }
@@ -69,18 +70,26 @@
 
     exhibitions.forEach(group => {
       group.items = Array.isArray(group.items) ? group.items : [];
-      group.items.forEach(item => {
-        item.title = item.title || fileTitle(item.file);
-        item.id = item.id || fileId(item.file);
+      group.items = group.items.map(item => {
+        if (typeof item === "string") {
+          return { id: item, file: item, title: fileTitle(item) };
+        }
+        item.title = item.title || fileTitle(item.file || "");
+        item.id = item.id || fileId(item.file || "");
+        return item;
       });
     });
 
-    works.forEach(item => {
-      item.title = item.title || fileTitle(item.file);
-      item.id = item.id || fileId(item.file);
+    const normWorks = works.map(item => {
+      if (typeof item === "string") {
+        return { id: item, file: item, title: fileTitle(item) };
+      }
+      item.title = item.title || fileTitle(item.file || "");
+      item.id = item.id || fileId(item.file || "");
+      return item;
     });
 
-    return { version: 1, exhibitions, works };
+    return { version: 1, exhibitions, works: normWorks };
   }
 
   function localManifestFromFiles(files) {
