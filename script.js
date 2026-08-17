@@ -1,50 +1,67 @@
 (() => {
   "use strict";
 
-  // ==========================================
-  // CONFIGURAÇÃO DOS SEUS ANÚNCIOS (GIFS)
-  // Coloque seus gifs na pasta assets/ads/ e adicione os nomes aqui.
-  // ==========================================
   const CUSTOM_ADS = [];
 
-  // Injetando CSS extra: Grade, XP Hover, Zoom e Explosão Consertada
+  // ==========================================
+  // INJEÇÃO DE CSS: MSN, XP TOOLBAR E EXPLOSÃO RADIAL
+  // ==========================================
   const extraStyles = document.createElement('style');
   extraStyles.textContent = `
     .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 15px; padding: 15px; background: #ffffff; min-height: 100%; }
-    .image-entry { display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid transparent; background: transparent; cursor: pointer; padding: 8px; border-radius: 2px; color: #000; }
+    .image-entry { display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid transparent; background: transparent !important; cursor: pointer; padding: 8px; border-radius: 2px; color: #000; }
     
-    /* Cores de Seleção Clássicas do Windows XP */
+    /* XP Clássico Hover */
     .image-entry:hover { background: #e5f3ff !important; border: 1px solid #d8ebf9 !important; }
     .image-entry.selected { background: #cce8ff !important; border: 1px solid #99d1ff !important; }
     
-    .work-thumb { width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; font-size: 50px; }
+    /* Remoção do fundo preto das pastas */
+    .work-thumb { width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; background: transparent !important; }
     .work-thumb img { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 2px 2px 5px rgba(0,0,0,0.3); }
+    
     .art-plate { overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: calc(100% - 40px); background: #111; }
     .art-plate img { touch-action: none; transition: transform 0.05s linear; max-width: 100%; max-height: 100%; object-fit: contain; }
     
-    /* Propagandas - Tamanho Mini e Quadrado */
+    /* POPUP BET QUADRADA E MINÚSCULA */
     .popup-ad { cursor: crosshair; border: 2px outset #dfdfdf; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); z-index: 999999 !important; overflow: visible !important; }
-    .popup-ad .window-body { padding: 0; margin: 0; width: 100%; height: calc(100% - 18px); overflow: hidden; pointer-events: none; }
-    .popup-ad .titlebar { height: 18px; padding: 0 4px; font-size: 10px; }
-    .popup-ad .titlebar .close { width: 14px; height: 14px; line-height: 14px; font-size: 10px; }
+    .popup-ad .titlebar { display: none !important; } /* Sem barra azul na propaganda */
+    .popup-ad .window-body { padding: 0 !important; margin: 0; width: 100% !important; height: 100% !important; overflow: hidden; pointer-events: none; }
     
-    /* ANIMAÇÃO EXPLOSÃO 8-BITS CONSISTENTE */
+    /* EXPLOSÃO DE PIXELS RADIAL (A partir do centro) */
     @keyframes pixelExplosion {
-      0% { box-shadow: inset 0 0 0 10px #ffff00; background: #ffaa00; transform: scale(1); opacity: 1; }
-      20% { box-shadow: inset 0 0 0 20px #ff0000, 10px 10px 0 #ffaa00, -10px -10px 0 #ffff00; background: #ff5500; transform: scale(1.5); border: none; }
-      50% { box-shadow: 25px 25px 0 5px #ff5500, -25px -25px 0 5px #ffaa00, 25px -25px 0 5px #ffff00, -25px 25px 0 5px #ff0000, 0 35px 0 #ff0000, 0 -35px 0 #ffaa00; background: transparent; transform: scale(2); border: none; }
-      75% { box-shadow: 40px 40px 0 -5px #ff0000, -40px -40px 0 -5px #ff5500, 40px -40px 0 -5px #ffff00, -40px 40px 0 -5px #ffaa00; background: transparent; opacity: 0.7; transform: scale(3); border: none; }
-      100% { opacity: 0; display: none; background: transparent; box-shadow: none; border: none; }
+      0% { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #ffeb3b, 0 0 0 6px #ff9800; background: transparent; transform: scale(1); }
+      25% { box-shadow: 
+        -4px -4px 0 2px #fff, 4px 4px 0 2px #fff, -4px 4px 0 2px #fff, 4px -4px 0 2px #fff,
+        -10px -10px 0 2px #ffeb3b, 10px 10px 0 2px #ffeb3b, -10px 10px 0 2px #ffeb3b, 10px -10px 0 2px #ffeb3b,
+        -16px 0 0 2px #ff9800, 16px 0 0 2px #ff9800, 0 -16px 0 2px #ff9800, 0 16px 0 2px #ff9800; 
+        background: transparent; border: none; }
+      50% { box-shadow: 
+        -15px -20px 0 2px #fff, 20px 10px 0 2px #ffeb3b, -10px 15px 0 2px #ffeb3b, 15px -15px 0 2px #fff,
+        -25px -25px 0 2px #ff9800, 25px 25px 0 2px #ff9800, -25px 25px 0 2px #ff9800, 25px -25px 0 2px #ff9800,
+        -30px 0 0 2px #f44336, 30px 0 0 2px #f44336, 0 -30px 0 2px #f44336, 0 30px 0 2px #f44336; 
+        background: transparent; border: none; }
+      75% { box-shadow: 
+        -30px -40px 0 2px #ffeb3b, 40px 20px 0 2px #ffeb3b, -20px 35px 0 2px #ff9800, 30px -30px 0 2px #ff9800,
+        -45px -45px 0 2px #f44336, 45px 45px 0 2px #f44336, -45px 45px 0 2px #f44336, 45px -45px 0 2px #f44336,
+        -55px 0 0 2px #d32f2f, 55px 0 0 2px #d32f2f, 0 -55px 0 2px #d32f2f, 0 55px 0 2px #d32f2f; 
+        background: transparent; border: none; opacity: 0.8; }
+      100% { box-shadow: none; opacity: 0; background: transparent; border: none; display: none; }
     }
     .explode-anim {
-      animation: pixelExplosion 0.4s steps(4) forwards !important;
-      pointer-events: none;
+      animation: pixelExplosion 0.45s steps(5) forwards !important;
+      pointer-events: none; background: transparent !important; border: none !important;
     }
-    .explode-anim .titlebar, .explode-anim .window-body { display: none !important; }
+    .explode-anim .window-body { display: none !important; }
+    
+    /* ESTILO JANELA MSN MESSENGER */
+    .msn-window { border-radius: 8px !important; background: linear-gradient(to bottom, #E6F0FA 0%, #CDE0F5 40%, #A4CBF0 100%) !important; border: 1px solid #6E98C7 !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.4) !important; }
+    .msn-window .titlebar { display: none !important; } /* Oculta o titlebar azul normal */
+    
+    .task-msn { background: linear-gradient(to bottom, #E6F0FA, #A4CBF0) !important; border: 1px solid #6E98C7 !important; color: #000 !important; }
   `;
   document.head.appendChild(extraStyles);
 
-  // Pasta Amarela Estilo XP
+  // Pasta Amarela Sem Fundo SVG
   const FOLDER_SVG = `<svg width="50" height="50" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));">
     <path d="M40 12H22L18 6H8C5.8 6 4 7.8 4 10V38C4 40.2 5.8 42 8 42H40C42.2 42 44 40.2 44 38V16C44 13.8 42.2 12 40 12Z" fill="#F4D03F" stroke="#D68910" stroke-width="2" stroke-linejoin="round"/>
     <path d="M4 16H44" stroke="#D68910" stroke-width="2"/>
@@ -56,23 +73,13 @@
   const $ = (s, root = document) => root.querySelector(s);
   const $$ = (s, root = document) => [...root.querySelectorAll(s)];
 
-  const state = {
-    wins: [],
-    top: 100,
-    active: null,
-    menuOpen: false,
-    cascade: 0,
-    manifest: LEGACY_MANIFEST,
-    browserPath: []
-  };
-
+  const state = { wins: [], top: 100, active: null, menuOpen: false, cascade: 0, manifest: LEGACY_MANIFEST, browserPath: [] };
   const windowsEl = $("#windows");
   const taskStrip = $("#taskStrip");
   const startMenu = $("#startMenu");
   const bsod = $("#bsod");
   const clockEl = $("#clock");
 
-  // Função para pegar o ícone dinâmico (.bmp ou fallback em emoji)
   function getIcon(name, fallbackEmoji) {
     return `<img src="assets/icons/${name}.bmp" onerror="this.outerHTML='<span>${fallbackEmoji}</span>'" alt="" style="width:16px; height:16px; object-fit:contain; vertical-align:middle; margin-right:4px;">`;
   }
@@ -124,8 +131,8 @@
 
   function allItems() { return [...state.manifest.exhibitions.flatMap(g => g.items), ...state.manifest.works]; }
   function findItem(id) { return allItems().find(item => item.id === id); }
-
   function browserRoot() { return { kind: "root", name: "C:\\h4wnee", path: [] }; }
+
   function currentBrowser(win) {
     const path = Array.isArray(win.browserPath) ? win.browserPath : [];
     if (path.length === 0) return browserRoot();
@@ -150,8 +157,8 @@
     const W = innerWidth, H = innerHeight;
     if (kind === "folder") return { x: W * .09, y: H * .23, w: 600, h: 420 };
     
-    // MSN WIDGET LADO DIREITO
-    if (kind === "contact") return { x: clamp(W - 300 - 20, 50, W - 320), y: clamp(H * 0.1, 50, H - 450), w: 280, h: 480 };
+    // MSN WIDGET E ABOUT NO CANTO DIREITO
+    if (kind === "contact") return { x: clamp(W - 280, 50, W - 260), y: clamp(H * 0.1, 50, H - 200), w: 250, h: 170 }; // Tamanho exato do popup do MSN
     if (kind === "about") return { x: clamp(W - 420, 80, W - 390), y: clamp(H * 0.25, 80, H - 250), w: 390, h: 392 };
     
     if (kind === "art" && work) {
@@ -171,10 +178,8 @@
     if (existing) { focusWin(existing.id); return; }
 
     const id = `${kind}_${work ? work.id : Math.random().toString(36).slice(2, 8)}`;
-    const titleMap = { folder: "C:\\h4wnee", about: "about_h4wnee.txt", contact: "MSN Messenger" };
-    
-    // Mapeamento de Ícones HTML para Janelas
-    const iconHtml = work ? getIcon("art", "🖼") : getIcon(kind, ({ folder: "📁", about: "🗒", contact: "📟" }[kind]));
+    const titleMap = { folder: "C:\\h4wnee", about: "about_h4wnee.txt", contact: "Windows Live Messenger" };
+    const iconHtml = work ? getIcon("art", "🖼") : getIcon(kind, ({ folder: "📁", about: "🗒", contact: "👥" }[kind]));
     
     const win = {
       id, kind, title: work ? (work.file || work.title) : titleMap[kind],
@@ -194,7 +199,7 @@
 
   function focusWin(id, forceRender = false) {
     const w = state.wins.find(x => x.id === id);
-    if (!w || w.kind === "popup") return; // Popup não precisa de foco normal
+    if (!w || w.kind === "popup") return;
     const alreadyActive = (state.active === id && !w.min && !state.menuOpen);
     w.z = ++state.top; w.min = false; state.active = id; state.menuOpen = false;
     
@@ -294,21 +299,31 @@
       content = `<div class="file-grid">${state.manifest.works.map(item => imageCard(item)).join("")}</div>`;
     }
 
+    // TOOLBAR XP CLÁSSICA RECONSTRUÍDA
     return `
-      <div class="folder-menu" style="display: flex; gap: 15px; padding: 6px 15px; border-bottom: 1px solid #ccc; background: #ece9d8; font-size: 13px;">
-        <span>File</span><span>Edit</span><span>View</span>
+      <div class="folder-menu" style="display: flex; gap: 12px; padding: 4px 8px; background: #ece9d8; border-bottom: 1px solid #d4d0c8; font-size: 11px; color: #000;">
+        <span><u>F</u>ile</span><span><u>E</u>dit</span><span><u>V</u>iew</span><span><u>H</u>elp</span>
       </div>
-      <div class="address toolbar-address" style="display: flex; align-items: center; gap: 10px; padding: 6px 15px; border-bottom: 1px solid #ccc; background: #fff; font-size: 13px;">
-        <button type="button" class="nav-btn" data-nav="back" style="padding: 2px 8px; cursor: pointer;">← Voltar</button>
-        <div class="address-breadcrumb" style="flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">C:\\h4wnee\\${current.path.join('\\')}</div>
+      <div class="toolbar" style="display: flex; align-items: center; gap: 4px; padding: 4px 8px; background: #ece9d8; border-bottom: 1px solid #d4d0c8;">
+        <button type="button" data-nav="back" style="display:flex; align-items:center; gap:4px; padding:2px 6px; background:transparent; border:1px solid transparent; cursor:pointer; font-size:11px;">
+          <span style="color:#008000; font-size:16px; font-weight:bold; line-height:1;">←</span> Back
+        </button>
+        <div style="width: 1px; height: 22px; background: #aca899; margin: 0 4px;"></div>
+        <button type="button" style="padding:2px 6px; background:transparent; border:1px solid transparent; cursor:pointer; font-size:11px;">Search</button>
+        <button type="button" style="padding:2px 6px; background:transparent; border:1px solid transparent; cursor:pointer; font-size:11px;">Folders</button>
       </div>
-      <div class="folder-body browser-body" style="cursor: default; overflow-y:auto; height:calc(100% - 90px); background:#fff;">${content}</div>`;
+      <div class="address-bar" style="display: flex; align-items: center; gap: 8px; padding: 4px 8px; background: #ece9d8; border-bottom: 1px solid #aca899; font-size: 11px;">
+        <span style="color: #aca899;">Address</span>
+        <div style="flex: 1; display:flex; align-items:center; gap:4px; background: #fff; border: 1px solid #7f9db9; padding: 2px 4px;">
+          <span style="font-size:12px;">📁</span>
+          <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color:#000;">C:\\h4wnee\\${current.path.join('\\')}</div>
+        </div>
+      </div>
+      <div class="folder-body browser-body" style="cursor: default; overflow-y:auto; height:calc(100% - 94px); background:#fff;">${content}</div>`;
   }
 
   function windowBodyHTML(w) {
-    if (w.kind === "folder") {
-      return browserBodyHTML(w);
-    }
+    if (w.kind === "folder") return browserBodyHTML(w);
 
     if (w.kind === "art") {
       return `
@@ -331,18 +346,32 @@
         </div>`;
     }
 
+    // ==========================================
+    // ESTRUTURA DO MSN MESSENGER (Toast)
+    // ==========================================
     if (w.kind === "contact") {
       return `
-        <div class="contact-body" style="display:flex; flex-direction:column; height:100%; background:#f0f0f0;">
-          <div style="background:#004e98; color:#fff; padding:15px; text-align:center;">
-             ${getIcon("contact", "👤")} <b>Lista de Contatos</b>
+        <div style="position:relative; font-family: 'Segoe UI', Tahoma, sans-serif; color: #000; height: 100%; display: flex; flex-direction: column; padding: 10px;">
+          <button class="close" data-act="close" style="position:absolute; top:8px; right:8px; background:transparent; border:none; font-size:14px; font-weight:bold; cursor:pointer; color:#444; padding:0;">×</button>
+          
+          <div style="display:flex; align-items:center; gap:6px; font-size:11px; font-weight:bold; margin-bottom:12px; pointer-events:none;">
+            ${getIcon("contact", "👥")}
+            <span>Windows Live Messenger</span>
           </div>
-          <div style="padding:15px; flex-grow:1;">
-            <div class="prompt" style="color:#000;">h4wnee_</div>
-            <br>
-            mail&nbsp;&nbsp;&nbsp; <a href="mailto:h4wnee@gmail.com" style="color:#004e98; text-decoration:none;">h4wnee@gmail.com</a><br>
-            insta&nbsp;&nbsp; <a href="https://instagram.com/h4wnee" target="_blank" rel="noopener" style="color:#004e98; text-decoration:none;">@h4wnee</a><br><br>
-            <div style="font-size:12px; color:#666;">Cariri / Paraíba / BR</div>
+          
+          <div style="display:flex; gap:12px; align-items:center; flex:1;">
+            <div style="width:55px; height:55px; border:1px solid #8ca6c0; border-radius:4px; background: linear-gradient(to bottom, #fff, #d2e4f5); padding:2px; display:flex; justify-content:center; align-items:center;">
+               <img src="assets/icons/contact.bmp" onerror="this.outerHTML='<span style=\\'font-size:35px;\\'>👤</span>'" style="max-width:100%; max-height:100%;">
+            </div>
+            
+            <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+              <div style="font-size:16px; margin-bottom:2px; letter-spacing:-0.5px;">h4wnee</div>
+              <div style="font-size:11px; color:#222; line-height:1.3;">acaba de iniciar sessão</div>
+            </div>
+          </div>
+          
+          <div style="text-align:right; margin-top:auto;">
+            <a href="mailto:h4wnee@gmail.com" style="font-size:11px; color:#0055CC; text-decoration:none; cursor:pointer;">Opções</a>
           </div>
         </div>`;
     }
@@ -353,7 +382,6 @@
   function bindWindowBody(el, w) {
     if (w.kind === "folder") {
       $$(".image-entry", el).forEach(btn => {
-        // Seleção no Hover
         btn.addEventListener("mouseenter", () => btn.classList.add("selected"));
         btn.addEventListener("mouseleave", () => btn.classList.remove("selected"));
 
@@ -371,6 +399,16 @@
       $$('[data-nav="back"]', el).forEach(btn => btn.addEventListener("click", e => {
         e.preventDefault(); e.stopPropagation(); goBack(w);
       }));
+    }
+
+    if (w.kind === "contact") {
+       // Permite arrastar o MSN segurando em qualquer área vazia dele
+       el.addEventListener("pointerdown", e => {
+         if (!e.target.closest("button") && !e.target.closest("a")) beginPointer(e, w.id, "move");
+       });
+       $$('[data-act="close"]', el).forEach(btn => btn.addEventListener("click", e => {
+         e.preventDefault(); e.stopPropagation(); closeWindow(w.id);
+       }));
     }
 
     if (w.kind === "art") {
@@ -421,34 +459,37 @@
 
   function createWindow(w) {
     const el = document.createElement("article");
-    el.className = `window ${state.active === w.id ? "" : "inactive"} ${w.kind === "popup" ? "popup-ad" : ""}`;
+    el.className = `window ${state.active === w.id ? "" : "inactive"} ${w.kind === "popup" ? "popup-ad" : ""} ${w.kind === "contact" ? "msn-window" : ""}`;
     el.dataset.id = w.id;
     el.style.left = `${w.x}px`; el.style.top = `${w.y}px`;
     el.style.width = `${w.w}px`; el.style.height = `${w.h}px`;
     el.style.zIndex = w.z;
     if (w.kind === "popup") el.style.position = "fixed";
     
-    // EXPLOSÃO COM APENAS UM CLIQUE NA PRIMEIRA CAMADA
+    // Explosão Instantânea de Popups
     if (w.kind === "popup") {
       el.addEventListener("pointerdown", (e) => {
         e.stopPropagation();
         if (!el.classList.contains("explode-anim")) {
           el.classList.add("explode-anim");
-          setTimeout(() => closeWindow(w.id), 380);
+          setTimeout(() => closeWindow(w.id), 430);
         }
       });
     } else {
       el.addEventListener("pointerdown", () => focusWin(w.id));
     }
     
-    el.appendChild(titlebar(w));
+    // MSN e Popups não usam o Titlebar normal
+    if (w.kind !== "contact" && w.kind !== "popup") {
+        el.appendChild(titlebar(w));
+    }
 
     const body = document.createElement("div");
     body.className = "window-body";
     body.innerHTML = w.kind === "popup" ? w.content : windowBodyHTML(w);
     el.appendChild(body);
 
-    if (!w.max && w.kind !== "popup") {
+    if (!w.max && w.kind !== "popup" && w.kind !== "contact") {
       const grip = document.createElement("div");
       grip.className = "resize-grip";
       grip.addEventListener("pointerdown", e => { e.stopPropagation(); beginPointer(e, w.id, "size"); });
@@ -466,7 +507,7 @@
     taskStrip.innerHTML = "";
     state.wins.filter(w => w.kind !== "popup").forEach(w => {
       const b = document.createElement("button");
-      b.className = `task-button ${state.active === w.id && !w.min ? "focused" : ""}`;
+      b.className = `task-button ${state.active === w.id && !w.min ? "focused" : ""} ${w.kind === "contact" ? "task-msn" : ""}`;
       b.innerHTML = `${w.iconHtml || ""} ${w.title}`;
       b.addEventListener("click", () => { if (state.active === w.id && !w.min) { w.min = true; render(); } else focusWin(w.id, true); });
       taskStrip.appendChild(b);
@@ -484,7 +525,6 @@
     const open = e.target.closest("[data-open]");
     if (open) openByKind(open.dataset.open);
   });
-
   bsod.addEventListener("click", () => bsod.classList.add("hidden"));
 
   // ==========================================
@@ -497,18 +537,17 @@
   }
 
   // ==========================================
-  // PROPAGANDA BET (Tamanho Mini Quadrado)
+  // PROPAGANDA BET (Estritamente 45x45 Quadriculada)
   // ==========================================
   function spawnAd() {
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
     
-    // Texto menor para caber num quadrado bem pequeno (60x60)
-    const contentHtml = `<div style="background:#006400; width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#ffff00; font-size: 16px; font-family: 'Archivo Black', sans-serif; font-weight:900; text-shadow: 1px 1px 0px #000;">BET</div>`;
+    const contentHtml = `<div style="background:#006400; width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#ffff00; font-size: 14px; font-family: 'Archivo Black', sans-serif; font-weight:900; text-shadow: 1px 1px 0px #000; box-sizing:border-box;">BET</div>`;
 
     const ad = {
       id, kind: "popup", title: "AD", icon: "⚠",
-      x: Math.random() * (innerWidth - 60), y: Math.random() * (innerHeight - 80),
-      w: 60, h: 78, z: 999999, min: false, max: false, // Forçado para cima e miniatura 60x78
+      x: Math.random() * (innerWidth - 45), y: Math.random() * (innerHeight - 45),
+      w: 45, h: 45, z: 999999, min: false, max: false, // Forçado 45x45 na raiz
       content: contentHtml, vx: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random()), vy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random())
     };
 
@@ -537,31 +576,28 @@
   async function init() {
     try { await loadGallery(); } catch (error) { state.manifest = normalizeManifest(LEGACY_MANIFEST); }
     
-    // Inicia e Mantém o Relógio Atualizado
-    nowClock();
-    setInterval(nowClock, 1000);
+    // Inicia Relógio
+    nowClock(); setInterval(nowClock, 1000);
 
-    // 1. Abre a pasta Works (Explorador)
+    // 1. Explorador
     addWindow("folder"); 
     
-    // 2. Abre a primeira imagem da pasta "Obras" (se existir)
+    // 2. Primeira Imagem
     if (state.manifest.works && state.manifest.works.length > 0) {
       const firstWork = state.manifest.works[0];
       loadDimensions(firstWork).then(() => addWindow("art", firstWork));
     }
 
-    // 3. Abre Contact (MSN) e About alinhados à direita
+    // 3. MSN e About
     addWindow("contact"); 
     addWindow("about");   
 
-    // 4. Injeta a primeira propaganda
+    // 4. Propaganda BET inicial
     setTimeout(spawnAd, 800);
 
-    // Lança as próximas propagandas com intervalo de 25 segundos
+    // 5. Novas propagandas a cada 25s
     setInterval(() => {
-      if (state.wins.filter(w => w.kind === "popup").length < 3) {
-        spawnAd();
-      }
+      if (state.wins.filter(w => w.kind === "popup").length < 3) spawnAd();
     }, 25000);
 
     render();
