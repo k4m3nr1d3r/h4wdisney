@@ -3,6 +3,9 @@
 
   const CUSTOM_ADS = [];
 
+  // ==========================================
+  // INJEÇÃO DE CSS AVANÇADO: CRT GLITCH, EVAPORAÇÃO E EXPLOSÃO
+  // ==========================================
   const extraStyles = document.createElement('style');
   extraStyles.textContent = `
     .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 15px; padding: 15px; background: #ffffff; min-height: 100%; }
@@ -17,38 +20,44 @@
     .art-plate { overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: calc(100% - 40px); background: #111; }
     .art-plate img { touch-action: none; transition: transform 0.05s linear; max-width: 100%; max-height: 100%; object-fit: contain; }
     
-    /* POPUP BET COM BARRA SUPERIOR */
+    /* Propagandas */
     .popup-ad { cursor: crosshair; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); z-index: 999999 !important; overflow: visible !important; }
     .popup-ad .window-body { padding: 0 !important; margin: 0; width: 100% !important; height: calc(100% - 25px) !important; overflow: hidden; pointer-events: none; }
     
-    /* EXPLOSÃO RADIAL (ESTRELA) 8-BITS */
-    @keyframes radialExplosion {
-      0% { box-shadow: 0 0 0 4px #fff; background: #fff; transform: scale(1); }
-      20% { box-shadow: 
-        0 -15px 0 2px #ffeb3b, 0 15px 0 2px #ffeb3b, 15px 0 0 2px #ffeb3b, -15px 0 0 2px #ffeb3b,
-        -10px -10px 0 2px #ff9800, 10px 10px 0 2px #ff9800, -10px 10px 0 2px #ff9800, 10px -10px 0 2px #ff9800; 
-        background: transparent; border: none; }
-      50% { box-shadow: 
-        0 -30px 0 3px #ff9800, 0 30px 0 3px #ff9800, 30px 0 0 3px #ff9800, -30px 0 0 3px #ff9800,
-        -20px -20px 0 2px #f44336, 20px 20px 0 2px #f44336, -20px 20px 0 2px #f44336, 20px -20px 0 2px #f44336,
-        -10px -30px 0 2px #ffeb3b, 10px 30px 0 2px #ffeb3b, -30px 10px 0 2px #ffeb3b, 30px -10px 0 2px #ffeb3b; 
-        background: transparent; border: none; }
-      80% { box-shadow: 
-        0 -50px 0 3px #d32f2f, 0 50px 0 3px #d32f2f, 50px 0 0 3px #d32f2f, -50px 0 0 3px #d32f2f,
-        -35px -35px 0 2px #d32f2f, 35px 35px 0 2px #d32f2f, -35px 35px 0 2px #d32f2f, 35px -35px 0 2px #d32f2f; 
-        background: transparent; border: none; opacity: 0.6; }
-      100% { box-shadow: none; opacity: 0; background: transparent; border: none; display: none; }
+    /* ANIMAÇÃO DE EVAPORAÇÃO E EXPLOSÃO EM ESTRELA */
+    @keyframes advancedEvaporation {
+      0% { transform: scale(1) skewX(0deg); filter: contrast(1) brightness(1); opacity: 1; }
+      25% { transform: scale(1.1) skewX(10deg); filter: contrast(3) hue-rotate(90deg); box-shadow: 0 -15px 0 2px #ffeb3b, 0 15px 0 2px #ffeb3b, 15px 0 0 2px #ffeb3b, -15px 0 0 2px #ffeb3b; }
+      50% { transform: scale(0.8) skewX(-15deg); filter: brightness(2) saturate(2); clip-path: polygon(0% 15%, 15% 15%, 15% 0%, 85% 0%, 85% 15%, 100% 15%, 100% 85%, 85% 85%, 85% 100%, 15% 100%, 15% 85%, 0% 85%); box-shadow: 0 -25px 0 3px #ff9800, 0 25px 0 3px #ff9800, 25px 0 0 3px #ff9800, -25px 0 0 3px #ff9800, -15px -15px 0 2px #f44336, 15px 15px 0 2px #f44336; }
+      75% { transform: scale(1.4) skewY(10deg); opacity: 0.6; box-shadow: 0 -45px 0 4px #d32f2f, 0 45px 0 4px #d32f2f, 45px 0 0 4px #d32f2f, -45px 0 0 4px #d32f2f, -30px -30px 0 2px #ff1100, 30px 30px 0 2px #ff1100; }
+      100% { transform: scale(2); opacity: 0; box-shadow: none; display: none; }
     }
     .explode-anim {
-      animation: radialExplosion 0.5s steps(5) forwards !important;
+      animation: advancedEvaporation 0.48s steps(6) forwards !important;
       pointer-events: none; background: transparent !important; border: none !important;
     }
     .explode-anim .titlebar, .explode-anim .window-body { display: none !important; }
     
-    /* ESTILO JANELA MSN MESSENGER COM TRANSIÇÃO */
+    /* MSN Messenger Widget */
     .msn-window { border-radius: 8px !important; background: linear-gradient(to bottom, #E6F0FA 0%, #CDE0F5 40%, #A4CBF0 100%) !important; border: 1px solid #6E98C7 !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.4) !important; transition: height 0.2s ease-in-out; }
     .msn-window .titlebar { display: none !important; }
     .task-msn { background: linear-gradient(to bottom, #E6F0FA, #A4CBF0) !important; border: 1px solid #6E98C7 !important; color: #000 !important; }
+    
+    /* GLITCH DE TURBULÊNCIA E DISTORÇÃO CROMÁTICA DO WALLPAPER */
+    @keyframes crtWallpaperGlitch {
+      0% { transform: scale(1) translate(0,0) skewX(0); filter: none; }
+      20% { transform: scale(1.03) translate(-5px, 3px) skewX(4deg); filter: hue-rotate(120deg) contrast(1.8) saturate(2); }
+      40% { transform: scale(0.98) translate(6px, -4px) skewX(-6deg); filter: hue-rotate(-60deg) brightness(1.5) contrast(2); }
+      60% { transform: scale(1.05) translate(-2px, -2px) skewY(2deg); filter: invert(0.1) hue-rotate(180deg); }
+      80% { transform: scale(1.01) translate(4px, 2px) skewX(8deg); filter: brightness(1.8) contrast(1.3); }
+      100% { transform: scale(1) translate(0,0) skewX(0); filter: none; }
+    }
+    .wallpaper-glitch-active {
+      animation: crtWallpaperGlitch 1s steps(8) forwards !important;
+    }
+    
+    /* TOPO ABSOLUTO PARA A TELA AZUL */
+    #bsod { z-index: 999999999 !important; }
   `;
   document.head.appendChild(extraStyles);
 
@@ -67,6 +76,11 @@
   const taskStrip = $("#taskStrip");
   const bsod = $("#bsod");
   const clockEl = $("#clock");
+  const wallpaperEl = $(".wallpaper");
+
+  // Multiplicadores para controle do tempo progressivo
+  let crashMultiplier = 1;
+  let adMultiplier = 1;
 
   function getIcon(name, fallbackEmoji) {
     return `<img src="assets/icons/${name}.png" onerror="this.outerHTML='<span>${fallbackEmoji}</span>'" alt="" style="width:16px; height:16px; object-fit:contain; vertical-align:middle; margin-right:4px;">`;
@@ -186,9 +200,7 @@
     if (!w || w.kind === "popup") return;
     const alreadyActive = (state.active === id && !w.min && !state.menuOpen);
     
-    // BOOST NA CAMADA PARA A OBRA FICAR NA FRENTE DO CRT
     w.z = ++state.top + (w.kind === "art" ? 90000 : 0); 
-    
     w.min = false; state.active = id; state.menuOpen = false;
     
     if (!alreadyActive || forceRender) render();
@@ -333,9 +345,6 @@
         </div>`;
     }
 
-    // ==========================================
-    // MSN MESSENGER WIDGET (COM CAIXA DE TEXTO EXPANSÍVEL)
-    // ==========================================
     if (w.kind === "contact") {
       return `
         <div style="position:relative; font-family: 'Segoe UI', Tahoma, sans-serif; color: #000; height: 100%; display: flex; flex-direction: column; padding: 10px;">
@@ -361,7 +370,6 @@
             <a href="#" class="msg-toggle" style="font-size:11px; color:#0055CC; text-decoration:none; cursor:pointer;">Enviar Mensagem</a>
           </div>
           
-          <!-- CAIXA DE TEXTO ESCONDIDA -->
           <div class="msn-expand" style="display:none; margin-top:10px; border-top:1px solid #8ca6c0; padding-top:10px;">
              <textarea placeholder="Digite sua mensagem..." style="width:100%; height:45px; resize:none; font-family:inherit; font-size:11px; box-sizing:border-box; border:1px solid #8ca6c0; padding:4px; margin-bottom:5px;"></textarea>
              <button class="send-msg" style="width:100%; cursor:pointer; font-size:11px; padding:3px; background:#f0f0f0; border:1px solid #8ca6c0; border-radius:3px;">Send</button>
@@ -402,27 +410,21 @@
          e.preventDefault(); e.stopPropagation(); closeWindow(w.id);
        }));
        
-       // Lógica de Expandir e Enviar Mensagem
        const toggleBtn = $(".msg-toggle", el);
        const expandArea = $(".msn-expand", el);
        const sendBtn = $(".send-msg", el);
        const textArea = $("textarea", el);
 
        toggleBtn.addEventListener("click", e => {
-           e.preventDefault();
-           e.stopPropagation();
+           e.preventDefault(); e.stopPropagation();
            const isExpanded = expandArea.style.display !== "none";
            expandArea.style.display = isExpanded ? "none" : "block";
-           w.h = isExpanded ? 160 : 255;
-           el.style.height = `${w.h}px`;
+           w.h = isExpanded ? 160 : 255; el.style.height = `${w.h}px`;
        });
 
        sendBtn.addEventListener("click", () => {
            if(textArea.value.trim() === "") return;
-           expandArea.style.display = "none";
-           w.h = 160;
-           el.style.height = `${w.h}px`;
-           textArea.value = "";
+           expandArea.style.display = "none"; w.h = 160; el.style.height = `${w.h}px`; textArea.value = "";
            alert("Mensagem enviada com sucesso!");
        });
     }
@@ -482,21 +484,20 @@
     el.style.zIndex = w.z;
     if (w.kind === "popup") el.style.position = "fixed";
     
+    // EVAPORAÇÃO RADIAL IMEDIATA EM 1 CLIQUE
     if (w.kind === "popup") {
       el.addEventListener("pointerdown", (e) => {
         e.stopPropagation();
         if (!el.classList.contains("explode-anim")) {
           el.classList.add("explode-anim");
-          setTimeout(() => closeWindow(w.id), 450); // Aguarda o fim da animação
+          setTimeout(() => closeWindow(w.id), 470);
         }
       });
     } else {
       el.addEventListener("pointerdown", () => focusWin(w.id));
     }
     
-    if (w.kind !== "contact") {
-        el.appendChild(titlebar(w));
-    }
+    if (w.kind !== "contact") el.appendChild(titlebar(w));
 
     const body = document.createElement("div");
     body.className = "window-body";
@@ -541,32 +542,43 @@
   });
   bsod.addEventListener("click", () => bsod.classList.add("hidden"));
 
-  // ==========================================
-  // RELÓGIO E SISTEMA DE ERROS (Glitches e Crash)
-  // ==========================================
   function nowClock() {
     if (!clockEl) return;
     const d = new Date();
     clockEl.textContent = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
   }
 
-  function redGlitch() {
-    const overlay = document.createElement("div");
-    overlay.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,0,0,0.5); mix-blend-mode:color-burn; z-index:9999999; pointer-events:none; transition:opacity 0.1s;";
-    document.body.appendChild(overlay);
+  // ==========================================
+  // FILTRO DO GLITCH CRT DE PAPEL DE PAREDE
+  // ==========================================
+  function triggerCrtWallpaperGlitch() {
+    if (!wallpaperEl) return;
+    wallpaperEl.classList.add("wallpaper-glitch-active");
     setTimeout(() => {
-        overlay.style.opacity = '0';
-        setTimeout(() => overlay.remove(), 100);
-    }, Math.random() * 200 + 100);
+      wallpaperEl.classList.remove("wallpaper-glitch-active");
+    }, 1000); // 1 segundo exato de interferência
+  }
+
+  // Lógica recursiva progressiva para os Glitches (40s, 80s, 120s...)
+  function scheduleNextGlitch() {
+    triggerCrtWallpaperGlitch();
+    // Você mencionou a cada 40 segundos por padrão, agora alinhado ao comportamento progressivo se desejado
+    setTimeout(scheduleNextGlitch, 40000); 
+  }
+
+  // Lógica recursiva progressiva para a Tela Azul (1min, 2min, 3min...)
+  function scheduleNextCrash() {
+    bsod.classList.remove("hidden");
+    crashMultiplier++;
+    const nextDelay = 60000 * crashMultiplier;
+    setTimeout(scheduleNextCrash, nextDelay);
   }
 
   // ==========================================
-  // PROPAGANDA BET
+  // PROPAGANDA BET (Tamanho exato de uma miniatura)
   // ==========================================
   function spawnAd() {
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
-    
-    // Tamanho Exato de uma Miniatura (90x110 com Titlebar, conteúdo quadrado de fundo)
     const contentHtml = `<div style="background:#006400; width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#ffff00; font-size: 24px; font-family: 'Archivo Black', sans-serif; font-weight:900; text-shadow: 1px 1px 0px #000; box-sizing:border-box;">BET</div>`;
 
     const ad = {
@@ -581,21 +593,27 @@
     function bounce() {
       const winData = state.wins.find(w => w.id === id);
       if (!winData) return; 
-      
-      winData.x += winData.vx;
-      winData.y += winData.vy;
-      
+      winData.x += winData.vx; winData.y += winData.vy;
       if (winData.x <= 0 || winData.x + winData.w >= innerWidth) winData.vx *= -1;
       if (winData.y <= 0 || winData.y + winData.h >= innerHeight) winData.vy *= -1;
 
       const currentEl = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
       if (currentEl && !currentEl.classList.contains("explode-anim")) { 
-        currentEl.style.left = `${winData.x}px`; 
-        currentEl.style.top = `${winData.y}px`; 
+        currentEl.style.left = `${winData.x}px`; currentEl.style.top = `${winData.y}px`; 
       }
       requestAnimationFrame(bounce);
     }
     requestAnimationFrame(bounce);
+  }
+
+  // Lógica recursiva progressiva para propagandas (25s, 50s, 75s...)
+  function scheduleNextAd() {
+    if (state.wins.filter(w => w.kind === "popup").length < 4) {
+      spawnAd();
+    }
+    adMultiplier++;
+    const nextAdDelay = 25000 * adMultiplier;
+    setTimeout(scheduleNextAd, nextAdDelay);
   }
 
   async function init() {
@@ -610,21 +628,15 @@
       loadDimensions(firstWork).then(() => addWindow("art", firstWork));
     }
 
-    addWindow("contact"); 
-    addWindow("about");   
+    addWindow("contact"); addWindow("about");   
 
-    setTimeout(spawnAd, 800);
-
-    // Propagandas a cada 45s (Intervalo longo)
-    setInterval(() => {
-      if (state.wins.filter(w => w.kind === "popup").length < 3) spawnAd();
-    }, 45000);
-
-    // Glitch Vermelho a cada 40s
-    setInterval(redGlitch, 40000);
-
-    // Tela Azul Crash.exe a cada 1 minuto
-    setInterval(() => bsod.classList.remove("hidden"), 60000);
+    // Disparos iniciais controlados e loops recursivos progressivos
+    setTimeout(spawnAd, 1000);
+    
+    // Inicia os relógios dinâmicos com atrasos gradativos (Progressivos)
+    setTimeout(scheduleNextAd, 25000);
+    setTimeout(scheduleNextGlitch, 40000);
+    setTimeout(scheduleNextCrash, 60000); // 1 minuto cravado para a primeira Tela Azul
 
     render();
   }
