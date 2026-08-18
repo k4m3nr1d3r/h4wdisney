@@ -4,10 +4,21 @@
   let currentAdIndex = 1; // Controla a sequência de anúncios (1 a 10)
   
   // ==========================================
-  // INJEÇÃO DE CSS: BLINDAGEM VISUAL E EFEITOS
+  // INJEÇÃO DE CSS: RESPONSIVIDADE MOBILE E ALINHAMENTO DO ABOUT
   // ==========================================
   const extraStyles = document.createElement('style');
   extraStyles.textContent = `
+    /* BLOQUEIO PARA RETRATO NO CELULAR: Obriga a usar na horizontal */
+    @media screen and (orientation: portrait) and (max-width: 768px) {
+      body::before {
+        content: "ROTATE YOUR DEVICE \\A\\A Por favor, vire o celular na horizontal para explorar o portfólio.";
+        white-space: pre-wrap; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: #0000aa; color: #fff; z-index: 999999999999; display: flex; align-items: center; justify-content: center;
+        text-align: center; font-family: 'Segoe UI', Tahoma, sans-serif; font-weight: bold; font-size: 16px; padding: 20px; box-sizing: border-box;
+      }
+      #screen, #windows, #taskStrip { display: none !important; }
+    }
+
     .file-grid { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; justify-content: flex-start; align-items: flex-end; background: #ffffff; min-height: 100%; }
     .image-entry { display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid transparent; background: transparent !important; cursor: pointer; padding: 8px; border-radius: 2px; color: #000; max-width: 130px; }
     
@@ -17,14 +28,12 @@
     .work-thumb { width: auto; height: auto; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; background: transparent !important; }
     .work-thumb img { max-width: 100px; max-height: 80px; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); }
     
-    /* ANIQUILAÇÃO TOTAL DE REQUADROS E BORDAS NAS ARTES */
     .frameless-art { background: transparent !important; background-image: none !important; border: none !important; box-shadow: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; outline: none !important; }
     .frameless-art .window-body { height: auto !important; background: transparent !important; background-image: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; border: none !important; box-shadow: none !important; }
     .frameless-art:before, .frameless-art:after { display: none !important; }
     
     .art-plate { overflow: visible; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: transparent !important; border: none !important; box-shadow: none !important; }
     
-    /* GRUDA O TEXTO E O X DIRETAMENTE NA IMAGEM PARA SE MOVEREM JUNTOS */
     .img-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.05s linear; cursor: pointer; background: transparent !important; border: none !important; box-shadow: none !important; }
     .img-wrapper img { display: block; touch-action: none; max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(3px 3px 12px rgba(0,0,0,0.8)); background: transparent !important; border: none !important; }
     
@@ -33,23 +42,19 @@
     
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
-    /* ======================================================= */
-    /* EFEITO VIDRO ESCOVADO PARA O ABOUT (1 TOM ÚNICO, À ESQUERDA) */
-    /* ======================================================= */
+    /* EFEITO VIDRO ESCOVADO PARA O ABOUT E TEXTO ALINHADO À ESQUERDA */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
     .glass-about .window-body { background: transparent !important; border: none !important; }
     .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); }
-    .about-content-box { text-align: left; padding: 25px; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; }
-    .about-content-box h2 { font-size: 24px; margin-bottom: 10px; margin-top: 0; }
-    .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.4; }
-    .about-content-box .chronology { font-family: monospace; font-size: 12px; line-height: 1.6; background: transparent; padding: 0; border-radius: 0; }
+    .about-content-box { text-align: left !important; padding: 25px; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; }
+    .about-content-box h2 { font-size: 24px; margin-bottom: 10px; margin-top: 0; text-align: left !important; }
+    .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.4; text-align: left !important; }
+    .about-content-box .chronology { font-family: monospace; font-size: 12px; line-height: 1.6; background: transparent; padding: 0; border-radius: 0; text-align: left !important; }
     
-    /* POPUP ADS NÚS (Apenas a Imagem Fluindo na Tela) */
     .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
     
-    /* ANIMAÇÃO EXPLOSÃO PIXELADA RADIAL 8-BITS PURA */
     @keyframes realisticPixelExplosion {
       0% { box-shadow: 0 0 0 4px #fff, 0 0 0 8px #ffeb3b; background: transparent; transform: scale(0.6); opacity: 1; }
       35% { box-shadow: 
@@ -68,23 +73,17 @@
     .explode-anim .window-body { display: none !important; } 
     .explode-anim::after { content: ""; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; margin-top: -2px; margin-left: -2px; animation: realisticPixelExplosion 0.45s steps(5) forwards; }
     
-    /* TOAST MSN MESSENGER */
-    @keyframes msnSlideIn {
-      0% { transform: translateY(250px); opacity: 0; }
-      100% { transform: translateY(0); opacity: 1; }
-    }
+    @keyframes msnSlideIn { 0% { transform: translateY(250px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
     .msn-window { position: fixed !important; border-radius: 8px !important; background: linear-gradient(to bottom, #E6F0FA 0%, #CDE0F5 40%, #A4CBF0 100%) !important; border: 1px solid #6E98C7 !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.4) !important; animation: msnSlideIn 0.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; transition: height 0.15s ease-in-out, top 0.15s ease-in-out, left 0.15s ease-in-out; }
     .msn-window .titlebar { display: none !important; }
     .task-msn { background: linear-gradient(to bottom, #E6F0FA, #A4CBF0) !important; border: 1px solid #6E98C7 !important; color: #000 !important; }
     
-    /* BARRA DE TAREFAS RESPONSIVA */
     .taskbar { display: flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; padding: 0 10px; }
     .task-strip { flex: 1; display: flex; gap: 4px; overflow: hidden; margin: 0 10px; min-width: 0; }
     .task-button { flex: 0 1 140px; min-width: 35px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .system-tray-container { display: flex; align-items: center; gap: 8px; flex-shrink: 0; background: linear-gradient(to bottom, #0c82dc, #045cc0); padding: 0 8px; height: 100%; border-left: 1px solid #08449c; }
     .system-tray-icons { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #fff; cursor: default; }
     
-    /* FILTROS E GLITCHES DE FUNDO E LOGO */
     @keyframes crtWallpaperGlitch {
       0% { transform: scale(1) translate(0,0) skewX(0); filter: none; }
       20% { transform: scale(1.02) translate(-3px, 2px) skewX(2deg); filter: hue-rotate(90deg) contrast(1.5) saturate(1.8); }
@@ -216,22 +215,35 @@
     ];
   }
 
+  // ==========================================
+  // GEOMETRIA INTELIGENTE (ADAPTA AO CELULAR)
+  // ==========================================
   function defaultGeometry(kind, work = null) {
     const W = innerWidth, H = innerHeight;
     const n = state.cascade++;
-    if (kind === "folder") return { x: W * 0.05, y: H * 0.23, w: 600, h: 420 };
-    if (kind === "about") return { x: clamp(W - 420, 80, W - 390), y: clamp(H * 0.2, 80, H - 250), w: 390, h: 392 };
-    if (kind === "contact") return { x: W - 270, y: H - 205, w: 250, h: 160 }; 
+    
+    const fW = Math.min(600, W * 0.9);
+    const fH = Math.min(420, H * 0.75);
+    if (kind === "folder") return { x: W * 0.05, y: H * 0.1, w: fW, h: fH };
+    
+    const aW = Math.min(390, W * 0.9);
+    const aH = Math.min(392, H * 0.85);
+    if (kind === "about") return { x: clamp(W - aW - 10, 10, W - aW), y: clamp(H * 0.1, 10, H - aH), w: aW, h: aH };
+    
+    const cW = Math.min(250, W * 0.8);
+    if (kind === "contact") return { x: W - cW - 10, y: H - 160 - 45, w: cW, h: 160 }; 
     
     if (kind === "art" && work) {
       const nw = Number(work.nw) || 800; const nh = Number(work.nh) || 600;
-      const scale = Math.min(clamp(W * 0.35, 250, 600) / nw, (H * 0.5) / nh, 1);
+      const scale = Math.min(clamp(W * 0.35, 150, 600) / nw, (H * 0.5) / nh, 1);
+      const artW = Math.max(150, Math.round(nw * scale));
+      const artH = Math.round(nh * scale);
       
-      if (work.title === "01") return { x: W * 0.12, y: H * 0.15, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1003 };
-      if (work.title === "02") return { x: Math.max(10, W - 580), y: H * 0.28, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1001 }; 
-      if (work.title === "03") return { x: W * 0.02, y: H * 0.38, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1001 }; 
+      if (work.title === "01") return { x: W * 0.1, y: H * 0.15, w: artW, h: artH, initZ: 1003 };
+      if (work.title === "02") return { x: Math.max(10, W - artW - 40), y: H * 0.28, w: artW, h: artH, initZ: 1001 }; 
+      if (work.title === "03") return { x: W * 0.02, y: H * 0.38, w: artW, h: artH, initZ: 1001 }; 
     }
-    return { x: 180 + (n % 6) * 46, y: 120 + (n % 6) * 38, w: 350, h: 250 };
+    return { x: 180 + (n % 6) * 46, y: 120 + (n % 6) * 38, w: Math.min(350, W * 0.8), h: Math.min(250, H * 0.8) };
   }
 
   function addWindow(kind, work = null, opts = {}) {
@@ -259,9 +271,7 @@
     if (targetedZ > state.top) state.top = targetedZ;
     state.wins.push(win); state.active = id; state.menuOpen = false;
     
-    if (windowsEl) {
-      windowsEl.appendChild(createWindow(win));
-    }
+    if (windowsEl) windowsEl.appendChild(createWindow(win));
     renderTasks();
   }
 
@@ -271,7 +281,6 @@
        const el = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
        if (el) el.remove();
     }
-    
     if (state.active === id) {
       state.active = state.wins.filter(w => !w.min).sort((a, b) => b.z - a.z)[0]?.id || null;
       if (state.active) focusWin(state.active);
@@ -289,13 +298,11 @@
     if (windowsEl) {
        const el = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
        if (el) el.style.zIndex = w.z;
-       
        $$(".window", windowsEl).forEach(win => {
          if (win.dataset.id === id) win.classList.remove("inactive");
          else win.classList.add("inactive");
        });
     }
-    
     renderTasks();
   }
 
@@ -534,10 +541,7 @@
            const isExpanded = expandArea.style.display !== "none";
            expandArea.style.display = isExpanded ? "none" : "block";
            w.h = isExpanded ? 160 : 255;
-           
-           if (w.anchor === "bottom-right") {
-              w.y = innerHeight - w.h - 45;
-           }
+           if (w.anchor === "bottom-right") { w.y = innerHeight - w.h - 45; }
            w.ratioY = w.y / innerHeight;
            el.style.height = `${w.h}px`; el.style.top = `${w.y}px`;
        });
@@ -625,7 +629,7 @@
     if (w.kind === "popup" || w.kind === "contact") el.style.position = "fixed";
     if (w.kind === "art") el.classList.add("frameless-art");
 
-    // TRAVA DE CAPTURA ABSOLUTA: Qualquer clique em qualquer janela a traz pro topo
+    // TRAVA DE CAPTURA ABSOLUTA PARA QUALQUER JANELA VIR PARA A FRENTE AO CLICAR
     el.addEventListener("pointerdown", () => focusWin(w.id), { capture: true });
     el.addEventListener("mousedown", () => focusWin(w.id), { capture: true });
 
@@ -723,7 +727,7 @@
   }
 
   // ==========================================
-  // PROPAGANDAS COMPLETAMENTE NÚAS E SEGURAS
+  // PROPAGANDAS TOTALMENTE NÚAS (SÓ IMAGEM)
   // ==========================================
   function spawnAd() {
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
