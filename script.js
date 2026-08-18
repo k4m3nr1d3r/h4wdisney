@@ -18,56 +18,52 @@
     .work-thumb { width: auto; height: auto; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; background: transparent !important; }
     .work-thumb img { max-width: 100px; max-height: 80px; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); }
     
-    /* REMOÇÃO ABSOLUTA E SUPREMA DE BORDAS E REQUADROS NAS ARTES */
+    /* ANIQUILAÇÃO TOTAL DE REQUADROS NAS ARTES */
     .frameless-art { background: transparent !important; background-image: none !important; border: none !important; box-shadow: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; outline: none !important; }
     .frameless-art .window-body { height: auto !important; background: transparent !important; background-image: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; border: none !important; box-shadow: none !important; }
     .frameless-art:before, .frameless-art:after { display: none !important; }
     
     .art-plate { overflow: visible; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: transparent !important; border: none !important; box-shadow: none !important; }
-    
-    /* GRUDA O TEXTO E O X DIRETAMENTE NA IMAGEM */
     .img-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.05s linear; cursor: pointer; background: transparent !important; border: none !important; box-shadow: none !important; }
     .img-wrapper img { display: block; touch-action: none; max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(3px 3px 12px rgba(0,0,0,0.8)); background: transparent !important; border: none !important; }
     
     .close-art { position: absolute; top: -12px; right: -12px; background: #e81123; color: #fff; border: 1px solid #fff; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); width: 24px; height: 26px; font-family: sans-serif; font-weight: bold; cursor: pointer; z-index: 100000; display: flex; align-items: center; justify-content: center; border-radius: 2px; }
     .close-art:hover { background: #ff0000; }
     
-    /* TEXTO COLADO EM BAIXO DA IMAGEM */
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
-    /* POPUP ADS MOLDADOS À IMAGEM */
+    /* POPUP ADS INTEGRADOS SEM ESTICAR */
     .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; background-image: none !important; border: 1px solid #0058e6 !important; box-shadow: 2px 2px 5px rgba(0,0,0,0.5) !important; }
     .popup-ad .titlebar { height: 20px; font-size: 11px; background: linear-gradient(to right, #0058e6, #3a93ff) !important; margin: 0 !important; border: none !important; padding: 0 6px; }
-    .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: calc(100% - 20px) !important; overflow: hidden; pointer-events: none; background: transparent !important; border: none !important; }
+    .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: calc(100% - 20px) !important; overflow: hidden; pointer-events: none; background: #fff !important; border: none !important; display: flex; align-items: center; justify-content: center; }
+    .popup-ad .window-body img { max-width: 100%; max-height: 100%; object-fit: contain !important; background: transparent !important; }
     
-    /* ANIMAÇÃO EXPLOSÃO PIXELADA REALISTA (ESTRELA RADIAL) */
+    /* RECONSTRUÇÃO DA EXPLOSÃO PIXELADA RADIAL 8-BITS */
     @keyframes realisticPixelExplosion {
-      0% { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #ffeb3b; background: transparent; transform: scale(0.8); opacity: 1; }
-      30% { box-shadow: 
-        0 -12px 0 2px #fff, 0 12px 0 2px #fff, 12px 0 0 2px #fff, -12px 0 0 2px #fff,
-        -8px -8px 0 3px #ffeb3b, 8px 8px 0 3px #ffeb3b, -8px 8px 0 3px #ffeb3b, 8px -8px 0 3px #ffeb3b,
-        0 -20px 0 2px #ff9800, 0 20px 0 2px #ff9800; transform: scale(1.1); opacity: 1; }
-      60% { box-shadow: 
-        0 -24px 0 3px #ff9800, 0 24px 0 3px #ff9800, 24px 0 0 3px #ff9800, -24px 0 0 3px #ff9800,
-        -16px -16px 0 3px #f44336, 16px 16px 0 3px #f44336, -16px 16px 0 3px #f44336, 16px -16px 0 3px #f44336,
-        -28px -28px 0 2px #ffeb3b, 28px 28px 0 2px #ffeb3b, 0 -35px 0 3px #f44336; transform: scale(1.3); opacity: 0.7; }
-      100% { box-shadow: 
-        0 -40px 0 1px rgba(211,47,47,0), 0 40px 0 1px rgba(211,47,47,0),
-        -30px -30px 0 1px rgba(255,152,0,0), 30px 30px 0 1px rgba(255,152,0,0); transform: scale(1.6); opacity: 0; display: none; }
+      0% { box-shadow: 0 0 0 4px #fff, 0 0 0 8px #ffeb3b; background: transparent; transform: scale(0.6); opacity: 1; }
+      35% { box-shadow: 
+        0 -16px 0 3px #fff, 0 16px 0 3px #fff, 16px 0 0 3px #fff, -16px 0 0 3px #fff,
+        -12px -12px 0 4px #ffeb3b, 12px 12px 0 4px #ffeb3b, -12px 12px 0 4px #ffeb3b, 12px -12px 0 4px #ffeb3b,
+        0 -25px 0 3px #ff9800, 0 25px 0 3px #ff9800; transform: scale(1.1); opacity: 1; }
+      70% { box-shadow: 
+        0 -32px 0 4px #ff9800, 0 32px 0 4px #ff9800, 32px 0 4px #ff9800, -32px 0 4px #ff9800,
+        -22px -22px 0 4px #f44336, 22px 22px 0 4px #f44336, -22px 22px 0 4px #f44336, 22px -22px 0 4px #f44336,
+        -36px -36px 0 3px #ffeb3b, 36px 36px 0 3px #ffeb3b, 0 -45px 0 4px #f44336; transform: scale(1.4); opacity: 0.8; }
+      100% { box-shadow: none; transform: scale(2); opacity: 0; display: none; }
     }
     .explode-anim { animation: realisticPixelExplosion 0.45s steps(5) forwards !important; pointer-events: none; background: transparent !important; border: none !important; box-shadow: none !important; }
-    .explode-anim .titlebar { display: none !important; }
+    .explode-anim .titlebar, .explode-anim .window-body { display: none !important; }
     
-    /* NOTIFICAÇÃO DO MSN AJUSTADA ACIMA DA BARRA */
+    /* TOAST MSN MESSENGER */
     @keyframes msnSlideIn {
       0% { transform: translateY(250px); opacity: 0; }
       100% { transform: translateY(0); opacity: 1; }
     }
-    .msn-window { position: fixed !important; border-radius: 8px !important; background: linear-gradient(to bottom, #E6F0FA 0%, #CDE0F5 40%, #A4CBF0 100%) !important; border: 1px solid #6E98C7 !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.4) !important; animation: msnSlideIn 0.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; transition: height 0.15s ease-in-out, top 0.15s ease-in-out; }
+    .msn-window { position: fixed !important; border-radius: 8px !important; background: linear-gradient(to bottom, #E6F0FA 0%, #CDE0F5 40%, #A4CBF0 100%) !important; border: 1px solid #6E98C7 !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.4) !important; animation: msnSlideIn 0.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; transition: height 0.15s ease-in-out, top 0.15s ease-in-out, left 0.15s ease-in-out; }
     .msn-window .titlebar { display: none !important; }
     .task-msn { background: linear-gradient(to bottom, #E6F0FA, #A4CBF0) !important; border: 1px solid #6E98C7 !important; color: #000 !important; }
     
-    /* RESPONSIVIDADE PROFISSIONAL DA BARRA DE TAREFAS */
+    /* BARRA DE TAREFAS RESPONSIVA */
     .taskbar { display: flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; padding: 0 10px; }
     .task-strip { flex: 1; display: flex; gap: 4px; overflow: hidden; margin: 0 10px; min-width: 0; }
     .task-button { flex: 0 1 140px; min-width: 35px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -121,13 +117,12 @@
       const osc = ctx.createOscillator(), gain = ctx.createGain();
       osc.type = "sawtooth"; osc.frequency.setValueAtTime(120, ctx.currentTime);
       osc.frequency.linearRampToValueAtTime(30, ctx.currentTime + 0.35);
-      gain.gain.setValueAtTime(0.08, ctx.currentTime); // Som mais baixo e suave
+      gain.gain.setValueAtTime(0.06, ctx.currentTime);
       gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 0.35);
       osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.35);
     } catch(_) {}
   }
 
-  // Ativa o som do MSN no primeiro clique caso o navegador bloqueie áudio automático
   document.addEventListener("click", () => {
     if (!msnNotified) {
       playMsnSound();
@@ -188,9 +183,8 @@
 
   function defaultGeometry(kind, work = null) {
     const W = innerWidth, H = innerHeight;
+    const n = state.cascade++;
     if (kind === "folder") return { x: W * .05, y: H * .23, w: 600, h: 420 };
-    
-    // MSN posicionado acima da barra inferior sem desajustar ao expandir
     if (kind === "contact") return { x: W - 270, y: H - 205, w: 250, h: 160 }; 
     if (kind === "about") return { x: clamp(W - 420, 80, W - 390), y: clamp(H * 0.2, 80, H - 250), w: 390, h: 392 };
     
@@ -198,12 +192,11 @@
       const nw = Number(work.nw) || 800; const nh = Number(work.nh) || 600;
       const scale = Math.min(clamp(W * .35, 250, 600) / nw, (H * 0.5) / nh, 1);
       
-      // Organização de posições iniciais customizadas para o trio de obras
-      if (work.title === "01") return { x: W * 0.12, y: H * 0.15, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale) };
-      if (work.title === "02") return { x: W - 490, y: H * 0.38, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale) }; // Por trás do About
-      if (work.title === "03") return { x: W * 0.03, y: H * 0.32, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale) }; // Por trás do Explorer
+      // REORGANIZAÇÃO COMPLETA DAS PROPORÇÕES DE CAMADAS INICIAIS
+      if (work.title === "01") return { x: W * 0.12, y: H * 0.15, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1005 };
+      if (work.title === "02") return { x: W - 490, y: H * 0.38, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1001 }; // Atrás do About
+      if (work.title === "03") return { x: W * 0.03, y: H * 0.32, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1002 }; // Atrás do Explorer
     }
-    const n = state.cascade++;
     return { x: 180 + (n % 6) * 46, y: 120 + (n % 6) * 38, w: 350, h: 250 };
   }
 
@@ -215,11 +208,19 @@
     const titleMap = { folder: "C:\\h4wnee", about: "about_h4wnee.txt", contact: "Windows Live Messenger" };
     const iconHtml = work ? getIcon("art", "🖼") : getIcon(kind, ({ folder: "📁", about: "🗒", contact: "👥" }[kind]));
     
+    const geom = defaultGeometry(kind, work);
+    
+    // Força o Z-index inicial para as obras ficarem por trás das janelas padrão no nascimento
+    let targetedZ = ++state.top;
+    if (geom.initZ) targetedZ = geom.initZ;
+
     const win = {
       id, kind, title: work ? (work.file || work.title) : titleMap[kind],
       iconHtml,
-      ...defaultGeometry(kind, work), z: ++state.top, min: false, max: false,
-      work, browserPath: [], browserHistory: [[]], ...opts
+      ...geom, z: targetedZ, min: false, max: false,
+      work, browserPath: [], browserHistory: [[]],
+      ratioX: geom.x / innerWidth, ratioY: geom.y / innerHeight, // Proporção salva para responsividade
+      ...opts
     };
 
     state.wins.push(win); state.active = id; state.menuOpen = false; render();
@@ -261,6 +262,7 @@
       if (mode === "move" && !w.max) {
         w.x = clamp(start.x + (ev.clientX - start.px), 96 - w.w + 140, innerWidth - 60);
         w.y = clamp(start.y + (ev.clientY - start.py), 38, innerHeight - 70);
+        w.ratioX = w.x / innerWidth; w.ratioY = w.y / innerHeight; // Atualiza proporção dinâmica
       }
       if (mode === "size" && !w.max) {
         w.w = Math.max(200, start.width + (ev.clientX - start.px));
@@ -435,6 +437,7 @@
             const move = ev => {
               w.x = clamp(start.x + (ev.clientX - start.px), 96 - w.w + 140, innerWidth - 60);
               w.y = clamp(start.y + (ev.clientY - start.py), 38, innerHeight - 70);
+              w.ratioX = w.x / innerWidth; w.ratioY = w.y / innerHeight;
               el.style.left = `${w.x}px`; el.style.top = `${w.y}px`;
             };
             const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
@@ -453,15 +456,13 @@
            const isExpanded = expandArea.style.display !== "none";
            expandArea.style.display = isExpanded ? "none" : "block";
            w.h = isExpanded ? 160 : 255;
-           
-           // Expande para baixo fixando o fundo acima da barra de tarefas
            w.y = isExpanded ? (innerHeight - 205) : (innerHeight - 300);
-           el.style.height = `${w.h}px`;
-           el.style.top = `${w.y}px`;
+           w.ratioY = w.y / innerHeight;
+           el.style.height = `${w.h}px`; el.style.top = `${w.y}px`;
        });
        sendBtn.addEventListener("click", () => {
            if(textArea.value.trim() === "") return;
-           expandArea.style.display = "none"; w.h = 160; w.y = innerHeight - 205;
+           expandArea.style.display = "none"; w.h = 160; w.y = innerHeight - 205; w.ratioY = w.y / innerHeight;
            el.style.height = `${w.h}px`; el.style.top = `${w.y}px`; textArea.value = "";
            alert("Mensagem enviada com sucesso!");
        });
@@ -507,6 +508,11 @@
         } else {
           wrapper.style.cursor = "pointer";
           document.removeEventListener("pointermove", moveHandler);
+          
+          // Salva novas coordenadas relativas após soltar o clique
+          const rect = el.getBoundingClientRect();
+          w.x = rect.left + panX; w.y = rect.top + panY;
+          w.ratioX = w.x / innerWidth; w.ratioY = w.y / innerHeight;
         }
       });
     }
@@ -569,7 +575,6 @@
       taskStrip.appendChild(b);
     });
 
-    // Injeção Responsiva Dinâmica da Bandeja de Sistema
     let tray = $(".system-tray-container");
     if (!tray) {
        tray = document.createElement("div"); tray.className = "system-tray-container";
@@ -626,7 +631,7 @@
        const adW = Math.max(70, img.naturalWidth * scale);
        const adH = Math.max(70, img.naturalHeight * scale);
        
-       const contentHtml = `<img src="${img.src}" style="display:block; width:100%; height:100%; object-fit:fill; background:transparent; pointer-events:none;">`;
+       const contentHtml = `<img src="${img.src}" style="display:block; width:100%; height:100%; pointer-events:none;">`;
        
        const ad = {
           id, kind: "popup", title: "AD", iconHtml: "⚠",
@@ -634,6 +639,8 @@
           w: adW, h: adH + 20, z: 999999, min: false, max: false,
           content: contentHtml, vx: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random()), vy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random())
        };
+       
+       ad.ratioX = ad.x / innerWidth; ad.ratioY = ad.y / innerHeight;
        state.wins.push(ad); render();
        
        requestAnimationFrame(function bounce() {
@@ -642,6 +649,9 @@
           winData.x += winData.vx; winData.y += winData.vy;
           if (winData.x <= 0 || winData.x + winData.w >= innerWidth) winData.vx *= -1;
           if (winData.y <= 0 || winData.y + winData.h >= innerHeight) winData.vy *= -1;
+          
+          winData.ratioX = winData.x / innerWidth; winData.ratioY = winData.y / innerHeight;
+
           const currentEl = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
           if (currentEl && !currentEl.classList.contains("explode-anim")) { 
             currentEl.style.left = `${winData.x}px`; currentEl.style.top = `${winData.y}px`; 
@@ -662,24 +672,21 @@
     state.manifest = generateAutomaticManifest();
     nowClock(); setInterval(nowClock, 1000);
 
-    addWindow("folder"); 
-    
+    // ABRE AS JANELAS NA ORDEM DE CAMADAS PERFEITA (Obras nascem no fundo)
     if (state.manifest.works && state.manifest.works.length >= 3) {
       const w1 = state.manifest.works[0];
       const w2 = state.manifest.works[1];
       const w3 = state.manifest.works[2];
-      loadDimensions(w1).then(() => { addWindow("art", w1); });
-      loadDimensions(w2).then(() => { addWindow("art", w2); });
-      loadDimensions(w3).then(() => { addWindow("art", w3); });
+      loadDimensions(w2).then(() => { addWindow("art", w2); }); // 02 (Trás do About)
+      loadDimensions(w3).then(() => { addWindow("art", w3); }); // 03 (Trás do Explorer)
+      loadDimensions(w1).then(() => { addWindow("art", w1); }); // 01 (Frente-Esquerda)
     }
 
+    addWindow("folder"); 
     addWindow("about");   
 
-    // Dispara o MSN Toast após 1 segundo exato
     setTimeout(() => {
        addWindow("contact");
-       // O som é engatado, mas o navegador exigirá que o usuário tenha interagido (clicado)
-       // para executá-lo. Por segurança, o clique global também o executa.
        playMsnSound(); 
     }, 1000);
 
@@ -690,5 +697,18 @@
 
     render();
   }
+
+  // MONITOR RESPONSIVO DE REDIMENSIONAMENTO DO BROWSER (Âncora Proporcional)
+  window.addEventListener("resize", () => {
+    state.wins.forEach(w => {
+      w.x = clamp(w.ratioX * innerWidth, 0, innerWidth - w.w);
+      w.y = clamp(w.ratioY * innerHeight, 38, innerHeight - w.h - 40);
+      
+      const el = windowsEl.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
+      if (el) { el.style.left = `${w.x}px`; el.style.top = `${w.y}px`; }
+    });
+    render();
+  });
+
   init();
 })();
