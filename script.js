@@ -1,11 +1,16 @@
 (() => {
   "use strict";
 
-  const CUSTOM_ADS = [];
+  // ==========================================
+  // LISTA SEQUENCIAL DE PROPAGANDAS (1 ao 10)
+  // O código vai rodar na ordem e aceitar tamanhos variados.
+  // ==========================================
+  const CUSTOM_ADS = [
+    "assets/ads/01.png", "assets/ads/02.gif", "assets/ads/03.png", "assets/ads/04.gif", "assets/ads/05.png",
+    "assets/ads/06.gif", "assets/ads/07.png", "assets/ads/08.png", "assets/ads/09.gif", "assets/ads/10.png"
+  ];
+  let currentAdIndex = 0; // Controla a sequência
 
-  // ==========================================
-  // INJEÇÃO DE CSS AVANÇADO: CRT GLITCH, EVAPORAÇÃO E EXPLOSÃO
-  // ==========================================
   const extraStyles = document.createElement('style');
   extraStyles.textContent = `
     .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 15px; padding: 15px; background: #ffffff; min-height: 100%; }
@@ -20,30 +25,29 @@
     .art-plate { overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: calc(100% - 40px); background: #111; }
     .art-plate img { touch-action: none; transition: transform 0.05s linear; max-width: 100%; max-height: 100%; object-fit: contain; }
     
-    /* Propagandas */
-    .popup-ad { cursor: crosshair; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); z-index: 999999 !important; overflow: visible !important; }
-    .popup-ad .window-body { padding: 0 !important; margin: 0; width: 100% !important; height: calc(100% - 25px) !important; overflow: hidden; pointer-events: none; }
+    /* POPUP DE PROPAGANDA (Miniatura) */
+    .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; }
+    .popup-ad .window-body { padding: 0 !important; margin: 0; width: 100% !important; height: 100% !important; overflow: hidden; pointer-events: none; }
     
-    /* ANIMAÇÃO DE EVAPORAÇÃO E EXPLOSÃO EM ESTRELA */
-    @keyframes advancedEvaporation {
-      0% { transform: scale(1) skewX(0deg); filter: contrast(1) brightness(1); opacity: 1; }
-      25% { transform: scale(1.1) skewX(10deg); filter: contrast(3) hue-rotate(90deg); box-shadow: 0 -15px 0 2px #ffeb3b, 0 15px 0 2px #ffeb3b, 15px 0 0 2px #ffeb3b, -15px 0 0 2px #ffeb3b; }
-      50% { transform: scale(0.8) skewX(-15deg); filter: brightness(2) saturate(2); clip-path: polygon(0% 15%, 15% 15%, 15% 0%, 85% 0%, 85% 15%, 100% 15%, 100% 85%, 85% 85%, 85% 100%, 15% 100%, 15% 85%, 0% 85%); box-shadow: 0 -25px 0 3px #ff9800, 0 25px 0 3px #ff9800, 25px 0 0 3px #ff9800, -25px 0 0 3px #ff9800, -15px -15px 0 2px #f44336, 15px 15px 0 2px #f44336; }
-      75% { transform: scale(1.4) skewY(10deg); opacity: 0.6; box-shadow: 0 -45px 0 4px #d32f2f, 0 45px 0 4px #d32f2f, 45px 0 0 4px #d32f2f, -45px 0 0 4px #d32f2f, -30px -30px 0 2px #ff1100, 30px 30px 0 2px #ff1100; }
-      100% { transform: scale(2); opacity: 0; box-shadow: none; display: none; }
+    /* ANIMAÇÃO DE EVAPORAÇÃO (FOGO DE BAIXO PARA CIMA) */
+    @keyframes burnUpward {
+      0% { clip-path: inset(0 0 0 0); filter: drop-shadow(0 0 0 transparent); transform: translateY(0); opacity: 1; }
+      30% { clip-path: inset(0 0 30% 0); filter: drop-shadow(0 -10px 10px #ff5500) brightness(1.5); transform: translateY(-5px); }
+      70% { clip-path: inset(0 0 70% 0); filter: drop-shadow(0 -20px 15px #ff0000) brightness(2) contrast(1.5) hue-rotate(-10deg); transform: translateY(-15px); }
+      100% { clip-path: inset(0 0 100% 0); filter: drop-shadow(0 -30px 20px #8b0000); transform: translateY(-25px); opacity: 0; }
     }
     .explode-anim {
-      animation: advancedEvaporation 0.48s steps(6) forwards !important;
-      pointer-events: none; background: transparent !important; border: none !important;
+      animation: burnUpward 0.6s ease-in forwards !important;
+      pointer-events: none; background: transparent !important; border: none !important; box-shadow: none !important;
     }
-    .explode-anim .titlebar, .explode-anim .window-body { display: none !important; }
+    .explode-anim .titlebar { display: none !important; }
     
     /* MSN Messenger Widget */
     .msn-window { border-radius: 8px !important; background: linear-gradient(to bottom, #E6F0FA 0%, #CDE0F5 40%, #A4CBF0 100%) !important; border: 1px solid #6E98C7 !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.4) !important; transition: height 0.2s ease-in-out; }
     .msn-window .titlebar { display: none !important; }
     .task-msn { background: linear-gradient(to bottom, #E6F0FA, #A4CBF0) !important; border: 1px solid #6E98C7 !important; color: #000 !important; }
     
-    /* GLITCH DE TURBULÊNCIA E DISTORÇÃO CROMÁTICA DO WALLPAPER */
+    /* GLITCH DE CRT NO WALLPAPER */
     @keyframes crtWallpaperGlitch {
       0% { transform: scale(1) translate(0,0) skewX(0); filter: none; }
       20% { transform: scale(1.03) translate(-5px, 3px) skewX(4deg); filter: hue-rotate(120deg) contrast(1.8) saturate(2); }
@@ -52,33 +56,24 @@
       80% { transform: scale(1.01) translate(4px, 2px) skewX(8deg); filter: brightness(1.8) contrast(1.3); }
       100% { transform: scale(1) translate(0,0) skewX(0); filter: none; }
     }
-    .wallpaper-glitch-active {
-      animation: crtWallpaperGlitch 1s steps(8) forwards !important;
-    }
+    .wallpaper-glitch-active { animation: crtWallpaperGlitch 1s steps(8) forwards !important; }
     
-    /* TOPO ABSOLUTO PARA A TELA AZUL */
     #bsod { z-index: 999999999 !important; }
   `;
   document.head.appendChild(extraStyles);
 
-  const FOLDER_SVG = `<svg width="50" height="50" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));">
-    <path d="M40 12H22L18 6H8C5.8 6 4 7.8 4 10V38C4 40.2 5.8 42 8 42H40C42.2 42 44 40.2 44 38V16C44 13.8 42.2 12 40 12Z" fill="#F4D03F" stroke="#D68910" stroke-width="2" stroke-linejoin="round"/>
-    <path d="M4 16H44" stroke="#D68910" stroke-width="2"/>
-  </svg>`;
+  const FOLDER_SVG = `<svg width="50" height="50" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));"><path d="M40 12H22L18 6H8C5.8 6 4 7.8 4 10V38C4 40.2 5.8 42 8 42H40C42.2 42 44 40.2 44 38V16C44 13.8 42.2 12 40 12Z" fill="#F4D03F" stroke="#D68910" stroke-width="2" stroke-linejoin="round"/><path d="M4 16H44" stroke="#D68910" stroke-width="2"/></svg>`;
 
-  const IMAGE_EXTS = /\.(png|jpe?g|webp|gif|avif|svg)$/i;
-  const LEGACY_MANIFEST = { version: 1, exhibitions: [], works: [] };
   const $ = (s, root = document) => root.querySelector(s);
   const $$ = (s, root = document) => [...root.querySelectorAll(s)];
 
-  const state = { wins: [], top: 1000, active: null, menuOpen: false, cascade: 0, manifest: LEGACY_MANIFEST, browserPath: [] };
+  const state = { wins: [], top: 1000, active: null, menuOpen: false, cascade: 0, manifest: null, browserPath: [] };
   const windowsEl = $("#windows");
   const taskStrip = $("#taskStrip");
   const bsod = $("#bsod");
   const clockEl = $("#clock");
   const wallpaperEl = $(".wallpaper");
 
-  // Multiplicadores para controle do tempo progressivo
   let crashMultiplier = 1;
   let adMultiplier = 1;
 
@@ -90,42 +85,27 @@
   function imageSrc(item) { return item?.source || asset(item?.file || ""); }
   function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
   function escapeHtml(s) { return String(s).replace(/[&<>"']/g, m => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"}[m])); }
-  
-  function fileTitle(file) {
-    if (!file) return "";
-    return (file.split("/").pop() || file).replace(/\.[^/.]+$/, "").replace(/_/g, " ");
-  }
-  function fileId(file) { return file; }
 
-  function normalizeManifest(data) {
-    const exhibitions = Array.isArray(data?.exhibitions) ? data.exhibitions : [];
-    const works = Array.isArray(data?.works) ? data.works : [];
-    exhibitions.forEach(group => {
-      group.items = Array.isArray(group.items) ? group.items : [];
-      group.items = group.items.map(item => {
-        if (typeof item === "string") return { id: item, file: item, title: fileTitle(item) };
-        item.title = item.title || fileTitle(item.file || "");
-        item.id = item.id || fileId(item.file || "");
-        return item;
+  // ==========================================
+  // O NOVO CÉREBRO AUTOMÁTICO (Adeus .json)
+  // ==========================================
+  function generateAutomaticManifest() {
+    const buildItems = (folderPath) => {
+      return Array.from({ length: 15 }, (_, i) => {
+        const num = String(i + 1).padStart(2, '0');
+        return { id: `${folderPath}/${num}.png`, file: `${folderPath}/${num}.png`, title: `${num}` };
       });
-    });
-    const normWorks = works.map(item => {
-      if (typeof item === "string") return { id: item, file: item, title: fileTitle(item) };
-      item.title = item.title || fileTitle(item.file || "");
-      item.id = item.id || fileId(item.file || "");
-      return item;
-    });
-    return { version: 1, exhibitions, works: normWorks };
-  }
+    };
 
-  async function loadGallery() {
-    if (window.__GALLERY_MANIFEST__) {
-      state.manifest = normalizeManifest(window.__GALLERY_MANIFEST__);
-      return;
-    }
-    const response = await fetch(`gallery-index.json?v=${Date.now()}`, { cache: "no-store" });
-    if (!response.ok) throw new Error("gallery-index.json não encontrado");
-    state.manifest = normalizeManifest(await response.json());
+    return {
+      version: 1,
+      exhibitions: [
+        { id: "vernissage:utopias_piratas_2021", name: "utopias_piratas_2021", year: 2021, items: buildItems("Vernissages/utopias_piratas_2021") },
+        { id: "vernissage:Hyperlinks, Distortion e Mormasso", name: "Hyperlinks, Distortion e Mormasso", year: 2022, items: buildItems("Vernissages/Hyperlinks, Distortion e Mormasso") },
+        { id: "vernissage:RAW 2025 (HOA+FDAG)", name: "RAW 2025 (HOA+FDAG)", year: 2025, items: buildItems("Vernissages/RAW 2025 (HOA+FDAG)") }
+      ],
+      works: buildItems("Obras")
+    };
   }
 
   function allItems() { return [...state.manifest.exhibitions.flatMap(g => g.items), ...state.manifest.works]; }
@@ -147,15 +127,14 @@
 
   function folderEntries() {
     return [
-      { type: "folder", id: "Vernissages", name: "Vernissages", subtitle: `${state.manifest.exhibitions.reduce((n, g) => n + g.items.length, 0)} arquivos` },
-      { type: "folder", id: "Obras", name: "Obras", subtitle: `${state.manifest.works.length} arquivos` }
+      { type: "folder", id: "Vernissages", name: "Vernissages", subtitle: `3 exposições` },
+      { type: "folder", id: "Obras", name: "Obras", subtitle: `15 arquivos` }
     ];
   }
 
   function defaultGeometry(kind, work = null) {
     const W = innerWidth, H = innerHeight;
     if (kind === "folder") return { x: W * .09, y: H * .23, w: 600, h: 420 };
-    
     if (kind === "contact") return { x: clamp(W - 280, 50, W - 260), y: clamp(H * 0.1, 50, H - 200), w: 250, h: 160 }; 
     if (kind === "about") return { x: clamp(W - 420, 80, W - 390), y: clamp(H * 0.25, 80, H - 250), w: 390, h: 392 };
     
@@ -270,8 +249,8 @@
   function imageCard(item) {
     return `
       <button class="work-item image-entry" type="button" data-work="${escapeHtml(item.id)}">
-        <div class="work-thumb"><img src="${escapeHtml(imageSrc(item))}" alt="" loading="lazy"></div>
-        <span>${escapeHtml(item.title || fileTitle(item.file))}</span>
+        <div class="work-thumb"><img src="${escapeHtml(imageSrc(item))}" alt="" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'50\\' height=\\'50\\'><rect width=\\'50\\' height=\\'50\\' fill=\\'%23eee\\'/></svg>'"></div>
+        <span>${escapeHtml(item.title)}</span>
       </button>`;
   }
 
@@ -328,7 +307,7 @@
       return `
         <div class="art-body" style="height:100%;">
           <div class="art-plate">
-            <img src="${imageSrc(w.work)}" alt="${escapeHtml(w.title)}">
+            <img src="${imageSrc(w.work)}" alt="${escapeHtml(w.title)}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'800\\' height=\\'600\\'><rect width=\\'800\\' height=\\'600\\' fill=\\'%23333\\'/><text x=\\'50%\\' y=\\'50%\\' fill=\\'%23fff\\' font-family=\\'sans-serif\\' font-size=\\'24\\' text-anchor=\\'middle\\'>Imagem n\u00E3o encontrada</text></svg>'">
           </div>
           <div class="caption" style="padding: 10px; text-align: center; background:#ddd; height:40px;">
             <b>${escapeHtml(w.title)}</b> <i>(Use Alt + Scroll para Zoom. Arraste para mover)</i>
@@ -341,7 +320,7 @@
         <div class="about-body">
           <h2>h4wnee</h2>
           <p>is a Latin American transdisciplinary artist whose work explores the intersection of digital culture, popular imagination, and contemporary technologies.</p>
-          <div class="chronology">2021  utopias_piratas_2021<br>2021  n0_f*ture_(prime)<br>2022  hyperlinks, distorção e mormaço<br>2025  RAW 2025 (HOA+FDAG)</div>
+          <div class="chronology">2021  utopias_piratas_2021<br>2021  n0_f*ture_(prime)<br>2022  Hyperlinks, Distortion e Mormasso<br>2025  RAW 2025 (HOA+FDAG)</div>
         </div>`;
     }
 
@@ -425,7 +404,7 @@
        sendBtn.addEventListener("click", () => {
            if(textArea.value.trim() === "") return;
            expandArea.style.display = "none"; w.h = 160; el.style.height = `${w.h}px`; textArea.value = "";
-           alert("Mensagem enviada com sucesso!");
+           alert("Mensagem enviada para o correio.");
        });
     }
 
@@ -484,20 +463,20 @@
     el.style.zIndex = w.z;
     if (w.kind === "popup") el.style.position = "fixed";
     
-    // EVAPORAÇÃO RADIAL IMEDIATA EM 1 CLIQUE
+    // EVAPORAÇÃO: Clique em qualquer área detona a máscara de fumaça e fogo
     if (w.kind === "popup") {
       el.addEventListener("pointerdown", (e) => {
         e.stopPropagation();
         if (!el.classList.contains("explode-anim")) {
           el.classList.add("explode-anim");
-          setTimeout(() => closeWindow(w.id), 470);
+          setTimeout(() => closeWindow(w.id), 580);
         }
       });
     } else {
       el.addEventListener("pointerdown", () => focusWin(w.id));
     }
     
-    if (w.kind !== "contact") el.appendChild(titlebar(w));
+    if (w.kind !== "contact" && w.kind !== "popup") el.appendChild(titlebar(w));
 
     const body = document.createElement("div");
     body.className = "window-body";
@@ -548,25 +527,19 @@
     clockEl.textContent = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
   }
 
-  // ==========================================
-  // FILTRO DO GLITCH CRT DE PAPEL DE PAREDE
-  // ==========================================
   function triggerCrtWallpaperGlitch() {
     if (!wallpaperEl) return;
     wallpaperEl.classList.add("wallpaper-glitch-active");
     setTimeout(() => {
       wallpaperEl.classList.remove("wallpaper-glitch-active");
-    }, 1000); // 1 segundo exato de interferência
+    }, 1000); 
   }
 
-  // Lógica recursiva progressiva para os Glitches (40s, 80s, 120s...)
   function scheduleNextGlitch() {
     triggerCrtWallpaperGlitch();
-    // Você mencionou a cada 40 segundos por padrão, agora alinhado ao comportamento progressivo se desejado
     setTimeout(scheduleNextGlitch, 40000); 
   }
 
-  // Lógica recursiva progressiva para a Tela Azul (1min, 2min, 3min...)
   function scheduleNextCrash() {
     bsod.classList.remove("hidden");
     crashMultiplier++;
@@ -575,16 +548,22 @@
   }
 
   // ==========================================
-  // PROPAGANDA BET (Tamanho exato de uma miniatura)
+  // PROPAGANDA (Tamanho Miniatura Flexível com Fundo Transparente)
   // ==========================================
   function spawnAd() {
+    if (CUSTOM_ADS.length === 0) return; // Só lança se houver imagens configuradas na lista
+    
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
-    const contentHtml = `<div style="background:#006400; width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#ffff00; font-size: 24px; font-family: 'Archivo Black', sans-serif; font-weight:900; text-shadow: 1px 1px 0px #000; box-sizing:border-box;">BET</div>`;
+    const adImageSrc = CUSTOM_ADS[currentAdIndex];
+    currentAdIndex = (currentAdIndex + 1) % CUSTOM_ADS.length;
+
+    // Tamanho flexível adaptado sem distorcer
+    const contentHtml = `<img src="${adImageSrc}" style="width:100%; height:100%; object-fit:contain; background:transparent;">`;
 
     const ad = {
       id, kind: "popup", title: "AD", icon: "⚠",
-      x: Math.random() * (innerWidth - 90), y: Math.random() * (innerHeight - 110),
-      w: 90, h: 110, z: 999999, min: false, max: false, 
+      x: Math.random() * (innerWidth - 90), y: Math.random() * (innerHeight - 90),
+      w: 90, h: 90, z: 999999, min: false, max: false, 
       content: contentHtml, vx: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random()), vy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random())
     };
 
@@ -606,21 +585,17 @@
     requestAnimationFrame(bounce);
   }
 
-  // Lógica recursiva progressiva para propagandas (25s, 50s, 75s...)
   function scheduleNextAd() {
-    if (state.wins.filter(w => w.kind === "popup").length < 4) {
-      spawnAd();
-    }
+    if (state.wins.filter(w => w.kind === "popup").length < 4) spawnAd();
     adMultiplier++;
-    const nextAdDelay = 25000 * adMultiplier;
+    const nextAdDelay = 45000 * adMultiplier; // Começa demorando 45s, depois 90s, depois 135s...
     setTimeout(scheduleNextAd, nextAdDelay);
   }
 
-  async function init() {
-    try { await loadGallery(); } catch (error) { state.manifest = normalizeManifest(LEGACY_MANIFEST); }
+  function init() {
+    state.manifest = generateAutomaticManifest();
     
     nowClock(); setInterval(nowClock, 1000);
-
     addWindow("folder"); 
     
     if (state.manifest.works && state.manifest.works.length > 0) {
@@ -630,13 +605,13 @@
 
     addWindow("contact"); addWindow("about");   
 
-    // Disparos iniciais controlados e loops recursivos progressivos
-    setTimeout(spawnAd, 1000);
+    // Dispara a primeira propaganda após 5 segundos para não poluir logo no primeiro frame
+    setTimeout(spawnAd, 5000);
     
-    // Inicia os relógios dinâmicos com atrasos gradativos (Progressivos)
-    setTimeout(scheduleNextAd, 25000);
+    // Inicia os relógios dinâmicos
+    setTimeout(scheduleNextAd, 45000);
     setTimeout(scheduleNextGlitch, 40000);
-    setTimeout(scheduleNextCrash, 60000); // 1 minuto cravado para a primeira Tela Azul
+    setTimeout(scheduleNextCrash, 60000);
 
     render();
   }
