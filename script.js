@@ -30,8 +30,8 @@
     
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
-    /* POPUP ADS NÚS (Sem barra, sem fundo, proporção perfeita) */
-    .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; background-image: none !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
+    /* POPUP ADS NÚS (Apenas Imagem) */
+    .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
     
@@ -51,7 +51,7 @@
         -30px -30px 0 1px rgba(255,152,0,0), 30px 30px 0 1px rgba(255,152,0,0); transform: scale(1.6); opacity: 0; display: none; border: none; }
     }
     .explode-anim { pointer-events: none !important; background: transparent !important; border: none !important; box-shadow: none !important; }
-    .explode-anim .window-body { display: none !important; } /* Esconde a imagem instantaneamente */
+    .explode-anim .window-body { display: none !important; } 
     .explode-anim::after { content: ""; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; margin-top: -2px; margin-left: -2px; animation: realisticPixelExplosion 0.45s steps(5) forwards; }
     
     /* TOAST MSN MESSENGER */
@@ -186,14 +186,12 @@
     const n = state.cascade++;
     if (kind === "folder") return { x: W * .05, y: H * .23, w: 600, h: 420 };
     if (kind === "about") return { x: clamp(W - 420, 80, W - 390), y: clamp(H * 0.2, 80, H - 250), w: 390, h: 392 };
-    
     if (kind === "contact") return { x: W - 270, y: H - 205, w: 250, h: 160 }; 
     
     if (kind === "art" && work) {
       const nw = Number(work.nw) || 800; const nh = Number(work.nh) || 600;
       const scale = Math.min(clamp(W * .35, 250, 600) / nw, (H * 0.5) / nh, 1);
       
-      // DISPOSIÇÃO INICIAL COREOGRAFADA
       if (work.title === "01") return { x: W * 0.12, y: H * 0.15, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale) };
       if (work.title === "02") return { x: W - 580, y: H * 0.28, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale) }; 
       if (work.title === "03") return { x: W * 0.02, y: H * 0.38, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale) }; 
@@ -241,7 +239,6 @@
     renderTasks();
   }
 
-  // ATUALIZAÇÃO DINÂMICA DE Z-INDEX PARA TRAZER QUALQUER JANELA PARA FRENTE
   function focusWin(id) {
     const w = state.wins.find(x => x.id === id);
     if (!w || w.kind === "popup") return;
@@ -258,6 +255,32 @@
     });
     
     renderTasks();
+  }
+
+  function beginPointer(e, id, mode) {
+    if (e.button !== undefined && e.button !== 0) return;
+    const w = state.wins.find(x => x.id === id);
+    if (!w || w.min) return;
+    focusWin(id);
+
+    const start = { px: e.clientX, py: e.clientY, x: w.x, y: w.y, width: w.w, height: w.h };
+
+    const move = ev => {
+      if (mode === "move" && !w.max) {
+        w.x = clamp(start.x + (ev.clientX - start.px), 96 - w.w + 140, innerWidth - 60);
+        w.y = clamp(start.y + (ev.clientY - start.py), 38, innerHeight - 70);
+        w.ratioX = w.x / innerWidth; w.ratioY = w.y / innerHeight;
+      }
+      if (mode === "size" && !w.max) {
+        w.w = Math.max(200, start.width + (ev.clientX - start.px));
+        w.h = Math.max(150, start.height + (ev.clientY - start.py));
+      }
+      const el = windowsEl.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
+      if (el) { el.style.left = `${w.x}px`; el.style.top = `${w.y}px`; el.style.width = `${w.w}px`; el.style.height = `${w.h}px`; }
+    };
+
+    const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
+    window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
   }
 
   function titlebar(w) {
@@ -427,9 +450,21 @@
     }
 
     if (w.kind === "contact") {
-       $$('[data-act="close"]', el).forEach(btn => btn.addEventListener("click", e => {
-         e.preventDefault(); e.stopPropagation(); closeWindow(w.id);
-       }));
+       el.addEventListener("pointerdown", e => {
+         if (!e.target.closest("button") && !e.target.closest("a") && !e.target.closest("textarea")) {
+            focusWin(w.id);
+            let start = { px: e.clientX, py: e.clientY, x: w.x, y: w.y };
+            const move = ev => {
+              w.x = clamp(start.x + (ev.clientX - start.px), 96 - w.w + 140, innerWidth - 60);
+              w.y = clamp(start.y + (ev.clientY - start.py), 38, innerHeight - 70);
+              w.ratioX = w.x / innerWidth; w.ratioY = w.y / innerHeight;
+              w.anchor = null; 
+              el.style.left = `${w.x}px`; el.style.top = `${w.y}px`;
+            };
+            const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
+            window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
+         }
+       });
        
        const toggleBtn = $(".msg-toggle", el); const expandArea = $(".msn-expand", el);
        const sendBtn = $(".send-msg", el); const textArea = $("textarea", el);
@@ -440,18 +475,13 @@
            const isExpanded = expandArea.style.display !== "none";
            expandArea.style.display = isExpanded ? "none" : "block";
            w.h = isExpanded ? 160 : 255;
-           
-           if (w.anchor === "bottom-right") {
-              w.y = innerHeight - w.h - 45;
-           }
+           w.y = innerHeight - w.h - 45; 
            w.ratioY = w.y / innerHeight;
            el.style.height = `${w.h}px`; el.style.top = `${w.y}px`;
        });
        sendBtn.addEventListener("click", () => {
            if(textArea.value.trim() === "") return;
-           expandArea.style.display = "none"; w.h = 160; 
-           if(w.anchor === "bottom-right") w.y = innerHeight - w.h - 45; 
-           w.ratioY = w.y / innerHeight;
+           expandArea.style.display = "none"; w.h = 160; w.y = innerHeight - 160 - 45; w.ratioY = w.y / innerHeight;
            el.style.height = `${w.h}px`; el.style.top = `${w.y}px`; textArea.value = "";
            alert("Mensagem enviada com sucesso!");
        });
@@ -534,10 +564,8 @@
         }
       });
     } else {
-      // QUALQUER CLIQUE NA JANELA (INCLUSIVE BORDAS) PUXA PRO TOPO
       el.addEventListener("pointerdown", () => focusWin(w.id));
       
-      // Permite arrastar qualquer janela livre pelo fundo dela
       el.addEventListener("pointerdown", e => {
          if (!e.target.closest("button") && !e.target.closest("a") && !e.target.closest("textarea") && !el.classList.contains("frameless-art") && !e.target.closest(".browser-body")) {
             let start = { px: e.clientX, py: e.clientY, x: w.x, y: w.y };
@@ -611,6 +639,9 @@
     setTimeout(scheduleNextGlitch, 40000); 
   }
 
+  // ==========================================
+  // TIMEOUT PROGRESSIVO COMPORTAMENTAL CORRIGIDO
+  // ==========================================
   function scheduleNextCrash() {
     bsod.classList.remove("hidden");
     crashMultiplier++;
@@ -618,25 +649,25 @@
   }
 
   // ==========================================
-  // PROPAGANDAS TOTALMENTE NÚAS (SÓ A IMAGEM)
-  // O código testa qual a extensão do seu arquivo até achar a certa
+  // PROPAGANDAS TIPO LOOP INDEPENDENTE DE EXTENSÃO
   // ==========================================
   function spawnAd() {
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
-    const numStr = String(currentAdIndex + 1).padStart(2, '0');
-    currentAdIndex = (currentAdIndex + 1) % 10;
+    const numStr = String(currentAdIndex).padStart(2, '0');
+    currentAdIndex = (currentAdIndex % 10) + 1; // Incrementa de 1 a 10 estritamente
 
+    // Varre as extensões possíveis de modo assíncrono para blindar o loop
     const extensions = ['gif', 'png', 'jpg', 'webp'];
     
     const tryLoad = () => {
-       if (extensions.length === 0) return; 
+       if (extensions.length === 0) return;
        const ext = extensions.shift();
        const img = new Image();
        
        img.onload = () => {
           const scale = Math.min(140 / img.naturalWidth, 140 / img.naturalHeight, 1);
-          const adW = Math.max(60, Math.round(img.naturalWidth * scale));
-          const adH = Math.max(60, Math.round(img.naturalHeight * scale));
+          const adW = Math.max(70, Math.round(img.naturalWidth * scale));
+          const adH = Math.max(70, Math.round(img.naturalHeight * scale));
           
           const contentHtml = `<img src="${img.src}" style="display:block; width:100%; height:100%; object-fit:contain; pointer-events:none;">`;
           
@@ -696,17 +727,16 @@
 
       setTimeout(() => addWindow("folder", null, { z: 1002 }), 100);
       setTimeout(() => addWindow("about", null, { z: 1003 }), 200);
-
       setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { x: W * 0.22, y: H * 0.15, z: 1004 }); }); }, 300);
     } else {
       addWindow("folder"); addWindow("about");
     }
 
     setTimeout(() => {
-       addWindow("contact", null, { anchor: "bottom-right", x: W - 270, y: H - 205, z: 1006 });
+       addWindow("contact", null, { anchor: "bottom-right", x: W - 270, y: H - 205, z: 1005 });
     }, 1000);
 
-    setTimeout(spawnAd, 8000);
+    setTimeout(spawnAd, 5000); // Dispara o primeiro frame de anúncios de modo estável
     setTimeout(scheduleNextAd, 45000);
     setTimeout(scheduleNextGlitch, 40000);
     setTimeout(scheduleNextCrash, 60000);
