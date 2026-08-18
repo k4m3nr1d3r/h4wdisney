@@ -4,7 +4,7 @@
   let currentAdIndex = 1; // Controla a sequência de anúncios (1 a 10)
   
   // ==========================================
-  // INJEÇÃO DE CSS: BLINDAGEM VISUAL E EFEITOS
+  // INJEÇÃO DE CSS: EFEITO VIDRO ESCOVADO, BLINDAGEM E EFEITOS CRT
   // ==========================================
   const extraStyles = document.createElement('style');
   extraStyles.textContent = `
@@ -17,14 +17,13 @@
     .work-thumb { width: auto; height: auto; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; background: transparent !important; }
     .work-thumb img { max-width: 100px; max-height: 80px; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); }
     
-    /* ANIQUILAÇÃO TOTAL DE REQUADROS E BORDAS NAS ARTES */
+    /* ANIQUILAÇÃO TOTAL DE REQUADROS E BORDAS NAS ARTES SOLTAS */
     .frameless-art { background: transparent !important; background-image: none !important; border: none !important; box-shadow: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; outline: none !important; }
     .frameless-art .window-body { height: auto !important; background: transparent !important; background-image: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; border: none !important; box-shadow: none !important; }
     .frameless-art:before, .frameless-art:after { display: none !important; }
     
     .art-plate { overflow: visible; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: transparent !important; border: none !important; box-shadow: none !important; }
     
-    /* GRUDA O TEXTO E O X DIRETAMENTE NA IMAGEM PARA SE MOVEREM JUNTOS */
     .img-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.05s linear; cursor: pointer; background: transparent !important; border: none !important; box-shadow: none !important; }
     .img-wrapper img { display: block; touch-action: none; max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(3px 3px 12px rgba(0,0,0,0.8)); background: transparent !important; border: none !important; }
     
@@ -33,12 +32,21 @@
     
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
-    /* POPUP ADS NÚS (Apenas a Imagem Fluindo na Tela) */
+    /* EFEITO VIDRO ESCOVADO PARA O ABOUT */
+    .glass-about { background: rgba(255, 255, 255, 0.45) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
+    .glass-about .window-body { background: transparent !important; border: none !important; }
+    .glass-about .titlebar { background: rgba(255, 255, 255, 0.2) !important; border-bottom: 1px solid rgba(255,255,255,0.4) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); }
+    .about-content-box { text-align: center; padding: 25px; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; }
+    .about-content-box h2 { font-size: 24px; margin-bottom: 10px; margin-top: 0; }
+    .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.4; }
+    .about-content-box .chronology { font-family: monospace; font-size: 12px; line-height: 1.6; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 4px; }
+    
+    /* POPUP ADS NÚS (Apenas Imagem) */
     .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
     
-    /* ANIMAÇÃO EXPLOSÃO PIXELADA RADIAL 8-BITS PURA */
+    /* ANIMAÇÃO EXPLOSÃO PIXELADA RADIAL 8-BITS */
     @keyframes realisticPixelExplosion {
       0% { box-shadow: 0 0 0 4px #fff, 0 0 0 8px #ffeb3b; background: transparent; transform: scale(0.6); opacity: 1; }
       35% { box-shadow: 
@@ -123,9 +131,6 @@
   let adMultiplier = 1;
   let msnNotified = false;
 
-  // ==========================================
-  // EFEITOS SONOROS
-  // ==========================================
   function playMsnSound() {
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -273,7 +278,7 @@
   }
 
   // ==========================================
-  // NOVO MOTOR Z-INDEX: TUDO VEM PARA A FRENTE AO CLICAR
+  // FOCO CORRIGIDO: TRAZ PARA FRENTE QUALQUER JANELA
   // ==========================================
   function focusWin(id) {
     const w = state.wins.find(x => x.id === id);
@@ -438,11 +443,21 @@
 
     if (w.kind === "about") {
       return `
-        <div class="about-body">
+        <!-- ============================================================== -->
+        <!-- EDITE O TEXTO DO ABOUT AQUI ABAIXO -->
+        <!-- ============================================================== -->
+        <div class="about-content-box">
           <h2>h4wnee</h2>
           <p>is a Latin American transdisciplinary artist whose work explores the intersection of digital culture, popular imagination, and contemporary technologies.</p>
-          <div class="chronology">2021  utopias_piratas_2021<br>2021  n0_f*ture_(prime)<br>2022  Hyperlinks, Distortion e Mormasso<br>2025  RAW 2025 (HOA+FDAG)</div>
-        </div>`;
+          <div class="chronology">
+            2021  utopias_piratas_2021<br>
+            2021  n0_f*ture_(prime)<br>
+            2022  Hyperlinks, Distortion e Mormasso<br>
+            2025  RAW 2025 (HOA+FDAG)
+          </div>
+        </div>
+        <!-- ============================================================== -->
+      `;
     }
 
     if (w.kind === "contact") {
@@ -495,21 +510,9 @@
     }
 
     if (w.kind === "contact") {
-       el.addEventListener("pointerdown", e => {
-         if (!e.target.closest("button") && !e.target.closest("a") && !e.target.closest("textarea")) {
-            focusWin(w.id);
-            let start = { px: e.clientX, py: e.clientY, x: w.x, y: w.y };
-            const move = ev => {
-              w.x = clamp(start.x + (ev.clientX - start.px), 96 - w.w + 140, innerWidth - 60);
-              w.y = clamp(start.y + (ev.clientY - start.py), 38, innerHeight - 70);
-              w.ratioX = w.x / innerWidth; w.ratioY = w.y / innerHeight;
-              w.anchor = null; 
-              el.style.left = `${w.x}px`; el.style.top = `${w.y}px`;
-            };
-            const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
-            window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
-         }
-       });
+       $$('[data-act="close"]', el).forEach(btn => btn.addEventListener("click", e => {
+         e.preventDefault(); e.stopPropagation(); closeWindow(w.id);
+       }));
        
        const toggleBtn = $(".msg-toggle", el); const expandArea = $(".msn-expand", el);
        const sendBtn = $(".send-msg", el); const textArea = $("textarea", el);
@@ -596,13 +599,25 @@
 
   function createWindow(w) {
     const el = document.createElement("article");
-    el.className = `window ${state.active === w.id ? "" : "inactive"} ${w.kind === "popup" ? "popup-ad" : ""} ${w.kind === "contact" ? "msn-window" : ""}`;
+    
+    // Identificador dinâmico de classe
+    let extraClass = "";
+    if (w.kind === "popup") extraClass = "popup-ad";
+    if (w.kind === "contact") extraClass = "msn-window";
+    if (w.kind === "about") extraClass = "glass-about";
+    
+    el.className = `window ${state.active === w.id ? "" : "inactive"} ${extraClass}`;
     el.dataset.id = w.id;
     el.style.left = `${w.x}px`; el.style.top = `${w.y}px`;
     el.style.width = `${w.w}px`; el.style.height = `${w.h}px`;
     el.style.zIndex = w.z;
+    
     if (w.kind === "popup" || w.kind === "contact") el.style.position = "fixed";
     if (w.kind === "art") el.classList.add("frameless-art");
+
+    // TRAVA DE CAPTURA ABSOLUTA PARA PUXAR AO TOPO AO CLICAR EM QUALQUER JANELA
+    el.addEventListener("pointerdown", () => focusWin(w.id), { capture: true });
+    el.addEventListener("mousedown", () => focusWin(w.id), { capture: true });
 
     if (w.kind === "popup") {
       el.addEventListener("mousedown", (e) => {
@@ -614,9 +629,6 @@
         }
       });
     } else {
-      // PERMITE TRAZER PARA A FRENTE AO CLICAR EM QUALQUER ÁREA DA JANELA
-      el.addEventListener("pointerdown", () => focusWin(w.id));
-      
       el.addEventListener("pointerdown", e => {
          if (!e.target.closest("button") && !e.target.closest("a") && !e.target.closest("textarea") && !el.classList.contains("frameless-art") && !e.target.closest(".browser-body")) {
             let start = { px: e.clientX, py: e.clientY, x: w.x, y: w.y };
