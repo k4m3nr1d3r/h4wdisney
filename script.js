@@ -1,10 +1,6 @@
 (() => {
   "use strict";
 
-  // ==========================================
-  // LISTA SEQUENCIAL DE PROPAGANDAS (1 ao 10)
-  // Lembre-se: GIFs devem ser salvos no Photoshop com Looping "Forever"
-  // ==========================================
   const CUSTOM_ADS = [
     "assets/ads/01.png", "assets/ads/02.gif", "assets/ads/03.png", "assets/ads/04.gif", "assets/ads/05.png",
     "assets/ads/06.gif", "assets/ads/07.png", "assets/ads/08.png", "assets/ads/09.gif", "assets/ads/10.png"
@@ -14,7 +10,7 @@
   const extraStyles = document.createElement('style');
   extraStyles.textContent = `
     .file-grid { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; justify-content: flex-start; align-items: flex-end; background: #ffffff; min-height: 100%; }
-    .image-entry { display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid transparent; background: transparent !important; cursor: pointer; padding: 6px; border-radius: 2px; color: #000; max-width: 130px; }
+    .image-entry { display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid transparent; background: transparent !important; cursor: pointer; padding: 8px; border-radius: 2px; color: #000; max-width: 130px; }
     
     .image-entry:hover { background: #e5f3ff !important; border: 1px solid #d8ebf9 !important; }
     .image-entry.selected { background: #cce8ff !important; border: 1px solid #99d1ff !important; }
@@ -22,45 +18,48 @@
     .work-thumb { width: auto; height: auto; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; background: transparent !important; }
     .work-thumb img { max-width: 100px; max-height: 80px; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); }
     
-    /* REMOÇÃO DEFINITIVA DO RETÂNGULO LISTRADO NAS ARTES */
+    /* ANIQUILAÇÃO TOTAL DE REQUADROS E RETÂNGULOS NAS ARTES SOLTAS */
     .frameless-art { background: transparent !important; background-image: none !important; border: none !important; box-shadow: none !important; overflow: visible !important; }
-    .frameless-art .window-body { height: 100% !important; background: transparent !important; background-image: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; border: none !important; box-shadow: none !important; }
+    .frameless-art .window-body { height: auto !important; background: transparent !important; background-image: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; border: none !important; box-shadow: none !important; }
     .frameless-art:before, .frameless-art:after { display: none !important; }
     
-    .art-plate { overflow: visible; position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: transparent; }
-    
-    /* INVÓLUCRO QUE JUNTA A IMAGEM E O "X" */
+    .art-plate { overflow: visible; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: transparent; }
     .img-wrapper { position: relative; display: inline-block; transition: transform 0.05s linear; cursor: pointer; }
     .img-wrapper img { display: block; touch-action: none; max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(3px 3px 12px rgba(0,0,0,0.8)); }
     
-    /* O Botão 'X' fixado no invólucro */
-    .close-art { position: absolute; top: -12px; right: -12px; background: #e81123; color: #fff; border: 1px solid #fff; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); width: 26px; height: 26px; font-family: sans-serif; font-weight: bold; cursor: pointer; z-index: 100000; display: flex; align-items: center; justify-content: center; border-radius: 2px; }
+    .close-art { position: absolute; top: -12px; right: -12px; background: #e81123; color: #fff; border: 1px solid #fff; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); width: 24px; height: 26px; font-family: sans-serif; font-weight: bold; cursor: pointer; z-index: 100000; display: flex; align-items: center; justify-content: center; border-radius: 2px; }
     .close-art:hover { background: #ff0000; }
     
-    /* POPUP ADS (Sem bordas brancas, barra ajustada) */
-    .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; background-image: none !important; border: 1px solid #0058e6 !important; box-shadow: 2px 2px 5px rgba(0,0,0,0.5) !important; }
-    .popup-ad .titlebar { height: 20px; font-size: 11px; background: linear-gradient(to right, #0058e6, #3a93ff) !important; margin: 0 !important; border: none !important; }
-    .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: calc(100% - 20px) !important; overflow: hidden; pointer-events: none; background: transparent !important; background-image: none !important; border: none !important; }
+    /* TEXTO DE AJUSTE SUTIL BRANCO COM BORDA PRETA */
+    .art-instruction { margin-top: 10px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; }
     
-    /* EXPLOSÃO RADIAL + EVAPORAÇÃO */
+    /* POPUP ADS MOLDADOS À IMAGEM */
+    .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; background-image: none !important; border: 1px solid #0058e6 !important; box-shadow: 2px 2px 5px rgba(0,0,0,0.5) !important; }
+    .popup-ad .titlebar { height: 20px; font-size: 11px; background: linear-gradient(to right, #0058e6, #3a93ff) !important; margin: 0 !important; border: none !important; padding: 0 6px; }
+    .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: calc(100% - 20px) !important; overflow: hidden; pointer-events: none; background: transparent !important; border: none !important; }
+    
+    /* EXPLOSÃO 8-BITS COM EVAPORAÇÃO */
     @keyframes burnUpward {
       0% { clip-path: inset(0 0 0 0); filter: drop-shadow(0 0 0 transparent); transform: translateY(0); opacity: 1; }
-      30% { clip-path: inset(0 0 30% 0); filter: drop-shadow(0 -10px 10px #ff5500) brightness(1.5); transform: translateY(-5px); }
-      70% { clip-path: inset(0 0 70% 0); filter: drop-shadow(0 -20px 15px #ff0000) brightness(2) contrast(1.5) hue-rotate(-10deg); transform: translateY(-15px); }
-      100% { clip-path: inset(0 0 100% 0); filter: drop-shadow(0 -30px 20px #8b0000); transform: translateY(-25px); opacity: 0; display: none; }
+      30% { clip-path: inset(0 0 30% 0); filter: drop-shadow(0 -12px 12px #ff5500) brightness(1.5); transform: translateY(-5px); }
+      70% { clip-path: inset(0 0 70% 0); filter: drop-shadow(0 -22px 18px #ff0000) brightness(2) contrast(1.5) hue-rotate(-10deg); transform: translateY(-15px); }
+      100% { clip-path: inset(0 0 100% 0); filter: drop-shadow(0 -32px 25px #8b0000); transform: translateY(-25px); opacity: 0; display: none; }
     }
-    .explode-anim {
-      animation: burnUpward 0.6s ease-in forwards !important;
-      pointer-events: none; background: transparent !important; border: none !important; box-shadow: none !important;
-    }
+    .explode-anim { animation: burnUpward 0.6s ease-in forwards !important; pointer-events: none; background: transparent !important; border: none !important; box-shadow: none !important; }
     .explode-anim .titlebar { display: none !important; }
     
-    /* MSN Messenger Widget */
-    .msn-window { border-radius: 8px !important; background: linear-gradient(to bottom, #E6F0FA 0%, #CDE0F5 40%, #A4CBF0 100%) !important; border: 1px solid #6E98C7 !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.4) !important; transition: height 0.2s ease-in-out; }
+    /* NOTIFICAÇÃO DO MSN SURGINDO DE BAIXO */
+    @keyframes msnSlideIn {
+      0% { transform: translateY(200px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    .msn-window { position: fixed !important; border-radius: 8px !important; background: linear-gradient(to bottom, #E6F0FA 0%, #CDE0F5 40%, #A4CBF0 100%) !important; border: 1px solid #6E98C7 !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.4) !important; animation: msnSlideIn 0.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; transition: height 0.2s ease-in-out; }
     .msn-window .titlebar { display: none !important; }
     .task-msn { background: linear-gradient(to bottom, #E6F0FA, #A4CBF0) !important; border: 1px solid #6E98C7 !important; color: #000 !important; }
     
-    /* GLITCH CRT WALLPAPER */
+    /* SINAIS DO SISTEMA NA TASKBAR */
+    .system-tray-icons { display: flex; align-items: center; gap: 6px; margin-right: 8px; font-size: 14px; color: #fff; cursor: default; }
+    
     @keyframes crtWallpaperGlitch {
       0% { transform: scale(1) translate(0,0) skewX(0); filter: none; }
       20% { transform: scale(1.03) translate(-5px, 3px) skewX(4deg); filter: hue-rotate(120deg) contrast(1.8) saturate(2); }
@@ -70,7 +69,6 @@
       100% { transform: scale(1) translate(0,0) skewX(0); filter: none; }
     }
     .wallpaper-glitch-active { animation: crtWallpaperGlitch 1s steps(8) forwards !important; }
-    
     #bsod { z-index: 999999999 !important; }
   `;
   document.head.appendChild(extraStyles);
@@ -90,6 +88,33 @@
   let crashMultiplier = 1;
   let adMultiplier = 1;
 
+  // ==========================================
+  // SINTETIZADORES DE ÁUDIO 8-BITS E ALERTA
+  // ==========================================
+  function playMsnSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.type = "sine"; osc.frequency.setValueAtTime(880, ctx.currentTime); // Notificação cristalina
+      osc.frequency.setValueAtTime(1200, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.3);
+    } catch(_) {}
+  }
+
+  function playExplosionSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.type = "sawtooth"; osc.frequency.setValueAtTime(150, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(40, ctx.currentTime + 0.4);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+      osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.4);
+    } catch(_) {}
+  }
+
   function getIcon(name, fallbackEmoji) {
     return `<img src="assets/icons/${name}.png" onerror="this.outerHTML='<span>${fallbackEmoji}</span>'" alt="" style="width:16px; height:16px; object-fit:contain; vertical-align:middle; margin-right:4px;">`;
   }
@@ -106,7 +131,6 @@
         return { id: `${folderPath}/${num}.png`, file: `${folderPath}/${num}.png`, title: `${num}` };
       });
     };
-
     return {
       version: 1,
       exhibitions: [
@@ -144,19 +168,21 @@
 
   function defaultGeometry(kind, work = null) {
     const W = innerWidth, H = innerHeight;
-    if (kind === "folder") return { x: W * .09, y: H * .23, w: 600, h: 420 };
-    if (kind === "contact") return { x: clamp(W - 280, 50, W - 260), y: clamp(H * 0.1, 50, H - 200), w: 250, h: 160 }; 
-    if (kind === "about") return { x: clamp(W - 420, 80, W - 390), y: clamp(H * 0.25, 80, H - 250), w: 390, h: 392 };
+    const n = state.cascade++;
+    if (kind === "folder") return { x: W * .05, y: H * .2, w: 600, h: 420 };
+    
+    // MSN posicionado cirurgicamente no canto inferior direito, logo acima da taskbar
+    if (kind === "contact") return { x: W - 270, y: H - 210, w: 250, h: 160 }; 
+    if (kind === "about") return { x: clamp(W - 420, 80, W - 390), y: clamp(H * 0.2, 80, H - 250), w: 390, h: 392 };
     
     if (kind === "art" && work) {
       const nw = Number(work.nw) || 800; const nh = Number(work.nh) || 600;
-      const scale = Math.min(clamp(W * .5, 300, 800) / nw, (H * 0.7) / nh, 1.2);
+      const scale = Math.min(clamp(W * .35, 250, 600) / nw, (H * 0.5) / nh, 1);
       return {
-        x: clamp(W * .25, 50, Math.max(50, W - 400)), y: clamp(H * .15, 50, Math.max(50, H - 300)),
+        x: 120 + (n % 4) * 60, y: 100 + (n % 4) * 50,
         w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale)
       };
     }
-    const n = state.cascade++;
     return { x: 180 + (n % 6) * 46, y: 120 + (n % 6) * 38, w: 350, h: 250 };
   }
 
@@ -189,7 +215,7 @@
     if (!w || w.kind === "popup") return;
     const alreadyActive = (state.active === id && !w.min && !state.menuOpen);
     
-    w.z = ++state.top + (w.kind === "art" ? 90000 : 0); 
+    w.z = ++state.top + (w.kind === "art" ? 950000 : 0); 
     w.min = false; state.active = id; state.menuOpen = false;
     
     if (!alreadyActive || forceRender) render();
@@ -202,6 +228,32 @@
     }
   }
 
+  function beginPointer(e, id, mode) {
+    if (e.button !== undefined && e.button !== 0) return;
+    const w = state.wins.find(x => x.id === id);
+    if (!w || w.min) return;
+    focusWin(id);
+
+    const start = { px: e.clientX, py: e.clientY, x: w.x, y: w.y, width: w.w, height: w.h };
+
+    const move = ev => {
+      const dx = ev.clientX - start.px; const dy = ev.clientY - start.py;
+      if (mode === "move" && !w.max) {
+        w.x = clamp(start.x + dx, 96 - w.w + 140, innerWidth - 60);
+        w.y = clamp(start.y + dy, 38, innerHeight - 70);
+      }
+      if (mode === "size" && !w.max) {
+        w.w = Math.max(200, start.width + dx);
+        w.h = Math.max(150, start.height + dy);
+      }
+      const el = windowsEl.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
+      if (el) { el.style.left = `${w.x}px`; el.style.top = `${w.y}px`; el.style.width = `${w.w}px`; el.style.height = `${w.h}px`; }
+    };
+
+    const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
+    window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
+  }
+
   function titlebar(w) {
     const bar = document.createElement("div");
     bar.className = "titlebar";
@@ -210,23 +262,7 @@
       <span class="title-text">${w.title}</span>
       <span class="window-buttons"><button type="button" class="close" data-act="close">×</button></span>`;
     
-    // O título arrasta a janela (comportamento padrão para pastas)
-    bar.addEventListener("pointerdown", e => { 
-      if (!e.target.closest("button")) {
-         if (e.button !== 0) return;
-         focusWin(w.id);
-         let start = { px: e.clientX, py: e.clientY, x: w.x, y: w.y };
-         const move = ev => {
-           w.x = clamp(start.x + (ev.clientX - start.px), 96 - w.w + 140, innerWidth - 60);
-           w.y = clamp(start.y + (ev.clientY - start.py), 38, innerHeight - 70);
-           const el = windowsEl.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
-           if (el) { el.style.left = `${w.x}px`; el.style.top = `${w.y}px`; }
-         };
-         const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
-         window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
-      }
-    });
-    
+    bar.addEventListener("pointerdown", e => { if (!e.target.closest("button")) beginPointer(e, w.id, "move"); });
     $$(".window-buttons button", bar).forEach(btn => btn.addEventListener("click", e => {
       e.preventDefault(); e.stopPropagation();
       if (btn.dataset.act === "close") closeWindow(w.id);
@@ -256,7 +292,6 @@
 
   function browserBodyHTML(win) {
     const current = currentBrowser(win); let content = "";
-    
     if (current.kind === "root") {
       content = `<div class="file-grid">` + folderEntries().map(entry => `
         <button class="work-item image-entry" type="button" data-folder="${escapeHtml(entry.id)}">
@@ -310,6 +345,7 @@
              <img src="${imageSrc(w.work)}" alt="${escapeHtml(w.title)}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'400\\' height=\\'400\\'><text x=\\'50%\\' y=\\'50%\\' fill=\\'%23fff\\' font-family=\\'sans-serif\\' font-size=\\'18\\' text-anchor=\\'middle\\'>Imagem n\u00E3o encontrada</text></svg>'">
              <button class="close-art" data-act="close">X</button>
           </div>
+          <div class="art-instruction">Alt + Scroll: Zoom | Clique: Mover/Travar</div>
         </div>`;
     }
 
@@ -348,7 +384,6 @@
           </div>
         </div>`;
     }
-
     return "";
   }
 
@@ -357,7 +392,6 @@
       $$(".image-entry", el).forEach(btn => {
         btn.addEventListener("mouseenter", () => btn.classList.add("selected"));
         btn.addEventListener("mouseleave", () => btn.classList.remove("selected"));
-
         btn.addEventListener("click", e => {
           e.preventDefault(); e.stopPropagation();
           if (btn.dataset.work) {
@@ -368,7 +402,6 @@
           }
         });
       });
-
       $$('[data-nav="back"]', el).forEach(btn => btn.addEventListener("click", e => {
         e.preventDefault(); e.stopPropagation(); goBack(w);
       }));
@@ -392,10 +425,8 @@
          e.preventDefault(); e.stopPropagation(); closeWindow(w.id);
        }));
        
-       const toggleBtn = $(".msg-toggle", el);
-       const expandArea = $(".msn-expand", el);
-       const sendBtn = $(".send-msg", el);
-       const textArea = $("textarea", el);
+       const toggleBtn = $(".msg-toggle", el); const expandArea = $(".msn-expand", el);
+       const sendBtn = $(".send-msg", el); const textArea = $("textarea", el);
 
        toggleBtn.addEventListener("click", e => {
            e.preventDefault(); e.stopPropagation();
@@ -403,11 +434,10 @@
            expandArea.style.display = isExpanded ? "none" : "block";
            w.h = isExpanded ? 160 : 255; el.style.height = `${w.h}px`;
        });
-
        sendBtn.addEventListener("click", () => {
            if(textArea.value.trim() === "") return;
            expandArea.style.display = "none"; w.h = 160; el.style.height = `${w.h}px`; textArea.value = "";
-           alert("Mensagem enviada para o correio.");
+           alert("Mensagem enviada com sucesso!");
        });
     }
 
@@ -416,7 +446,6 @@
       let scale = 1, panX = 0, panY = 0, isDragging = false;
       let startMouseX = 0, startMouseY = 0, initialPanX = 0, initialPanY = 0;
 
-      // O evento de movimentação precisa ser global para acompanhar o mouse livremente
       const moveHandler = e => {
         if (!isDragging) return;
         panX = initialPanX + (e.clientX - startMouseX);
@@ -439,19 +468,14 @@
         }
       });
 
-      // LÓGICA: 1 CLIQUE PRA GRUDAR, 1 CLIQUE PRA SOLTAR
       wrapper.addEventListener("click", e => {
-        if (e.target.closest('.close-art')) return; // Se clicou no X, ignora
-        e.stopPropagation();
-        focusWin(w.id);
-        
-        isDragging = !isDragging; // Inverte o estado
+        if (e.target.closest('.close-art')) return;
+        e.stopPropagation(); focusWin(w.id);
+        isDragging = !isDragging;
         
         if (isDragging) {
-          startMouseX = e.clientX;
-          startMouseY = e.clientY;
-          initialPanX = panX;
-          initialPanY = panY;
+          startMouseX = e.clientX; startMouseY = e.clientY;
+          initialPanX = panX; initialPanY = panY;
           wrapper.style.cursor = "grabbing";
           document.addEventListener("pointermove", moveHandler);
         } else {
@@ -479,33 +503,22 @@
     el.style.width = `${w.w}px`; el.style.height = `${w.h}px`;
     el.style.zIndex = w.z;
     if (w.kind === "popup") el.style.position = "fixed";
-    
-    // Transforma a janela de Arte em Frameless
     if (w.kind === "art") el.classList.add("frameless-art");
 
     if (w.kind === "popup") {
       el.addEventListener("mousedown", (e) => {
         e.stopPropagation();
         if (!el.classList.contains("explode-anim")) {
+          playExplosionSound(); // Áudio Retro
           el.classList.add("explode-anim");
           setTimeout(() => closeWindow(w.id), 580);
         }
       });
-      el.addEventListener("touchstart", (e) => {
-        e.stopPropagation();
-        if (!el.classList.contains("explode-anim")) {
-          el.classList.add("explode-anim");
-          setTimeout(() => closeWindow(w.id), 580);
-        }
-      }, {passive: true});
-    } else {
+    } else if (w.kind !== "contact") {
       el.addEventListener("pointerdown", () => focusWin(w.id));
     }
     
-    // Apenas Explorer e Popup recebem o Titlebar
-    if (w.kind !== "contact" && w.kind !== "art") {
-        el.appendChild(titlebar(w));
-    }
+    if (w.kind !== "contact" && w.kind !== "art") el.appendChild(titlebar(w));
 
     const body = document.createElement("div");
     body.className = "window-body";
@@ -519,6 +532,7 @@
     windowsEl.innerHTML = "";
     state.wins.filter(w => !w.min).sort((a, b) => a.z - b.z).forEach(w => windowsEl.appendChild(createWindow(w)));
   }
+
   function renderTasks() {
     taskStrip.innerHTML = "";
     state.wins.filter(w => w.kind !== "popup").forEach(w => {
@@ -528,6 +542,14 @@
       b.addEventListener("click", () => { if (state.active === w.id && !w.min) { w.min = true; render(); } else focusWin(w.id, true); });
       taskStrip.appendChild(b);
     });
+
+    // Injeta os ícones de Rede e Som estáticos e o Relógio na bandeja
+    let tray = $(".system-tray-icons");
+    if (!tray) {
+       tray = document.createElement("div"); tray.className = "system-tray-icons";
+       tray.innerHTML = `<span title="Volume">🔊</span><span title="Wi-Fi">📶</span>`;
+       clockEl.parentNode.insertBefore(tray, clockEl);
+    }
   }
   function render() { renderWindowLayer(); renderTasks(); }
 
@@ -552,9 +574,7 @@
   function triggerCrtWallpaperGlitch() {
     if (!wallpaperEl) return;
     wallpaperEl.classList.add("wallpaper-glitch-active");
-    setTimeout(() => {
-      wallpaperEl.classList.remove("wallpaper-glitch-active");
-    }, 1000); 
+    setTimeout(() => { wallpaperEl.classList.remove("wallpaper-glitch-active"); }, 1000); 
   }
 
   function scheduleNextGlitch() {
@@ -565,25 +585,20 @@
   function scheduleNextCrash() {
     bsod.classList.remove("hidden");
     crashMultiplier++;
-    const nextDelay = 60000 * crashMultiplier;
-    setTimeout(scheduleNextCrash, nextDelay);
+    setTimeout(scheduleNextCrash, 60000 * crashMultiplier);
   }
 
   // ==========================================
-  // PROPAGANDAS SEM BORDAS LATERAIS
+  // SPAWN AD: ACOPLAMENTO FIEL ÀS PROPORÇÕES
   // ==========================================
   function spawnAd() {
     if (CUSTOM_ADS.length === 0) return; 
-    
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
     const adImageSrc = CUSTOM_ADS[currentAdIndex];
     currentAdIndex = (currentAdIndex + 1) % CUSTOM_ADS.length;
 
     const img = new Image();
-    let isGif = true;
-
     img.onload = () => {
-       // O tamanho da janela agora se acopla EXATAMENTE ao tamanho da imagem sem deixar borda
        const scale = Math.min(140 / img.naturalWidth, 140 / img.naturalHeight, 1);
        const adW = Math.max(70, img.naturalWidth * scale);
        const adH = Math.max(70, img.naturalHeight * scale);
@@ -611,36 +626,40 @@
           requestAnimationFrame(bounce);
        });
     };
-
-    img.onerror = () => {
-       if (isGif) {
-           isGif = false;
-           // Tenta PNG se o GIF falhar na leitura (Apenas uma checagem de segurança do seu script)
-           img.src = adImageSrc.replace('.gif', '.png').replace('.png', '.gif');
-       }
-    };
     img.src = adImageSrc;
   }
 
   function scheduleNextAd() {
     if (state.wins.filter(w => w.kind === "popup").length < 4) spawnAd();
     adMultiplier++;
-    const nextAdDelay = 45000 * adMultiplier;
-    setTimeout(scheduleNextAd, nextAdDelay);
+    setTimeout(scheduleNextAd, 45000 * adMultiplier);
   }
 
   function init() {
     state.manifest = generateAutomaticManifest();
     nowClock(); setInterval(nowClock, 1000);
 
+    // 1. Explorador principal
     addWindow("folder"); 
     
-    if (state.manifest.works && state.manifest.works.length > 0) {
-      const firstWork = state.manifest.works[0];
-      loadDimensions(firstWork).then(() => addWindow("art", firstWork));
+    // 2. Abertura TRIPLA das primeiras imagens da galeria de obras
+    if (state.manifest.works && state.manifest.works.length >= 3) {
+      const w1 = state.manifest.works[0];
+      const w2 = state.manifest.works[1];
+      const w3 = state.manifest.works[2];
+      loadDimensions(w1).then(() => { addWindow("art", w1); });
+      loadDimensions(w2).then(() => { addWindow("art", w2); });
+      loadDimensions(w3).then(() => { addWindow("art", w3); });
     }
 
-    addWindow("contact"); addWindow("about");   
+    // 3. Janelas Auxiliares
+    addWindow("about");   
+
+    // 4. Notificação do MSN programada para surgir 1 segundo após a inicialização
+    setTimeout(() => {
+       addWindow("contact");
+       playMsnSound(); // Alerta sonoro clássico
+    }, 1000);
 
     setTimeout(spawnAd, 8000);
     setTimeout(scheduleNextAd, 45000);
@@ -649,6 +668,5 @@
 
     render();
   }
-  
   init();
 })();
