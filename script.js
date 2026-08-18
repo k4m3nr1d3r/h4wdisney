@@ -2,6 +2,25 @@
   "use strict";
 
   // ==========================================
+  // SCANNER DE EXTENSÕES GLOBAL (Salva as imagens JPG/GIF perdidas)
+  // ==========================================
+  window.handleThumbErr = function(img) {
+     if (!img.dataset.errStep) {
+        img.dataset.errStep = "1";
+        img.src = img.src.replace(/\.png$/i, '.jpg');
+     } else if (img.dataset.errStep === "1") {
+        img.dataset.errStep = "2";
+        img.src = img.src.replace(/\.jpg$/i, '.jpeg');
+     } else if (img.dataset.errStep === "2") {
+        img.dataset.errStep = "3";
+        img.src = img.src.replace(/\.jpeg$/i, '.gif');
+     } else {
+        // Se a imagem realmente não existir, desenha um quadradinho tracejado
+        img.outerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><rect width="50" height="50" fill="transparent" stroke="#ccc" stroke-dasharray="4"/></svg>';
+     }
+  };
+
+  // ==========================================
   // FORÇAR MODO DESKTOP NO CELULAR (Zoom e Pan livres)
   // ==========================================
   let metaViewport = document.querySelector('meta[name="viewport"]');
@@ -26,18 +45,22 @@
     .work-thumb { width: auto; height: auto; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; background: transparent !important; }
     .work-thumb img { max-width: 100px; max-height: 80px; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); }
     
+    /* REMOÇÃO ABSOLUTA DE BORDAS DAS JANELAS DE ARTE */
     .frameless-art { background: transparent !important; background-image: none !important; border: none !important; box-shadow: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; outline: none !important; }
     .frameless-art .window-body { height: auto !important; background: transparent !important; background-image: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; border: none !important; box-shadow: none !important; }
     .frameless-art:before, .frameless-art:after { display: none !important; }
     
     .art-plate { overflow: visible; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: transparent !important; border: none !important; box-shadow: none !important; width: 100%; height: 100%; }
     
+    /* GRUPO PRINCIPAL QUE PRENDE A IMAGEM, O "X" E AS SETAS JUNTOS */
     .img-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.05s linear; cursor: pointer; background: transparent !important; border: none !important; box-shadow: none !important; touch-action: none; }
     .img-wrapper img { display: block; touch-action: none; max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(3px 3px 12px rgba(0,0,0,0.8)); background: transparent !important; border: none !important; }
     
+    /* BOTÃO FECHAR GRUDADO */
     .close-art { position: absolute; top: -12px; right: -12px; background: #e81123; color: #fff; border: 1px solid #fff; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); width: 24px; height: 26px; font-family: sans-serif; font-weight: bold; cursor: pointer; z-index: 100000; display: flex; align-items: center; justify-content: center; border-radius: 2px; touch-action: manipulation; }
     .close-art:hover { background: #ff0000; }
     
+    /* SETAS DE NAVEGAÇÃO GRUDADAS NA IMAGEM */
     .nav-art { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.5); width: 34px; height: 34px; font-size: 16px; font-weight: bold; cursor: pointer; z-index: 100001; border-radius: 50%; display: flex; align-items: center; justify-content: center; touch-action: manipulation; transition: background 0.2s, transform 0.1s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); padding-bottom: 2px; }
     .nav-art:hover { background: rgba(255,255,255,0.9); color: #000; }
     .nav-art:active { transform: translateY(-50%) scale(0.9); }
@@ -48,12 +71,14 @@
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
     /* ======================================================= */
-    /* ABOUT: VIDRO ESCOVADO, TEXTO FUNDIDO E ALINHADO */
+    /* ABOUT: MAIS ALTO, COM MARGEM RESPIRO E TEXTOS À ESQUERDA */
     /* ======================================================= */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
     .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; text-align: left !important; }
     .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); text-align: left !important; }
-    .about-content-box { text-align: left !important; padding: 25px 25px 40px 25px !important; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block !important; width: 100% !important; box-sizing: border-box; }
+    
+    /* MARGEM INFERIOR (PADDING-BOTTOM) BEM MAIOR PARA DAR RESPIRO: 80px */
+    .about-content-box { text-align: left !important; padding: 25px 25px 80px 25px !important; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block !important; width: 100% !important; box-sizing: border-box; }
     .about-content-box * { text-align: left !important; justify-content: flex-start !important; align-items: flex-start !important; }
     .about-content-box h2 { font-size: 24px; margin-bottom: 10px; margin-top: 0; text-align: left !important; width: 100%; }
     .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.4; text-align: left !important; width: 100%; }
@@ -182,13 +207,11 @@
   function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
   function escapeHtml(s) { return String(s).replace(/[&<>"']/g, m => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"}[m])); }
 
-  // ==========================================
-  // MANIFESTO: DIRETÓRIOS ATUALIZADOS
-  // ==========================================
   function generateAutomaticManifest() {
     const buildItems = (folderPath, type) => {
       return Array.from({ length: 15 }, (_, i) => {
         const num = String(i + 1).padStart(2, '0');
+        // Inicialmente assume .png, mas o motor vai testar e consertar o caminho se for jpg ou gif
         return { id: `${folderPath}/${num}.png`, file: `${folderPath}/${num}.png`, title: `${num}`, type: type };
       });
     };
@@ -250,11 +273,14 @@
     const n = state.cascade++;
     
     if (kind === "folder") return { x: W * 0.05, y: H * 0.23, w: Math.min(600, W * 0.8), h: Math.min(420, H * 0.7) };
+    
+    // ABOUT MUITO MAIS ALTO PARA CABER O RESPIRO (Mínimo 420px de altura)
     if (kind === "about") {
        const aW = Math.min(320, W * 0.9);
-       const aH = Math.min(280, H * 0.8);
+       const aH = Math.min(420, H * 0.8);
        return { x: clamp(W - aW - 20, 10, W - aW), y: clamp(H * 0.2, 10, H - aH), w: aW, h: aH };
     }
+    
     if (kind === "contact") return { x: W - 270, y: H - 205, w: 250, h: 160 }; 
     
     if (kind === "art" && work) {
@@ -268,9 +294,9 @@
       const artH = Math.round(nh * scale);
       
       if (opts.isInit) {
-         if (work.title === "01") return { x: W * 0.12, y: H * 0.15, w: artW, h: artH, initZ: 1003 };
-         if (work.title === "02") return { x: Math.max(10, W - artW - 40), y: H * 0.28, w: artW, h: artH, initZ: 1001 }; 
-         if (work.title === "03") return { x: W * 0.02, y: H * 0.38, w: artW, h: artH, initZ: 1001 }; 
+         if (work.title === "01") return { x: W * 0.22, y: H * 0.15, w: artW, h: artH, initZ: 1004 };
+         if (work.title === "02") return { x: Math.max(10, W - 580), y: H * 0.28, w: artW, h: artH, initZ: 1001 }; 
+         if (work.title === "03") return { x: W * 0.02, y: H * 0.42, w: artW, h: artH, initZ: 1001 }; 
       }
       return { x: clamp((W - artW) / 2, 0, W), y: clamp((H - artH) / 2, 0, H), w: artW, h: artH };
     }
@@ -416,7 +442,7 @@
   function imageCard(item) {
     return `
       <button class="work-item image-entry" type="button" data-work="${escapeHtml(item.id)}">
-        <div class="work-thumb"><img src="${escapeHtml(imageSrc(item))}" alt="" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'50\\' height=\\'50\\'><rect width=\\'50\\' height=\\'50\\' fill=\\'transparent\\'/></svg>'"></div>
+        <div class="work-thumb"><img src="${escapeHtml(imageSrc(item))}" alt="" loading="lazy" onerror="window.handleThumbErr(this)"></div>
         <span>${escapeHtml(item.title)}</span>
       </button>`;
   }
@@ -473,12 +499,11 @@
     if (w.kind === "folder") return browserBodyHTML(w);
 
     if (w.kind === "art") {
-      // O PAINEL DE INFORMAÇÕES (TOAST) PARA A PASTA "ACERVO"
       const acervoPanel = w.work.type === "ACERVO" ? `
         <div class="acervo-toast" style="position: absolute; left: calc(100% + 60px); top: 20px; background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 15px; border: 1px solid rgba(255,255,255,0.4); border-radius: 4px; color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; width: max-content; min-width: 220px; box-shadow: 2px 2px 10px rgba(0,0,0,0.5); text-align: left; cursor: default; touch-action: auto;">
-           <div style="font-size: 16px; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px; text-transform: uppercase;">${escapeHtml(w.title)}</div>
+           <div style="font-size: 16px; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px; text-transform: uppercase;">${escapeHtml(w.work.id)}</div>
            <div style="font-size: 12px; line-height: 1.8;">
-             <strong style="color:#A4CBF0; display:inline-block; width:80px;">STATUS:</strong> <a href="mailto:h4wnee@gmail.com?subject=Interesse%20na%20obra%20${escapeHtml(w.title)}" target="_blank" style="color:#F4D03F; text-decoration:none; border-bottom:1px dashed #F4D03F;">[ SOLICITAR INFO ]</a><br>
+             <strong style="color:#A4CBF0; display:inline-block; width:80px;">STATUS:</strong> <a href="mailto:h4wnee@gmail.com?subject=Interesse%20na%20obra%20${escapeHtml(w.work.id)}" target="_blank" style="color:#F4D03F; text-decoration:none; border-bottom:1px dashed #F4D03F;">[ SOLICITAR INFO ]</a><br>
              <strong style="color:#A4CBF0; display:inline-block; width:80px;">ANO:</strong> 2026<br>
              <strong style="color:#A4CBF0; display:inline-block; width:80px;">MATERIAL:</strong> ...<br>
              <strong style="color:#A4CBF0; display:inline-block; width:80px;">DIMENSÕES:</strong> ...<br>
@@ -491,7 +516,7 @@
         <div class="art-plate">
           <div class="img-wrapper">
              <button class="nav-art prev-art" data-dir="-1">❮</button>
-             <img src="${imageSrc(w.work)}" alt="${escapeHtml(w.title)}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'400\\' height=\\'400\\'><text x=\\'50%\\' y=\\'50%\\' fill=\\'%23fff\\' font-family=\\'sans-serif\\' font-size=\\'18\\' text-anchor=\\'middle\\'>Imagem n\u00E3o encontrada</text></svg>'">
+             <img src="${imageSrc(w.work)}" alt="${escapeHtml(w.title)}" onerror="window.handleThumbErr(this)">
              <button class="close-art" data-act="close">X</button>
              <button class="nav-art next-art" data-dir="1">❯</button>
              ${acervoPanel}
@@ -742,12 +767,30 @@
     }
   }
 
+  // ==========================================
+  // MOTOR DE CARREGAMENTO SEGURO DE EXTENSÕES
+  // Testa silenciosamente a extensão real da imagem (png, jpg ou gif)
+  // ==========================================
   function loadDimensions(work) {
     return new Promise(resolve => {
-      const img = new Image();
-      img.onload = () => { work.nw = img.naturalWidth; work.nh = img.naturalHeight; resolve(work); };
-      img.onerror = () => { work.nw = 800; work.nh = 600; resolve(work); };
-      img.src = imageSrc(work);
+      const exts = ['png', 'jpg', 'jpeg', 'gif'];
+      const baseFile = work.file.replace(/\.[a-z]+$/i, '');
+      
+      const tryNext = () => {
+        if (exts.length === 0) {
+           work.nw = 800; work.nh = 600; resolve(work); return;
+        }
+        const ext = exts.shift();
+        const img = new Image();
+        img.onload = () => { 
+           work.file = baseFile + '.' + ext; // Grava a extensão certa pro site inteiro usar
+           work.nw = img.naturalWidth; work.nh = img.naturalHeight; 
+           resolve(work); 
+        };
+        img.onerror = tryNext;
+        img.src = asset(baseFile + '.' + ext);
+      };
+      tryNext();
     });
   }
 
@@ -948,10 +991,11 @@
       nowClock(); setInterval(nowClock, 1000);
       fixBackgroundCache();
 
-      if (state.manifest.acervo && state.manifest.acervo.length >= 3) {
-        const w1 = state.manifest.acervo[0];
-        const w2 = state.manifest.acervo[1];
-        const w3 = state.manifest.acervo[2];
+      // INICIA COM A PASTA beck_END (AS 3 PRIMEIRAS IMAGENS)
+      if (state.manifest.beckEnd && state.manifest.beckEnd.length >= 3) {
+        const w1 = state.manifest.beckEnd[0];
+        const w2 = state.manifest.beckEnd[1];
+        const w3 = state.manifest.beckEnd[2];
 
         loadDimensions(w3).then(() => { addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 }); });
         loadDimensions(w2).then(() => { addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 }); });
