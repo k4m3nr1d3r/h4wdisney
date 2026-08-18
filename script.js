@@ -2,42 +2,38 @@
   "use strict";
 
   // ==========================================
-  // O GRANDE RADAR (Scanner Imbatível de Pastas e Extensões)
+  // O GRANDE RADAR (Scanner de Força Bruta)
+  // Testa 150+ combinações para driblar o bloqueio do Vercel/Linux
   // ==========================================
   window.getPathsToTest = function(baseFile) {
       const exts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'PNG', 'JPG', 'JPEG', 'GIF', 'WEBP'];
-      let variations = [
-          baseFile,
-          'assets/' + baseFile,
-          baseFile.toLowerCase(),
-          'assets/' + baseFile.toLowerCase(),
-          baseFile.toUpperCase()
-      ];
+      const doubleExts = ['png.png', 'jpg.jpg', 'jpeg.jpeg']; // O clássico erro de extensão oculta no Windows
+      const allExts = exts.concat(doubleExts);
       
-      let moreVars = [];
-      variations.forEach(v => {
-          if (v.includes('exhibiti0ns')) {
-              moreVars.push(v.replace('exhibiti0ns', 'exhibitions'));
-              moreVars.push(v.replace('exhibiti0ns', 'Exhibitions'));
-          }
-          if (v.includes('beck_END')) {
-              moreVars.push(v.replace('beck_END', 'beck_end'));
-              moreVars.push(v.replace('beck_END', 'backend'));
-          }
-          if (v.includes('ACERVO')) {
-              moreVars.push(v.replace('ACERVO', 'Acervo'));
-              moreVars.push(v.replace('ACERVO', 'acervo'));
-          }
+      let parts = baseFile.split('/');
+      let filename = parts.pop(); 
+      let folder = parts.join('/'); 
+
+      let folders = [folder, 'assets/' + folder, folder.toLowerCase(), folder.toUpperCase()];
+      if (folder === 'exhibiti0ns') folders.push('exhibitions');
+      if (folder === 'beck_END') { folders.push('beck_end'); folders.push('backend'); }
+      if (folder === 'ACERVO') folders.push('acervo');
+
+      let files = [filename];
+      if (filename.startsWith('0')) files.push(filename.substring(1)); // Transforma "01" em "1"
+      else if (filename.length === 1) files.push('0' + filename); // Transforma "1" em "01"
+      
+      let paths = [];
+      [...new Set(folders)].forEach(f => {
+          files.forEach(file => {
+              allExts.forEach(ext => {
+                  paths.push(f + '/' + file + '.' + ext);
+              });
+          });
       });
-      variations = variations.concat(moreVars);
-      
-      const uniqueVars = [...new Set(variations)];
-      const paths = [];
-      uniqueVars.forEach(v => { exts.forEach(ext => paths.push(v + '.' + ext)); });
       return paths;
   };
 
-  // NOME DA FUNÇÃO CORRIGIDA AQUI!
   window.handleThumbErr = function(img) {
      let step = parseInt(img.dataset.step || "0");
      let rawPath = img.dataset.filepath.replace(/\.[a-zA-Z0-9]+$/i, '');
@@ -47,42 +43,11 @@
          img.dataset.step = step + 1;
          img.src = paths[step].split("/").map(encodeURIComponent).join("/");
      } else {
+         // Se não achar, oculta o botão da galeria para manter o site limpo
          let btn = img.closest('.image-entry');
          if (btn) btn.style.display = 'none';
-         if (!btn) {
-             img.outerHTML = '<div style="display:flex; align-items:center; justify-content:center; width:100%; height:100%; color:#fff; font-family:sans-serif; text-shadow:1px 1px 2px #000;">Imagem não encontrada no servidor</div>';
-         }
      }
   };
-
-  // ==========================================
-  // CARREGAMENTO PROTEGIDO PARA ABRIR OBRAS
-  // ==========================================
-  function loadDimensions(work) {
-    return new Promise((resolve) => {
-      const rawPath = work.file.replace(/\.[a-zA-Z0-9]+$/i, '');
-      const paths = window.getPathsToTest(rawPath);
-      let step = 0;
-      
-      const tryNext = () => {
-        if (step >= paths.length) {
-           work.nw = 800; work.nh = 600; 
-           resolve(work); 
-           return;
-        }
-        const testPath = paths[step++];
-        const img = new Image();
-        img.onload = () => { 
-           work.file = testPath; 
-           work.nw = img.naturalWidth; work.nh = img.naturalHeight; 
-           resolve(work); 
-        };
-        img.onerror = tryNext;
-        img.src = testPath.split("/").map(encodeURIComponent).join("/");
-      };
-      tryNext();
-    });
-  }
 
   // ==========================================
   // FORÇAR MODO DESKTOP NO CELULAR
@@ -136,7 +101,7 @@
     .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; height: 100% !important; text-align: left !important; overflow: hidden; }
     .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); text-align: left !important; }
     
-    .about-content-box { text-align: left !important; padding: 15px 25px 80px 25px !important; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block !important; width: 100% !important; box-sizing: border-box; height: 100%; overflow-y: auto; }
+    .about-content-box { text-align: left !important; padding: 25px !important; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block !important; width: 100% !important; box-sizing: border-box; height: 100%; overflow-y: auto; }
     .about-content-box * { text-align: left !important; justify-content: flex-start !important; align-items: flex-start !important; }
     .about-content-box h2 { font-size: 24px; margin-bottom: 15px; margin-top: 0; text-align: left !important; width: 100%; display: block; }
     .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.5; text-align: left !important; width: 100%; display: block; }
@@ -147,7 +112,6 @@
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
     
-    /* EXPLOSÃO RADIAL 8-BITS */
     @keyframes realisticPixelExplosion {
       0% { box-shadow: 0 0 0 4px #fff, 0 0 0 8px #ffeb3b; background: transparent; transform: scale(0.6); opacity: 1; }
       35% { box-shadow: 0 -16px 0 3px #fff, 0 16px 0 3px #fff, 16px 0 0 3px #fff, -16px 0 0 3px #fff, -12px -12px 0 4px #ffeb3b, 12px 12px 0 4px #ffeb3b, -12px 12px 0 4px #ffeb3b, 12px -12px 0 4px #ffeb3b, 0 -25px 0 3px #ff9800, 0 25px 0 3px #ff9800; transform: scale(1.1); opacity: 1; border: none; }
@@ -158,13 +122,11 @@
     .explode-anim .window-body { display: none !important; } 
     .explode-anim::after { content: ""; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; margin-top: -2px; margin-left: -2px; animation: realisticPixelExplosion 0.45s steps(5) forwards; }
     
-    /* TOAST MSN */
     @keyframes msnSlideIn { 0% { transform: translateY(250px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
     .msn-window { position: fixed !important; border-radius: 8px !important; background: linear-gradient(to bottom, #E6F0FA 0%, #CDE0F5 40%, #A4CBF0 100%) !important; border: 1px solid #6E98C7 !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.4) !important; animation: msnSlideIn 0.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; transition: height 0.15s ease-in-out, top 0.15s ease-in-out, left 0.15s ease-in-out; }
     .msn-window .titlebar { display: none !important; }
     .task-msn { background: linear-gradient(to bottom, #E6F0FA, #A4CBF0) !important; border: 1px solid #6E98C7 !important; color: #000 !important; }
     
-    /* TASKBAR E FILTROS CRT */
     .taskbar { display: flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; padding: 0 10px; }
     .task-strip { flex: 1; display: flex; gap: 4px; overflow: hidden; margin: 0 10px; min-width: 0; }
     .task-button { flex: 0 1 140px; min-width: 35px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -624,6 +586,35 @@
     return "";
   }
 
+  // ==========================================
+  // CARREGAMENTO PROTEGIDO PARA OBRAS GIGANTES
+  // Agora ele te avisa com um Alerta caso a Vercel negue as 150 tentativas
+  // ==========================================
+  function loadDimensions(work) {
+    return new Promise((resolve, reject) => {
+      const rawPath = work.file.replace(/\.[a-zA-Z0-9]+$/i, '');
+      const paths = window.getPathsToTest(rawPath);
+      let step = 0;
+      
+      const tryNext = () => {
+        if (step >= paths.length) {
+           reject("Imagem não encontrada"); 
+           return;
+        }
+        const testPath = paths[step++];
+        const img = new Image();
+        img.onload = () => { 
+           work.file = testPath; 
+           work.nw = img.naturalWidth; work.nh = img.naturalHeight; 
+           resolve(work); 
+        };
+        img.onerror = tryNext;
+        img.src = testPath.split("/").map(encodeURIComponent).join("/");
+      };
+      tryNext();
+    });
+  }
+
   function bindWindowBody(el, w) {
     if (w.kind === "folder") {
       $$(".image-entry", el).forEach(btn => {
@@ -631,7 +622,14 @@
           e.preventDefault(); e.stopPropagation();
           if (btn.dataset.work) {
             const work = findItem(btn.dataset.work);
-            if (work) loadDimensions(work).then(() => addWindow("art", work, { isInit: false })); 
+            if (work) {
+               // SE O SERVIDOR NEGAR TUDO, ELE GERA O ALERTA DO SISTEMA
+               loadDimensions(work).then(() => {
+                  addWindow("art", work, { isInit: false }); 
+               }).catch(() => {
+                  alert("ERRO DO SISTEMA 404:\\n\\nO servidor da Vercel informou que a foto da obra '" + work.id + "' NÃO existe dentro da pasta.\\n\\nDICA DE OURO:\\n1. Você salvou como '1.png' e o código pede '01'?\\n2. A extensão duplicou ('01.png.png')?\\n3. A pasta está escondida dentro de uma pasta 'assets'?\\n\\nConfira o arquivo no seu PC e tente o Push novamente!");
+               });
+            }
           } else if (btn.dataset.folder) {
             navigateBrowser(w, btn.dataset.folder);
           }
@@ -708,6 +706,8 @@
                   const body = el.querySelector(".window-body");
                   if(body) body.innerHTML = windowBodyHTML(w);
                   bindWindowBody(el, w);
+               }).catch(() => {
+                  alert("Você chegou no fim da galeria ou o arquivo não existe.");
                });
             }
          });
@@ -1013,12 +1013,13 @@
         const w2 = state.manifest.beckEnd[1];
         const w3 = state.manifest.beckEnd[2];
 
-        loadDimensions(w3).then(() => { addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 }); });
-        loadDimensions(w2).then(() => { addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 }); });
+        loadDimensions(w3).then(() => { addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 }); }).catch(()=>{});
+        loadDimensions(w2).then(() => { addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 }); }).catch(()=>{});
 
         setTimeout(() => addWindow("folder", null, { z: 1002 }), 100);
         setTimeout(() => addWindow("about", null, { z: 1003 }), 200);
-        setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { isInit: true, x: W * 0.22, y: H * 0.15, z: 1004 }); }); }, 300);
+        
+        setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { isInit: true, x: W * 0.22, y: H * 0.15, z: 1004 }); }).catch(()=>{}); }, 300);
       } else {
         addWindow("folder"); addWindow("about");
       }
