@@ -2,20 +2,17 @@
   "use strict";
 
   // ==========================================
-  // SCANNER DE EXTENSÕES BLINDADO (Resolve erro de Maiúscula/Minúscula no Vercel)
+  // MOTOR UNIVERSAL DE EXTENSÕES (Resolve Maiúsculas/Minúsculas)
   // ==========================================
-  window.handleThumbErr = function(img) {
+  window.getAltImg = function(img, basePath) {
      const exts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'PNG', 'JPG', 'JPEG', 'GIF', 'WEBP'];
-     let step = parseInt(img.dataset.errStep || "0");
-     
+     let step = parseInt(img.dataset.step || "0");
      if (step < exts.length) {
-        let url = img.src.split('?')[0]; // Remove query tags se houver
-        let baseSrc = url.substring(0, url.lastIndexOf('.'));
-        img.dataset.errStep = step + 1;
-        img.src = baseSrc + '.' + exts[step];
+         img.dataset.step = step + 1;
+         let nextFile = basePath + '.' + exts[step];
+         img.src = nextFile.split("/").map(encodeURIComponent).join("/");
      } else {
-        // Se a imagem não for achada de jeito nenhum
-        img.outerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><rect width="50" height="50" fill="transparent" stroke="#ccc" stroke-dasharray="4"/></svg>';
+         img.outerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"><rect width="50" height="50" fill="rgba(255,255,255,0.1)" stroke="#ff0000" stroke-width="2" stroke-dasharray="4"/><text x="25" y="25" fill="#ff0000" font-size="10" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">OFF</text></svg>';
      }
   };
 
@@ -44,6 +41,7 @@
     .work-thumb { width: auto; height: auto; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; background: transparent !important; }
     .work-thumb img { max-width: 100px; max-height: 80px; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); }
     
+    /* REMOÇÃO ABSOLUTA DE BORDAS DAS JANELAS DE ARTE */
     .frameless-art { background: transparent !important; background-image: none !important; border: none !important; box-shadow: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; outline: none !important; }
     .frameless-art .window-body { height: auto !important; background: transparent !important; background-image: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; border: none !important; box-shadow: none !important; }
     .frameless-art:before, .frameless-art:after { display: none !important; }
@@ -66,13 +64,14 @@
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
     /* ======================================================= */
-    /* ABOUT: VIDRO ESCOVADO COM RESPIRO AUMENTADO NO FUNDO */
+    /* ABOUT: MAIS ALTO, COM MARGEM RESPIRO E TEXTOS À ESQUERDA */
     /* ======================================================= */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
-    .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; height: 100% !important; text-align: left !important; overflow: hidden; }
+    .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; height: 100% !important; text-align: left !important; overflow-y: auto !important; }
     .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); text-align: left !important; }
     
-    .about-content-box { text-align: left !important; padding: 25px 25px 70px 25px !important; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block !important; width: 100% !important; box-sizing: border-box; height: 100%; overflow-y: auto; }
+    /* MARGEM INFERIOR (PADDING-BOTTOM) BEM MAIOR PARA DAR RESPIRO: 100px */
+    .about-content-box { text-align: left !important; padding: 25px 25px 100px 25px !important; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block !important; width: 100% !important; box-sizing: border-box; }
     .about-content-box * { text-align: left !important; justify-content: flex-start !important; align-items: flex-start !important; }
     .about-content-box h2 { font-size: 24px; margin-bottom: 10px; margin-top: 0; text-align: left !important; width: 100%; display: block; }
     .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.5; text-align: left !important; width: 100%; display: block; }
@@ -202,7 +201,6 @@
     const buildItems = (folderPath, type) => {
       return Array.from({ length: 15 }, (_, i) => {
         const num = String(i + 1).padStart(2, '0');
-        // Inicializa com .png, mas o motor loadDimensions corrige a extensão caso necessário!
         return { id: `${folderPath}/${num}.png`, file: `${folderPath}/${num}.png`, title: `${num}`, type: type };
       });
     };
@@ -265,10 +263,10 @@
     
     if (kind === "folder") return { x: W * 0.05, y: H * 0.23, w: Math.min(600, W * 0.8), h: Math.min(420, H * 0.7) };
     
-    // ABOUT MAIOR E MAIS ALTO PARA CABER O RESPIRO INFERIOR
+    // ABOUT BEM MAIOR PARA DAR RESPIRO NA BORDA INFERIOR
     if (kind === "about") {
        const aW = Math.min(320, W * 0.9);
-       const aH = 460; 
+       const aH = 500; 
        return { x: clamp(W - aW - 20, 10, W - aW), y: clamp(H * 0.15, 10, H - aH), w: aW, h: aH };
     }
     
@@ -431,9 +429,10 @@
   }
 
   function imageCard(item) {
+    const baseFile = escapeHtml(item.file.replace(/\.[a-zA-Z0-9]+$/i, ''));
     return `
       <button class="work-item image-entry" type="button" data-work="${escapeHtml(item.id)}">
-        <div class="work-thumb"><img src="${escapeHtml(imageSrc(item))}" alt="" loading="lazy" onerror="window.handleThumbErr(this)"></div>
+        <div class="work-thumb"><img src="${escapeHtml(imageSrc(item))}" alt="" loading="lazy" onerror="window.getAltImg(this, '${baseFile}')"></div>
         <span>${escapeHtml(item.title)}</span>
       </button>`;
   }
@@ -494,7 +493,7 @@
         <div class="acervo-toast" style="position: absolute; left: calc(100% + 60px); top: 20px; background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 15px; border: 1px solid rgba(255,255,255,0.4); border-radius: 4px; color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; width: max-content; min-width: 220px; box-shadow: 2px 2px 10px rgba(0,0,0,0.5); text-align: left; cursor: default; touch-action: auto;">
            <div style="font-size: 16px; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px; text-transform: uppercase;">OBRA ${escapeHtml(w.title)}</div>
            <div style="font-size: 12px; line-height: 1.8;">
-             <strong style="color:#A4CBF0; display:inline-block; width:80px;">STATUS:</strong> <a href="mailto:h4wnee@gmail.com?subject=Interesse%20na%20obra%20${escapeHtml(w.work.id)}" target="_blank" style="color:#F4D03F; text-decoration:none; border-bottom:1px dashed #F4D03F;">[ SOLICITAR INFO ]</a><br>
+             <strong style="color:#A4CBF0; display:inline-block; width:80px;">STATUS:</strong> <a href="mailto:h4wnee@gmail.com?subject=Interesse%20na%20obra%20${escapeHtml(w.title)}" target="_blank" style="color:#F4D03F; text-decoration:none; border-bottom:1px dashed #F4D03F;">[ SOLICITAR INFO ]</a><br>
              <strong style="color:#A4CBF0; display:inline-block; width:80px;">ANO:</strong> 2026<br>
              <strong style="color:#A4CBF0; display:inline-block; width:80px;">MATERIAL:</strong> ...<br>
              <strong style="color:#A4CBF0; display:inline-block; width:80px;">DIMENSÕES:</strong> ...<br>
@@ -503,11 +502,12 @@
         </div>
       ` : '';
 
+      const baseFile = escapeHtml(w.work.file.replace(/\.[a-zA-Z0-9]+$/i, ''));
       return `
         <div class="art-plate">
           <div class="img-wrapper">
              <button class="nav-art prev-art" data-dir="-1">❮</button>
-             <img src="${imageSrc(w.work)}" alt="${escapeHtml(w.title)}" onerror="window.handleThumbErr(this)">
+             <img src="${imageSrc(w.work)}" alt="${escapeHtml(w.title)}" onerror="window.getAltImg(this, '${baseFile}')">
              <button class="close-art" data-act="close">X</button>
              <button class="nav-art next-art" data-dir="1">❯</button>
              ${acervoPanel}
@@ -759,18 +759,20 @@
   }
 
   // ==========================================
-  // MOTOR DE CARREGAMENTO SEGURO DE EXTENSÕES
+  // CARREGAMENTO PROTEGIDO DE DIMENSÕES
   // ==========================================
   function loadDimensions(work) {
     return new Promise(resolve => {
       const exts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'PNG', 'JPG', 'JPEG', 'GIF', 'WEBP'];
       const baseFile = work.file.replace(/\.[a-zA-Z0-9]+$/i, '');
+      let step = 0;
       
       const tryNext = () => {
-        if (exts.length === 0) {
+        if (step >= exts.length) {
+           work.file = baseFile + '.png'; // Fallback final
            work.nw = 800; work.nh = 600; resolve(work); return;
         }
-        const ext = exts.shift();
+        const ext = exts[step++];
         const img = new Image();
         img.onload = () => { 
            work.file = baseFile + '.' + ext; 
@@ -986,16 +988,16 @@
         const w2 = state.manifest.beckEnd[1];
         const w3 = state.manifest.beckEnd[2];
 
-        // w3 é 03.png (Nasce na esquerda)
+        // w3 é 03 (Nasce na esquerda)
         loadDimensions(w3).then(() => { addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 }); });
         
-        // w2 é 02.png (Nasce na direita)
+        // w2 é 02 (Nasce na direita)
         loadDimensions(w2).then(() => { addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 }); });
 
         setTimeout(() => addWindow("folder", null, { z: 1002 }), 100);
         setTimeout(() => addWindow("about", null, { z: 1003 }), 200);
         
-        // w1 é 01.png (Nasce no centro)
+        // w1 é 01 (Nasce no centro)
         setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { isInit: true, x: W * 0.22, y: H * 0.15, z: 1004 }); }); }, 300);
       } else {
         addWindow("folder"); addWindow("about");
