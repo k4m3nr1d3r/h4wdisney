@@ -1,6 +1,9 @@
 (() => {
   "use strict";
 
+  // ==========================================
+  // FORÇAR MODO DESKTOP NO CELULAR (Zoom e Pan livres)
+  // ==========================================
   let metaViewport = document.querySelector('meta[name="viewport"]');
   if (!metaViewport) {
       metaViewport = document.createElement('meta');
@@ -24,31 +27,37 @@
     .work-thumb img { max-width: 100px; max-height: 80px; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); }
     
     .frameless-art { background: transparent !important; background-image: none !important; border: none !important; box-shadow: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; outline: none !important; }
-    .frameless-art .window-body { height: 100% !important; background: transparent !important; background-image: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; border: none !important; box-shadow: none !important; }
+    .frameless-art .window-body { height: auto !important; background: transparent !important; background-image: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; border: none !important; box-shadow: none !important; }
     .frameless-art:before, .frameless-art:after { display: none !important; }
     
     .art-plate { overflow: visible; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: transparent !important; border: none !important; box-shadow: none !important; width: 100%; height: 100%; }
+    
     .img-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.05s linear; cursor: pointer; background: transparent !important; border: none !important; box-shadow: none !important; touch-action: none; }
     .img-wrapper img { display: block; touch-action: none; max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(3px 3px 12px rgba(0,0,0,0.8)); background: transparent !important; border: none !important; }
     
     .close-art { position: absolute; top: -12px; right: -12px; background: #e81123; color: #fff; border: 1px solid #fff; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); width: 24px; height: 26px; font-family: sans-serif; font-weight: bold; cursor: pointer; z-index: 100000; display: flex; align-items: center; justify-content: center; border-radius: 2px; touch-action: manipulation; }
     .close-art:hover { background: #ff0000; }
     
-    /* BOTÕES DE NAVEGAÇÃO (ANTERIOR / PRÓXIMO) NAS OBRAS */
-    .nav-art { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.4); width: 36px; height: 36px; font-size: 16px; font-weight: bold; cursor: pointer; z-index: 100001; border-radius: 50%; display: flex; align-items: center; justify-content: center; touch-action: manipulation; transition: background 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+    .nav-art { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.5); width: 34px; height: 34px; font-size: 16px; font-weight: bold; cursor: pointer; z-index: 100001; border-radius: 50%; display: flex; align-items: center; justify-content: center; touch-action: manipulation; transition: background 0.2s, transform 0.1s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); padding-bottom: 2px; }
     .nav-art:hover { background: rgba(255,255,255,0.9); color: #000; }
-    .prev-art { left: 0px; }
-    .next-art { right: 0px; }
-
+    .nav-art:active { transform: translateY(-50%) scale(0.9); }
+    .prev-art { left: -45px; }
+    .next-art { right: -45px; }
+    @media (max-width: 768px) { .prev-art { left: -15px; } .next-art { right: -15px; } }
+    
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
     /* ======================================================= */
-    /* ABOUT: REDUZIDO E TEXTOS FUNDIDOS E ALINHADOS À ESQUERDA */
+    /* ABOUT: VIDRO ESCOVADO, TEXTO FUNDIDO E ALINHADO */
     /* ======================================================= */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
-    .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; align-items: flex-start !important; justify-content: flex-start !important; }
+    .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; text-align: left !important; }
     .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); text-align: left !important; }
-    .about-content-box { text-align: left !important; padding: 25px; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block !important; width: 100% !important; box-sizing: border-box; }
+    .about-content-box { text-align: left !important; padding: 25px 25px 40px 25px !important; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block !important; width: 100% !important; box-sizing: border-box; }
+    .about-content-box * { text-align: left !important; justify-content: flex-start !important; align-items: flex-start !important; }
+    .about-content-box h2 { font-size: 24px; margin-bottom: 10px; margin-top: 0; text-align: left !important; width: 100%; }
+    .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.4; text-align: left !important; width: 100%; }
+    .about-content-box .chronology { font-family: monospace; font-size: 12px; line-height: 1.6; background: transparent; padding: 0; border-radius: 0; text-align: left !important; display: block; width: 100%; }
     
     /* POPUP ADS NÚS */
     .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
@@ -173,36 +182,42 @@
   function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
   function escapeHtml(s) { return String(s).replace(/[&<>"']/g, m => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"}[m])); }
 
+  // ==========================================
+  // MANIFESTO: DIRETÓRIOS ATUALIZADOS
+  // ==========================================
   function generateAutomaticManifest() {
-    const buildItems = (folderPath) => {
+    const buildItems = (folderPath, type) => {
       return Array.from({ length: 15 }, (_, i) => {
         const num = String(i + 1).padStart(2, '0');
-        return { id: `${folderPath}/${num}.png`, file: `${folderPath}/${num}.png`, title: `${num}` };
+        return { id: `${folderPath}/${num}.png`, file: `${folderPath}/${num}.png`, title: `${num}`, type: type };
       });
     };
     return {
       version: 1,
       exhibitions: [
-        { id: "vernissage:utopias_piratas_2021", name: "utopias_piratas_2021", year: 2021, items: buildItems("Vernissages/utopias_piratas_2021") },
-        { id: "vernissage:Hyperlinks, Distortion e Mormasso", name: "Hyperlinks, Distortion e Mormasso", year: 2022, items: buildItems("Vernissages/Hyperlinks, Distortion e Mormasso") },
-        { id: "vernissage:RAW 2025 (HOA+FDAG)", name: "RAW 2025 (HOA+FDAG)", year: 2025, items: buildItems("Vernissages/RAW 2025 (HOA+FDAG)") }
+        { id: "exhibiti0ns:utopias_piratas_2021", name: "utopias_piratas_2021", year: 2021, items: buildItems("exhibiti0ns/utopias_piratas_2021", "exhibiti0ns") },
+        { id: "exhibiti0ns:Hyperlinks, Distortion e Mormasso", name: "Hyperlinks, Distortion e Mormasso", year: 2022, items: buildItems("exhibiti0ns/Hyperlinks, Distortion e Mormasso", "exhibiti0ns") },
+        { id: "exhibiti0ns:RAW 2025 (HOA+FDAG)", name: "RAW 2025 (HOA+FDAG)", year: 2025, items: buildItems("exhibiti0ns/RAW 2025 (HOA+FDAG)", "exhibiti0ns") }
       ],
-      works: buildItems("Obras")
+      acervo: buildItems("ACERVO", "ACERVO"),
+      beckEnd: buildItems("beck_END", "beck_END")
     };
   }
 
-  function allItems() { return [...state.manifest.exhibitions.flatMap(g => g.items), ...state.manifest.works]; }
+  function allItems() { return [...state.manifest.exhibitions.flatMap(g => g.items), ...state.manifest.acervo, ...state.manifest.beckEnd]; }
   function findItem(id) { return allItems().find(item => item.id === id); }
   
-  // Função para pegar as fotos vizinhas na navegação (Próximo / Anterior)
   function getSiblings(id) {
     if (!state.manifest) return null;
     for (const ex of state.manifest.exhibitions) {
       const idx = ex.items.findIndex(i => i.id === id);
       if (idx !== -1) return { list: ex.items, index: idx };
     }
-    const idx = state.manifest.works.findIndex(i => i.id === id);
-    if (idx !== -1) return { list: state.manifest.works, index: idx };
+    let idx = state.manifest.acervo.findIndex(i => i.id === id);
+    if (idx !== -1) return { list: state.manifest.acervo, index: idx };
+    
+    idx = state.manifest.beckEnd.findIndex(i => i.id === id);
+    if (idx !== -1) return { list: state.manifest.beckEnd, index: idx };
     return null;
   }
 
@@ -211,45 +226,42 @@
   function currentBrowser(win) {
     const path = Array.isArray(win.browserPath) ? win.browserPath : [];
     if (path.length === 0) return browserRoot();
-    if (path[0] === "Vernissages") {
-      if (path.length === 1) return { kind: "vernissages", name: "Vernissages", path };
+    if (path[0] === "exhibiti0ns") {
+      if (path.length === 1) return { kind: "exhibiti0ns", name: "exhibiti0ns", path };
       const name = path.slice(1).join("/");
       const group = state.manifest.exhibitions.find(x => x.name === name);
-      return group ? { kind: "exhibition", name: group.name, path, group } : { kind: "vernissages", name: "Vernissages", path: ["Vernissages"] };
+      return group ? { kind: "exhibition", name: group.name, path, group } : { kind: "exhibiti0ns", name: "exhibiti0ns", path: ["exhibiti0ns"] };
     }
-    if (path[0] === "Obras") return { kind: "obras", name: "Obras", path };
+    if (path[0] === "ACERVO") return { kind: "ACERVO", name: "ACERVO", path };
+    if (path[0] === "beck_END") return { kind: "beck_END", name: "beck_END", path };
     win.browserPath = []; return browserRoot();
   }
 
   function folderEntries() {
     return [
-      { type: "folder", id: "Vernissages", name: "Vernissages", subtitle: `3 exposições` },
-      { type: "folder", id: "Obras", name: "Obras", subtitle: `15 arquivos` }
+      { type: "folder", id: "exhibiti0ns", name: "exhibiti0ns", subtitle: `3 exposições` },
+      { type: "folder", id: "ACERVO", name: "ACERVO", subtitle: `15 arquivos` },
+      { type: "folder", id: "beck_END", name: "beck_END", subtitle: `15 arquivos` }
     ];
   }
 
-  // GEOMETRIA INTELIGENTE
   function defaultGeometry(kind, work = null, opts = {}) {
     const W = innerWidth, H = innerHeight;
     const n = state.cascade++;
     
     if (kind === "folder") return { x: W * 0.05, y: H * 0.23, w: Math.min(600, W * 0.8), h: Math.min(420, H * 0.7) };
-    
-    // ABOUT DIMINUÍDO E MAIS COMPACTO
     if (kind === "about") {
        const aW = Math.min(320, W * 0.9);
        const aH = Math.min(280, H * 0.8);
        return { x: clamp(W - aW - 20, 10, W - aW), y: clamp(H * 0.2, 10, H - aH), w: aW, h: aH };
     }
-    
     if (kind === "contact") return { x: W - 270, y: H - 205, w: 250, h: 160 }; 
     
     if (kind === "art" && work) {
       const nw = Number(work.nw) || 800; const nh = Number(work.nh) || 600;
       
-      // TAMANHO DA ABERTURA: Se for abertura inicial, tamanho sutil. Se for clique, BEM GRANDE.
       let scaleFactorW = opts.isInit ? 0.35 : 0.85;
-      let scaleFactorH = opts.isInit ? 0.5 : 0.85;
+      let scaleFactorH = opts.isInit ? 0.50 : 0.85;
       
       const scale = Math.min(clamp(W * scaleFactorW, 150, W), (H * scaleFactorH) / nh, 2);
       const artW = Math.max(150, Math.round(nw * scale));
@@ -260,8 +272,6 @@
          if (work.title === "02") return { x: Math.max(10, W - artW - 40), y: H * 0.28, w: artW, h: artH, initZ: 1001 }; 
          if (work.title === "03") return { x: W * 0.02, y: H * 0.38, w: artW, h: artH, initZ: 1001 }; 
       }
-      
-      // ABERTURA NO CLIQUE (Centro da tela e gigante)
       return { x: clamp((W - artW) / 2, 0, W), y: clamp((H - artH) / 2, 0, H), w: artW, h: artH };
     }
     return { x: 180 + (n % 6) * 46, y: 120 + (n % 6) * 38, w: Math.min(350, W * 0.8), h: Math.min(250, H * 0.8) };
@@ -294,9 +304,7 @@
     
     if (windowsEl) windowsEl.appendChild(createWindow(win));
     
-    // TODA NOVA JANELA QUE NÃO SEJA INICIAL RECEBE FOCO TOTAL AO ABRIR
     if (!opts.isInit && kind !== "popup") focusWin(win.id);
-    
     renderTasks();
   }
 
@@ -422,9 +430,9 @@
           <strong>${escapeHtml(entry.name)}</strong>
         </button>`).join("") + `</div>`;
     } 
-    else if (current.kind === "vernissages") {
+    else if (current.kind === "exhibiti0ns") {
       content = `<div class="file-grid">` + state.manifest.exhibitions.map(group => `
-        <button class="work-item image-entry" type="button" data-folder="${escapeHtml(`Vernissages/${group.name}`)}">
+        <button class="work-item image-entry" type="button" data-folder="${escapeHtml(`exhibiti0ns/${group.name}`)}">
           <div class="work-thumb">${FOLDER_SVG}</div>
           <span>${escapeHtml(group.name)}</span>
         </button>`).join("") + `</div>`;
@@ -432,8 +440,11 @@
     else if (current.kind === "exhibition") {
       content = `<div class="file-grid">${current.group.items.map(item => imageCard(item)).join("")}</div>`;
     } 
-    else if (current.kind === "obras") {
-      content = `<div class="file-grid">${state.manifest.works.map(item => imageCard(item)).join("")}</div>`;
+    else if (current.kind === "ACERVO") {
+      content = `<div class="file-grid">${state.manifest.acervo.map(item => imageCard(item)).join("")}</div>`;
+    }
+    else if (current.kind === "beck_END") {
+      content = `<div class="file-grid">${state.manifest.beckEnd.map(item => imageCard(item)).join("")}</div>`;
     }
 
     return `
@@ -462,15 +473,30 @@
     if (w.kind === "folder") return browserBodyHTML(w);
 
     if (w.kind === "art") {
+      // O PAINEL DE INFORMAÇÕES (TOAST) PARA A PASTA "ACERVO"
+      const acervoPanel = w.work.type === "ACERVO" ? `
+        <div class="acervo-toast" style="position: absolute; left: calc(100% + 60px); top: 20px; background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 15px; border: 1px solid rgba(255,255,255,0.4); border-radius: 4px; color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; width: max-content; min-width: 220px; box-shadow: 2px 2px 10px rgba(0,0,0,0.5); text-align: left; cursor: default; touch-action: auto;">
+           <div style="font-size: 16px; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px; text-transform: uppercase;">${escapeHtml(w.title)}</div>
+           <div style="font-size: 12px; line-height: 1.8;">
+             <strong style="color:#A4CBF0; display:inline-block; width:80px;">STATUS:</strong> <a href="mailto:h4wnee@gmail.com?subject=Interesse%20na%20obra%20${escapeHtml(w.title)}" target="_blank" style="color:#F4D03F; text-decoration:none; border-bottom:1px dashed #F4D03F;">[ SOLICITAR INFO ]</a><br>
+             <strong style="color:#A4CBF0; display:inline-block; width:80px;">ANO:</strong> 2026<br>
+             <strong style="color:#A4CBF0; display:inline-block; width:80px;">MATERIAL:</strong> ...<br>
+             <strong style="color:#A4CBF0; display:inline-block; width:80px;">DIMENSÕES:</strong> ...<br>
+             <strong style="color:#A4CBF0; display:inline-block; width:80px;">LOCAL:</strong> CARIRI/PB
+           </div>
+        </div>
+      ` : '';
+
       return `
         <div class="art-plate">
-          <button class="nav-art prev-art" data-dir="-1">❮</button>
           <div class="img-wrapper">
+             <button class="nav-art prev-art" data-dir="-1">❮</button>
              <img src="${imageSrc(w.work)}" alt="${escapeHtml(w.title)}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'400\\' height=\\'400\\'><text x=\\'50%\\' y=\\'50%\\' fill=\\'%23fff\\' font-family=\\'sans-serif\\' font-size=\\'18\\' text-anchor=\\'middle\\'>Imagem n\u00E3o encontrada</text></svg>'">
              <button class="close-art" data-act="close">X</button>
-             <div class="art-instruction">Alt+Scroll: Zoom | 2 Dedos: Zoom/Arrastar</div>
+             <button class="nav-art next-art" data-dir="1">❯</button>
+             ${acervoPanel}
+             <div class="art-instruction">Alt+Scroll / Pinça: Zoom | Arrastar: Mover</div>
           </div>
-          <button class="nav-art next-art" data-dir="1">❯</button>
         </div>`;
     }
 
@@ -480,13 +506,15 @@
         <!-- EDITE O TEXTO DO ABOUT AQUI ABAIXO -->
         <!-- ============================================================== -->
         <div class="about-content-box" style="text-align: left !important; display: block !important;">
-          <h2 style="text-align: left !important; margin: 0 0 10px 0; font-size: 22px;">h4wnee</h2>
-          <p style="text-align: left !important; margin: 0; line-height: 1.5; font-size: 13px;">
+          <h2 style="text-align: left !important; margin: 0 0 10px 0; font-size: 24px;">h4wnee</h2>
+          <p style="text-align: left !important; margin: 0; line-height: 1.5; font-size: 14px;">
             is a Latin American transdisciplinary artist whose work explores the intersection of digital culture, popular imagination, and contemporary technologies.<br><br>
+            <span style="font-family: monospace; font-size: 13px;">
             2021 &nbsp; utopias_piratas_2021<br>
             2021 &nbsp; n0_f*ture_(prime)<br>
             2022 &nbsp; Hyperlinks, Distortion e Mormasso<br>
             2025 &nbsp; RAW 2025 (HOA+FDAG)
+            </span>
           </p>
         </div>
         <!-- ============================================================== -->
@@ -529,7 +557,7 @@
           e.preventDefault(); e.stopPropagation();
           if (btn.dataset.work) {
             const work = findItem(btn.dataset.work);
-            if (work) loadDimensions(work).then(() => addWindow("art", work, { isInit: false })); // isInit false traz tela gigante
+            if (work) loadDimensions(work).then(() => addWindow("art", work, { isInit: false })); 
           } else if (btn.dataset.folder) {
             navigateBrowser(w, btn.dataset.folder);
           }
@@ -594,7 +622,6 @@
       let initialTouchMidX = 0, initialTouchMidY = 0;
       let touchStartPanX = 0, touchStartPanY = 0;
 
-      // BOTÕES DE NAVEGAÇÃO DE IMAGENS (Anterior / Próximo)
       $$('.nav-art', el).forEach(btn => {
          btn.addEventListener("click", e => {
             e.preventDefault(); e.stopPropagation();
@@ -641,7 +668,7 @@
       });
 
       wrapper.addEventListener("click", e => {
-        if (e.target.closest('.close-art')) return;
+        if (e.target.closest('.close-art') || e.target.closest('.nav-art') || e.target.closest('.acervo-toast')) return;
         e.stopPropagation(); focusWin(w.id);
         isDragging = !isDragging;
         
@@ -659,11 +686,18 @@
         }
       });
 
-      // TOUCH 2 DEDOS (ZOOM E ARRASTE NO CELULAR)
       wrapper.addEventListener("touchstart", e => {
         focusWin(w.id);
-        if (e.touches.length === 2) {
-          e.preventDefault();
+        if (e.target.closest('.close-art') || e.target.closest('.nav-art') || e.target.closest('.acervo-toast')) return;
+        
+        if (e.touches.length === 1) {
+          e.stopPropagation();
+          isDragging = true;
+          startMouseX = e.touches[0].clientX; startMouseY = e.touches[0].clientY;
+          initialPanX = panX; initialPanY = panY;
+        } else if (e.touches.length === 2) {
+          e.preventDefault(); e.stopPropagation();
+          isDragging = false;
           const t1 = e.touches[0], t2 = e.touches[1];
           initialTouchDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
           initialTouchScale = scale;
@@ -675,8 +709,13 @@
       }, { passive: false });
 
       wrapper.addEventListener("touchmove", e => {
-        if (e.touches.length === 2) {
-          e.preventDefault();
+        if (e.touches.length === 1 && isDragging) {
+          e.stopPropagation();
+          panX = initialPanX + (e.touches[0].clientX - startMouseX);
+          panY = initialPanY + (e.touches[0].clientY - startMouseY);
+          wrapper.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+        } else if (e.touches.length === 2) {
+          e.preventDefault(); e.stopPropagation();
           const t1 = e.touches[0], t2 = e.touches[1];
           const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
           if (initialTouchDist > 0) {
@@ -692,8 +731,9 @@
       }, { passive: false });
 
       wrapper.addEventListener("touchend", e => {
-        if (e.touches.length < 2) {
-          initialTouchDist = 0;
+        if (e.touches.length < 2) { initialTouchDist = 0; }
+        if (e.touches.length === 0) {
+          isDragging = false;
           const rect = el.getBoundingClientRect();
           w.x = rect.left + panX; w.y = rect.top + panY;
           w.ratioX = w.x / innerWidth; w.ratioY = w.y / innerHeight;
@@ -908,10 +948,10 @@
       nowClock(); setInterval(nowClock, 1000);
       fixBackgroundCache();
 
-      if (state.manifest.works && state.manifest.works.length >= 3) {
-        const w1 = state.manifest.works[0];
-        const w2 = state.manifest.works[1];
-        const w3 = state.manifest.works[2];
+      if (state.manifest.acervo && state.manifest.acervo.length >= 3) {
+        const w1 = state.manifest.acervo[0];
+        const w2 = state.manifest.acervo[1];
+        const w3 = state.manifest.acervo[2];
 
         loadDimensions(w3).then(() => { addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 }); });
         loadDimensions(w2).then(() => { addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 }); });
@@ -934,7 +974,7 @@
       setTimeout(scheduleNextLogoShake, 4000);
       
     } catch(err) {
-      console.error("Erro inicial tratado:", err);
+      console.error("Erro inicial tratado em background:", err);
     }
   }
 
