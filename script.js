@@ -3,6 +3,7 @@
 
   let currentAdIndex = 1; // Controla a sequência de anúncios (1 a 10)
   
+  // INJEÇÃO DE CSS: LINHAS CRT OSCILANTES, LOGO TREMENDO E SUPORTE A GIF NO BACKGROUND
   const extraStyles = document.createElement('style');
   extraStyles.textContent = `
     .file-grid { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; justify-content: flex-start; align-items: flex-end; background: #ffffff; min-height: 100%; }
@@ -35,7 +36,7 @@
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
     
-    /* ANIMAÇÃO EXPLOSÃO PIXELADA RADIAL 8-BITS (A partir do centro) */
+    /* ANIMAÇÃO EXPLOSÃO PIXELADA RADIAL 8-BITS */
     @keyframes realisticPixelExplosion {
       0% { box-shadow: 0 0 0 4px #fff, 0 0 0 8px #ffeb3b; background: transparent; transform: scale(0.6); opacity: 1; }
       35% { box-shadow: 
@@ -46,9 +47,7 @@
         0 -32px 0 4px #ff9800, 0 32px 0 4px #ff9800, 32px 0 4px #ff9800, -32px 0 4px #ff9800,
         -22px -22px 0 4px #f44336, 22px 22px 0 4px #f44336, -22px 22px 0 4px #f44336, 22px -22px 0 4px #f44336,
         -36px -36px 0 3px #ffeb3b, 36px 36px 0 3px #ffeb3b, 0 -45px 0 4px #f44336; transform: scale(1.4); opacity: 0.8; border: none; }
-      100% { box-shadow: 
-        0 -40px 0 1px rgba(211,47,47,0), 0 40px 0 1px rgba(211,47,47,0),
-        -30px -30px 0 1px rgba(255,152,0,0), 30px 30px 0 1px rgba(255,152,0,0); transform: scale(1.6); opacity: 0; display: none; border: none; }
+      100% { box-shadow: none; transform: scale(2); opacity: 0; display: none; border: none; }
     }
     .explode-anim { pointer-events: none !important; background: transparent !important; border: none !important; box-shadow: none !important; }
     .explode-anim .window-body { display: none !important; } 
@@ -70,15 +69,41 @@
     .system-tray-container { display: flex; align-items: center; gap: 8px; flex-shrink: 0; background: linear-gradient(to bottom, #0c82dc, #045cc0); padding: 0 8px; height: 100%; border-left: 1px solid #08449c; }
     .system-tray-icons { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #fff; cursor: default; }
     
+    /* INTERFERÊNCIA DE FILTRO GLITCH CRT NO WALLPAPER (ACEITA GIF/JPG) */
     @keyframes crtWallpaperGlitch {
       0% { transform: scale(1) translate(0,0) skewX(0); filter: none; }
-      20% { transform: scale(1.03) translate(-5px, 3px) skewX(4deg); filter: hue-rotate(120deg) contrast(1.8) saturate(2); }
-      40% { transform: scale(0.98) translate(6px, -4px) skewX(-6deg); filter: hue-rotate(-60deg) brightness(1.5) contrast(2); }
-      60% { transform: scale(1.05) translate(-2px, -2px) skewY(2deg); filter: invert(0.1) hue-rotate(180deg); }
-      80% { transform: scale(1.01) translate(4px, 2px) skewX(8deg); filter: brightness(1.8) contrast(1.3); }
+      20% { transform: scale(1.02) translate(-3px, 2px) skewX(2deg); filter: hue-rotate(90deg) contrast(1.5) saturate(1.8); }
+      40% { transform: scale(0.99) translate(4px, -3px) skewX(-3deg); filter: hue-rotate(-45deg) brightness(1.3) contrast(1.7); }
+      65% { transform: scale(1.03) translate(-1px, -1px) skewY(1deg); filter: invert(0.05) hue-rotate(140deg); }
+      85% { transform: scale(1) translate(2px, 1px) skewX(4deg); filter: brightness(1.5) contrast(1.2); }
       100% { transform: scale(1) translate(0,0) skewX(0); filter: none; }
     }
-    .wallpaper-glitch-active { animation: crtWallpaperGlitch 1s steps(8) forwards !important; }
+    .wallpaper-glitch-active { animation: crtWallpaperGlitch 0.9s steps(6) forwards !important; }
+    
+    /* ANIMAÇÃO OSCILANTE DA MALHA DE LINHAS CRT */
+    @keyframes crtLinesOscillation {
+      0% { transform: translateY(0px); opacity: 0.94; }
+      50% { transform: translateY(1.5px); opacity: 1; }
+      100% { transform: translateY(0px); opacity: 0.94; }
+    }
+    .crt::after {
+      animation: crtLinesOscillation 0.18s steps(2) infinite !important;
+    }
+    
+    /* TREMOR CROMÁTICO DA LOGO PRINCIPAL (RGB SHAKE) */
+    @keyframes logoRgbShake {
+      0% { transform: translate(0, 0) skewX(0deg); filter: none; }
+      15% { transform: translate(-4px, 2px) skewX(3deg); filter: drop-shadow(3px 0 0 #ff0055) drop-shadow(-3px 0 0 #00f0ff) contrast(1.5); }
+      30% { transform: translate(3px, -3px) skewX(-4deg); filter: drop-shadow(-2px 0 0 #ff0055) drop-shadow(2px 0 0 #00f0ff) brightness(1.3); }
+      45% { transform: translate(-2px, -1px) skewY(2deg); filter: drop-shadow(4px 0 0 #ff0055) drop-shadow(-4px 0 0 #00f0ff) contrast(1.8); }
+      60% { transform: translate(3px, 3px) skewX(5deg); filter: drop-shadow(-3px 0 0 #ff0055) drop-shadow(3px 0 0 #00f0ff) hue-rotate(30deg); }
+      75% { transform: translate(-1px, -2px) skewX(-2deg); filter: drop-shadow(2px 0 0 #ff0055) drop-shadow(-2px 0 0 #00f0ff); }
+      100% { transform: translate(0, 0) skewX(0deg); filter: none; }
+    }
+    .logo-shake-active {
+      animation: logoRgbShake 0.45s steps(4) forwards !important;
+    }
+    
     #bsod { z-index: 999999999 !important; }
   `;
   document.head.appendChild(extraStyles);
@@ -94,6 +119,7 @@
   const bsod = $("#bsod");
   const clockEl = $("#clock");
   const wallpaperEl = $(".wallpaper");
+  const logoEl = $(".brand-logo");
 
   let crashMultiplier = 1;
   let adMultiplier = 1;
@@ -592,71 +618,12 @@
     bindWindowBody(el, w); return el;
   }
 
-  function renderTasks() {
-    taskStrip.innerHTML = "";
-    state.wins.filter(w => w.kind !== "popup").forEach(w => {
-      const b = document.createElement("button");
-      b.className = `task-button ${state.active === w.id && !w.min ? "focused" : ""} ${w.kind === "contact" ? "task-msn" : ""}`;
-      b.innerHTML = `${w.iconHtml || ""} ${w.title}`;
-      b.addEventListener("click", () => { if (state.active === w.id && !w.min) { w.min = true; renderTasks(); } else focusWin(w.id); });
-      taskStrip.appendChild(b);
-    });
-
-    let tray = $(".system-tray-container");
-    if (!tray) {
-       tray = document.createElement("div"); tray.className = "system-tray-container";
-       tray.innerHTML = `<div class="system-tray-icons"><span title="Volume">🔊</span><span title="Wi-Fi">📶</span></div>`;
-       clockEl.parentNode.insertBefore(tray, clockEl);
-    }
-  }
-
-  function openByKind(kind) {
-    if (kind === "folder") { addWindow("folder"); return; }
-    if (kind === "crash") { bsod.classList.remove("hidden"); return; }
-    if (kind === "about" || kind === "contact") addWindow(kind);
-  }
-
-  document.addEventListener("click", e => {
-    const open = e.target.closest("[data-open]");
-    if (open) openByKind(open.dataset.open);
-  });
-  bsod.addEventListener("click", () => bsod.classList.add("hidden"));
-
-  function nowClock() {
-    if (!clockEl) return;
-    const d = new Date();
-    clockEl.textContent = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
-  }
-
-  function triggerCrtWallpaperGlitch() {
-    if (!wallpaperEl) return;
-    wallpaperEl.classList.add("wallpaper-glitch-active");
-    setTimeout(() => { wallpaperEl.classList.remove("wallpaper-glitch-active"); }, 1000); 
-  }
-
-  function scheduleNextGlitch() {
-    triggerCrtWallpaperGlitch();
-    setTimeout(scheduleNextGlitch, 40000); 
-  }
-
-  // ==========================================
-  // TIMEOUT PROGRESSIVO COMPORTAMENTAL CORRIGIDO
-  // ==========================================
-  function scheduleNextCrash() {
-    bsod.classList.remove("hidden");
-    crashMultiplier++;
-    setTimeout(scheduleNextCrash, 60000 * crashMultiplier);
-  }
-
-  // ==========================================
-  // PROPAGANDAS TIPO LOOP INDEPENDENTE DE EXTENSÃO
-  // ==========================================
+  // REPROGRAMAÇÃO COMPLETA DO MOTOR DE ANÚNCIOS COM BUSCA SEQUENCIAL DE EXTENSÕES COM MARGEM DE TEMPO
   function spawnAd() {
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
     const numStr = String(currentAdIndex).padStart(2, '0');
-    currentAdIndex = (currentAdIndex % 10) + 1; // Incrementa de 1 a 10 estritamente
+    currentAdIndex = (currentAdIndex % 10) + 1; // Avança estritamente de 1 a 10
 
-    // Varre as extensões possíveis de modo assíncrono para blindar o loop
     const extensions = ['gif', 'png', 'jpg', 'webp'];
     
     const tryLoad = () => {
@@ -699,8 +666,9 @@
           });
        };
        
-       img.onerror = () => { tryLoad(); };
-       img.src = `assets/ads/${numStr}.${ext}`;
+       // Adicionado um pequeno delay assíncrono para dar tempo ao servidor do Vercel responder os GIFs maiores
+       img.onerror = () => { setTimeout(tryLoad, 25); };
+       img.src = `assets/ads/${numStr}.${ext}?v=${Date.now()}`;
     };
     
     tryLoad();
@@ -712,10 +680,43 @@
     setTimeout(scheduleNextAd, 45000 * adMultiplier);
   }
 
+  // LOOP INDEPENDENTE DE DISPARO DO RGB SHAKE NA LOGO
+  function scheduleNextLogoShake() {
+     if (logoEl) {
+        logoEl.classList.add("logo-shake-active");
+        setTimeout(() => {
+           logoEl.classList.remove("logo-shake-active");
+        }, 460);
+     }
+     // Sorteia o próximo tremor cromático entre 4 e 10 segundos aleatoriamente
+     const nextShakeDelay = Math.floor(Math.random() * 6000) + 4000;
+     setTimeout(scheduleNextLogoShake, nextShakeDelay);
+  }
+
+  function scheduleNextGlitch() {
+    triggerCrtWallpaperGlitch();
+    setTimeout(scheduleNextGlitch, 40000); 
+  }
+
+  function scheduleNextCrash() {
+    bsod.classList.remove("hidden");
+    crashMultiplier++;
+    setTimeout(scheduleNextCrash, 60000 * crashMultiplier);
+  }
+
+  function fixBackgroundCache() {
+    const wallpaper = $(".wallpaper");
+    if (!wallpaper) return;
+    // Removido o JPG travado no código antigo para aceitar .gif de fundo diretamente da sua pasta local
+    wallpaper.style.backgroundImage =
+      `url("assets/background.gif?v=${Date.now()}"), linear-gradient(180deg,#07225f 0%,#1156c4 18%,#3f9ce8 42%,#a8dcf5 60%,#e9d9b6 62%,#d8a878 74%,#b9743f 92%,#8c4a24 100%)`;
+  }
+
   function init() {
     const W = innerWidth, H = innerHeight;
     state.manifest = generateAutomaticManifest();
     nowClock(); setInterval(nowClock, 1000);
+    fixBackgroundCache();
 
     if (state.manifest.works && state.manifest.works.length >= 3) {
       const w1 = state.manifest.works[0];
@@ -736,10 +737,11 @@
        addWindow("contact", null, { anchor: "bottom-right", x: W - 270, y: H - 205, z: 1005 });
     }, 1000);
 
-    setTimeout(spawnAd, 5000); // Dispara o primeiro frame de anúncios de modo estável
+    setTimeout(spawnAd, 5000); 
     setTimeout(scheduleNextAd, 45000);
     setTimeout(scheduleNextGlitch, 40000);
     setTimeout(scheduleNextCrash, 60000);
+    setTimeout(scheduleNextLogoShake, 4000); // Dispara os loops cromáticos da logo
   }
 
   window.addEventListener("resize", () => {
