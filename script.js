@@ -3,7 +3,6 @@
 
   // ==========================================
   // SCANNER DE EXTENSÕES BLINDADO (Auto-limpante)
-  // Testa silenciosamente se a foto existe. Se não existir, some com o ícone.
   // ==========================================
   window.getAltImg = function(img) {
      const exts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'PNG', 'JPG', 'JPEG', 'GIF', 'WEBP'];
@@ -15,16 +14,11 @@
          let nextFile = rawPath + '.' + exts[step];
          img.src = nextFile.split("/").map(encodeURIComponent).join("/");
      } else {
-         // Se testou todas as extensões e não achou nada, a foto não existe no Vercel.
-         // Esconde o botão para a galeria ficar limpa apenas com o que existe!
          let btn = img.closest('.image-entry');
          if (btn) btn.style.display = 'none';
      }
   };
 
-  // ==========================================
-  // FORÇAR MODO DESKTOP NO CELULAR (Zoom livre no site)
-  // ==========================================
   let metaViewport = document.querySelector('meta[name="viewport"]');
   if (!metaViewport) {
       metaViewport = document.createElement('meta');
@@ -69,14 +63,13 @@
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
     /* ======================================================= */
-    /* ABOUT: VIDRO ESCOVADO, PADDING SUPERIOR REDUZIDO */
+    /* ABOUT: REDUZIDO E COM MARGENS SIMÉTRICAS (25px) */
     /* ======================================================= */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
     .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; height: 100% !important; text-align: left !important; overflow: hidden; }
     .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); text-align: left !important; }
     
-    /* Padding-top agora é 15px para acompanhar a margem dos parágrafos, fundo com bastante respiro (80px) */
-    .about-content-box { text-align: left !important; padding: 15px 25px 80px 25px !important; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block !important; width: 100% !important; box-sizing: border-box; height: 100%; overflow-y: auto; }
+    .about-content-box { text-align: left !important; padding: 25px !important; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block !important; width: 100% !important; box-sizing: border-box; height: 100%; overflow-y: auto; }
     .about-content-box * { text-align: left !important; justify-content: flex-start !important; align-items: flex-start !important; }
     .about-content-box h2 { font-size: 24px; margin-bottom: 15px; margin-top: 0; text-align: left !important; width: 100%; display: block; }
     .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.5; text-align: left !important; width: 100%; display: block; }
@@ -206,7 +199,6 @@
     const buildItems = (folderPath, type) => {
       return Array.from({ length: 15 }, (_, i) => {
         const num = String(i + 1).padStart(2, '0');
-        // Inicializa com .png. O window.getAltImg ou loadDimensions corrige automático.
         return { id: `${folderPath}/${num}.png`, file: `${folderPath}/${num}.png`, title: `${num}`, type: type };
       });
     };
@@ -269,10 +261,10 @@
     
     if (kind === "folder") return { x: W * 0.05, y: H * 0.23, w: Math.min(600, W * 0.8), h: Math.min(420, H * 0.7) };
     
-    // ABOUT MAIOR E MAIS ALTO PARA CABER O RESPIRO INFERIOR E NÃO CORTAR TEXTO
+    // ABOUT MENOR E COM MARGENS SIMÉTRICAS
     if (kind === "about") {
-       const aW = Math.min(330, W * 0.9);
-       const aH = 460; 
+       const aW = Math.min(320, W * 0.9);
+       const aH = 340; 
        return { x: clamp(W - aW - 20, 10, W - aW), y: clamp(H * 0.15, 10, H - aH), w: aW, h: aH };
     }
     
@@ -761,10 +753,6 @@
     }
   }
 
-  // ==========================================
-  // CARREGAMENTO PROTEGIDO PARA AS OBRAS GRANDES
-  // O código testa todas as extensões antes de abrir a janela
-  // ==========================================
   function loadDimensions(work) {
     return new Promise((resolve, reject) => {
       const exts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'PNG', 'JPG', 'JPEG', 'GIF', 'WEBP'];
@@ -773,7 +761,7 @@
       
       const tryNext = () => {
         if (step >= exts.length) {
-           reject("Imagem não encontrada"); 
+           reject("Imagem não encontrada no Vercel"); 
            return;
         }
         const ext = exts[step++];
@@ -980,9 +968,6 @@
     wallpaperEl.style.backgroundImage = `url("assets/background.gif?v=${Date.now()}"), linear-gradient(180deg,#07225f 0%,#1156c4 18%,#3f9ce8 42%,#a8dcf5 60%,#e9d9b6 62%,#d8a878 74%,#b9743f 92%,#8c4a24 100%)`;
   }
 
-  // ==========================================
-  // INICIALIZAÇÃO SEGURA (Abre a pasta beck_END se existir)
-  // ==========================================
   function init() {
     try {
       const W = innerWidth, H = innerHeight;
@@ -995,15 +980,12 @@
         const w2 = state.manifest.beckEnd[1];
         const w3 = state.manifest.beckEnd[2];
 
-        // w3 é 03 (Nasce na esquerda) - Oculta erro se falhar
         loadDimensions(w3).then(() => { addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 }); }).catch(()=>{});
-        // w2 é 02 (Nasce na direita)
         loadDimensions(w2).then(() => { addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 }); }).catch(()=>{});
 
         setTimeout(() => addWindow("folder", null, { z: 1002 }), 100);
         setTimeout(() => addWindow("about", null, { z: 1003 }), 200);
         
-        // w1 é 01 (Nasce no centro)
         setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { isInit: true, x: W * 0.22, y: H * 0.15, z: 1004 }); }).catch(()=>{}); }, 300);
       } else {
         addWindow("folder"); addWindow("about");
