@@ -2,8 +2,7 @@
   "use strict";
 
   // ==========================================
-  // FORÇAR MODO DESKTOP NO CELULAR (Zoomável)
-  // Faz o celular renderizar o site como um monitor amplo
+  // FORÇAR MODO DESKTOP NO CELULAR (Zoom e Pan livres)
   // ==========================================
   let metaViewport = document.querySelector('meta[name="viewport"]');
   if (!metaViewport) {
@@ -21,7 +20,7 @@
     .image-entry { display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid transparent; background: transparent !important; cursor: pointer; padding: 8px; border-radius: 2px; color: #000; max-width: 130px; }
     
     .image-entry:hover { background: #e5f3ff !important; border: 1px solid #d8ebf9 !important; }
-    .image-entry.selected { background: #cce8ff !important; border: 1px solid #99d1ff !important; }
+    .image-entry:active { background: #cce8ff !important; border: 1px solid #99d1ff !important; }
     
     .work-thumb { width: auto; height: auto; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; background: transparent !important; }
     .work-thumb img { max-width: 100px; max-height: 80px; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); }
@@ -31,24 +30,28 @@
     .frameless-art:before, .frameless-art:after { display: none !important; }
     
     .art-plate { overflow: visible; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: transparent !important; border: none !important; box-shadow: none !important; }
-    .img-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.05s linear; cursor: pointer; background: transparent !important; border: none !important; box-shadow: none !important; }
+    .img-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.05s linear; cursor: pointer; background: transparent !important; border: none !important; box-shadow: none !important; touch-action: none; }
     .img-wrapper img { display: block; touch-action: none; max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(3px 3px 12px rgba(0,0,0,0.8)); background: transparent !important; border: none !important; }
     
-    .close-art { position: absolute; top: -12px; right: -12px; background: #e81123; color: #fff; border: 1px solid #fff; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); width: 24px; height: 26px; font-family: sans-serif; font-weight: bold; cursor: pointer; z-index: 100000; display: flex; align-items: center; justify-content: center; border-radius: 2px; }
+    .close-art { position: absolute; top: -12px; right: -12px; background: #e81123; color: #fff; border: 1px solid #fff; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); width: 24px; height: 26px; font-family: sans-serif; font-weight: bold; cursor: pointer; z-index: 100000; display: flex; align-items: center; justify-content: center; border-radius: 2px; touch-action: manipulation; }
     .close-art:hover { background: #ff0000; }
     
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
-    /* ABOUT COM VIDRO ESCOVADO E TEXTO FORÇADO À ESQUERDA */
+    /* ======================================================= */
+    /* ABOUT: VIDRO ESCOVADO COM ALINHAMENTO À ESQUERDA FORÇADO */
+    /* ======================================================= */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
-    .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; }
-    .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); }
-    .about-content-box { text-align: left !important; padding: 25px; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block; width: 100%; box-sizing: border-box; }
-    .about-content-box h2 { font-size: 24px; margin-bottom: 10px; margin-top: 0; text-align: left !important; }
-    .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.4; text-align: left !important; }
-    .about-content-box .chronology { font-family: monospace; font-size: 12px; line-height: 1.6; background: transparent; padding: 0; border-radius: 0; text-align: left !important; display: block; }
+    .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; text-align: left !important; }
+    .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); text-align: left !important; }
     
-    /* POPUP ADS NÚS (Apenas Imagem) */
+    .about-content-box { text-align: left !important; padding: 25px; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block !important; width: 100% !important; box-sizing: border-box; }
+    .about-content-box * { text-align: left !important; justify-content: flex-start !important; align-items: flex-start !important; }
+    .about-content-box h2 { font-size: 24px; margin-bottom: 10px; margin-top: 0; text-align: left !important; width: 100%; }
+    .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.4; text-align: left !important; width: 100%; }
+    .about-content-box .chronology { font-family: monospace; font-size: 12px; line-height: 1.6; background: transparent; padding: 0; border-radius: 0; text-align: left !important; display: block; width: 100%; }
+    
+    /* POPUP ADS NÚS */
     .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
@@ -72,13 +75,13 @@
     .explode-anim .window-body { display: none !important; } 
     .explode-anim::after { content: ""; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; margin-top: -2px; margin-left: -2px; animation: realisticPixelExplosion 0.45s steps(5) forwards; }
     
-    /* TOAST MSN MESSENGER */
+    /* TOAST MSN */
     @keyframes msnSlideIn { 0% { transform: translateY(250px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
     .msn-window { position: fixed !important; border-radius: 8px !important; background: linear-gradient(to bottom, #E6F0FA 0%, #CDE0F5 40%, #A4CBF0 100%) !important; border: 1px solid #6E98C7 !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.4) !important; animation: msnSlideIn 0.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; transition: height 0.15s ease-in-out, top 0.15s ease-in-out, left 0.15s ease-in-out; }
     .msn-window .titlebar { display: none !important; }
     .task-msn { background: linear-gradient(to bottom, #E6F0FA, #A4CBF0) !important; border: 1px solid #6E98C7 !important; color: #000 !important; }
     
-    /* BARRA DE TAREFAS */
+    /* TASKBAR */
     .taskbar { display: flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; padding: 0 10px; }
     .task-strip { flex: 1; display: flex; gap: 4px; overflow: hidden; margin: 0 10px; min-width: 0; }
     .task-button { flex: 0 1 140px; min-width: 35px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -156,10 +159,11 @@
   }
 
   document.addEventListener("click", () => {
-    if (!msnNotified) {
-      playMsnSound();
-      msnNotified = true;
-    }
+    if (!msnNotified) { playMsnSound(); msnNotified = true; }
+  }, { once: true });
+
+  document.addEventListener("touchstart", () => {
+    if (!msnNotified) { playMsnSound(); msnNotified = true; }
   }, { once: true });
 
   function getIcon(name, fallbackEmoji) {
@@ -213,23 +217,23 @@
     ];
   }
 
-  // ==========================================
-  // GEOMETRIA INTELIGENTE BASEADA NUM MONITOR DE 1280px
-  // ==========================================
   function defaultGeometry(kind, work = null) {
     const W = innerWidth, H = innerHeight;
     const n = state.cascade++;
-    if (kind === "folder") return { x: W * 0.05, y: H * 0.23, w: 600, h: 420 };
-    if (kind === "about") return { x: clamp(W - 420, 80, W - 390), y: clamp(H * 0.2, 80, H - 250), w: 390, h: 392 };
+    
+    if (kind === "folder") return { x: W * 0.05, y: H * 0.23, w: Math.min(600, W * 0.8), h: Math.min(420, H * 0.7) };
+    if (kind === "about") return { x: clamp(W - 420, 10, W - 390), y: clamp(H * 0.2, 10, H - 250), w: Math.min(390, W*0.9), h: Math.min(392, H*0.8) };
     if (kind === "contact") return { x: W - 270, y: H - 205, w: 250, h: 160 }; 
     
     if (kind === "art" && work) {
       const nw = Number(work.nw) || 800; const nh = Number(work.nh) || 600;
-      const scale = Math.min(clamp(W * 0.35, 250, 600) / nw, (H * 0.5) / nh, 1);
+      const scale = Math.min(clamp(W * 0.35, 150, 600) / nw, (H * 0.5) / nh, 1);
+      const artW = Math.max(150, Math.round(nw * scale));
+      const artH = Math.round(nh * scale);
       
-      if (work.title === "01") return { x: W * 0.12, y: H * 0.15, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1003 };
-      if (work.title === "02") return { x: Math.max(10, W - 580), y: H * 0.28, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1001 }; 
-      if (work.title === "03") return { x: W * 0.02, y: H * 0.38, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1001 }; 
+      if (work.title === "01") return { x: W * 0.12, y: H * 0.15, w: artW, h: artH, initZ: 1003 };
+      if (work.title === "02") return { x: Math.max(10, W - artW - 80), y: H * 0.28, w: artW, h: artH, initZ: 1001 }; 
+      if (work.title === "03") return { x: W * 0.02, y: H * 0.38, w: artW, h: artH, initZ: 1001 }; 
     }
     return { x: 180 + (n % 6) * 46, y: 120 + (n % 6) * 38, w: 350, h: 250 };
   }
@@ -269,7 +273,6 @@
        const el = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
        if (el) el.remove();
     }
-    
     if (state.active === id) {
       state.active = state.wins.filter(w => !w.min).sort((a, b) => b.z - a.z)[0]?.id || null;
       if (state.active) focusWin(state.active);
@@ -295,34 +298,6 @@
     renderTasks();
   }
 
-  function beginPointer(e, id, mode) {
-    if (e.button !== undefined && e.button !== 0) return;
-    const w = state.wins.find(x => x.id === id);
-    if (!w || w.min) return;
-    focusWin(id);
-
-    const start = { px: e.clientX, py: e.clientY, x: w.x, y: w.y, width: w.w, height: w.h };
-
-    const move = ev => {
-      if (mode === "move" && !w.max) {
-        w.x = clamp(start.x + (ev.clientX - start.px), 96 - w.w + 140, innerWidth - 60);
-        w.y = clamp(start.y + (ev.clientY - start.py), 38, innerHeight - 70);
-        w.ratioX = w.x / innerWidth; w.ratioY = w.y / innerHeight;
-      }
-      if (mode === "size" && !w.max) {
-        w.w = Math.max(200, start.width + (ev.clientX - start.px));
-        w.h = Math.max(150, start.height + (ev.clientY - start.py));
-      }
-      if (windowsEl) {
-         const el = windowsEl.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
-         if (el) { el.style.left = `${w.x}px`; el.style.top = `${w.y}px`; el.style.width = `${w.w}px`; el.style.height = `${w.h}px`; }
-      }
-    };
-
-    const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
-    window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
-  }
-
   function titlebar(w) {
     const bar = document.createElement("div");
     bar.className = "titlebar";
@@ -331,10 +306,25 @@
       <span class="title-text">${w.title}</span>
       <span class="window-buttons"><button type="button" class="close" data-act="close">×</button></span>`;
     
-    bar.addEventListener("pointerdown", e => { if (!e.target.closest("button")) beginPointer(e, w.id, "move"); });
-    $$(".window-buttons button", bar).forEach(btn => btn.addEventListener("click", e => {
+    bar.addEventListener("pointerdown", e => { 
+      if (!e.target.closest("button")) {
+        focusWin(w.id);
+        let start = { px: e.clientX, py: e.clientY, x: w.x, y: w.y };
+        const move = ev => {
+          w.x = clamp(start.x + (ev.clientX - start.px), 96 - w.w + 140, innerWidth - 60);
+          w.y = clamp(start.y + (ev.clientY - start.py), 38, innerHeight - 70);
+          w.ratioX = w.x / innerWidth; w.ratioY = w.y / innerHeight;
+          const el = windowsEl.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
+          if (el) { el.style.left = `${w.x}px`; el.style.top = `${w.y}px`; }
+        };
+        const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
+        window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
+      }
+    });
+    
+    $$(".window-buttons button", bar).forEach(btn => btn.addEventListener("pointerdown", e => {
       e.preventDefault(); e.stopPropagation();
-      if (btn.dataset.act === "close") closeWindow(w.id);
+      closeWindow(w.id);
     }));
     return bar;
   }
@@ -431,7 +421,7 @@
           <div class="img-wrapper">
              <img src="${imageSrc(w.work)}" alt="${escapeHtml(w.title)}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'400\\' height=\\'400\\'><text x=\\'50%\\' y=\\'50%\\' fill=\\'%23fff\\' font-family=\\'sans-serif\\' font-size=\\'18\\' text-anchor=\\'middle\\'>Imagem n\u00E3o encontrada</text></svg>'">
              <button class="close-art" data-act="close">X</button>
-             <div class="art-instruction">Alt+Scroll: Zoom | Clique: Mover/Travar</div>
+             <div class="art-instruction">Alt+Scroll / Pinça (Mobile) para Zoom</div>
           </div>
         </div>`;
     }
@@ -486,9 +476,8 @@
 
   function bindWindowBody(el, w) {
     if (w.kind === "folder") {
+      // Correção profunda do Mobile Tap nas pastas: Usando click limpo e seguro
       $$(".image-entry", el).forEach(btn => {
-        btn.addEventListener("mouseenter", () => btn.classList.add("selected"));
-        btn.addEventListener("mouseleave", () => btn.classList.remove("selected"));
         btn.addEventListener("click", e => {
           e.preventDefault(); e.stopPropagation();
           if (btn.dataset.work) {
@@ -505,7 +494,7 @@
     }
 
     if (w.kind === "contact") {
-       $$('[data-act="close"]', el).forEach(btn => btn.addEventListener("click", e => {
+       $$('[data-act="close"]', el).forEach(btn => btn.addEventListener("pointerdown", e => {
          e.preventDefault(); e.stopPropagation(); closeWindow(w.id);
        }));
        
@@ -518,7 +507,10 @@
            const isExpanded = expandArea.style.display !== "none";
            expandArea.style.display = isExpanded ? "none" : "block";
            w.h = isExpanded ? 160 : 255;
-           if (w.anchor === "bottom-right") { w.y = innerHeight - w.h - 45; }
+           
+           if (w.anchor === "bottom-right") {
+              w.y = innerHeight - w.h - 45;
+           }
            w.ratioY = w.y / innerHeight;
            el.style.height = `${w.h}px`; el.style.top = `${w.y}px`;
        });
@@ -536,6 +528,11 @@
       const wrapper = $(".img-wrapper", el);
       let scale = 1, panX = 0, panY = 0, isDragging = false;
       let startMouseX = 0, startMouseY = 0, initialPanX = 0, initialPanY = 0;
+      
+      // Controle de Toque (Mobile)
+      let initialTouchDist = 0, initialTouchScale = 1;
+      let initialTouchMidX = 0, initialTouchMidY = 0;
+      let touchStartPanX = 0, touchStartPanY = 0;
 
       const moveHandler = e => {
         if (!isDragging) return;
@@ -544,21 +541,23 @@
         wrapper.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
       };
 
-      $$('.close-art', el).forEach(btn => btn.addEventListener("click", e => {
+      $$('.close-art', el).forEach(btn => btn.addEventListener("pointerdown", e => {
          e.preventDefault(); e.stopPropagation();
          document.removeEventListener("pointermove", moveHandler);
          closeWindow(w.id);
       }));
 
+      // Zoom Mouse Clássico
       wrapper.addEventListener("wheel", e => {
         if (e.altKey) {
           e.preventDefault();
           scale += e.deltaY * -0.002;
-          scale = Math.min(Math.max(0.5, scale), 5);
+          scale = Math.min(Math.max(0.4, scale), 5);
           wrapper.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
         }
       });
 
+      // Clique Simples de Mouse (Arrastar e Travar)
       wrapper.addEventListener("click", e => {
         if (e.target.closest('.close-art')) return;
         e.stopPropagation(); focusWin(w.id);
@@ -572,6 +571,47 @@
         } else {
           wrapper.style.cursor = "pointer";
           document.removeEventListener("pointermove", moveHandler);
+          const rect = el.getBoundingClientRect();
+          w.x = rect.left + panX; w.y = rect.top + panY;
+          w.ratioX = w.x / innerWidth; w.ratioY = w.y / innerHeight;
+        }
+      });
+
+      // Efeitos Touch de Celular Avançados (Pinça para Zoom e 2 Dedos para Arrastar)
+      wrapper.addEventListener("touchstart", e => {
+        focusWin(w.id);
+        if (e.touches.length === 2) {
+          e.preventDefault();
+          const t1 = e.touches[0], t2 = e.touches[1];
+          initialTouchDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+          initialTouchScale = scale;
+          initialTouchMidX = (t1.clientX + t2.clientX) / 2;
+          initialTouchMidY = (t1.clientY + t2.clientY) / 2;
+          touchStartPanX = panX;
+          touchStartPanY = panY;
+        }
+      }, { passive: false });
+
+      wrapper.addEventListener("touchmove", e => {
+        if (e.touches.length === 2) {
+          e.preventDefault();
+          const t1 = e.touches[0], t2 = e.touches[1];
+          const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+          if (initialTouchDist > 0) {
+            const factor = dist / initialTouchDist;
+            scale = clamp(initialTouchScale * factor, 0.4, 5);
+          }
+          const midX = (t1.clientX + t2.clientX) / 2;
+          const midY = (t1.clientY + t2.clientY) / 2;
+          panX = touchStartPanX + (midX - initialTouchMidX);
+          panY = touchStartPanY + (midY - initialTouchMidY);
+          wrapper.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+        }
+      }, { passive: false });
+
+      wrapper.addEventListener("touchend", e => {
+        if (e.touches.length < 2) {
+          initialTouchDist = 0;
           const rect = el.getBoundingClientRect();
           w.x = rect.left + panX; w.y = rect.top + panY;
           w.ratioX = w.x / innerWidth; w.ratioY = w.y / innerHeight;
@@ -606,12 +646,11 @@
     if (w.kind === "popup" || w.kind === "contact") el.style.position = "fixed";
     if (w.kind === "art") el.classList.add("frameless-art");
 
-    // TRAVA DE CAPTURA ABSOLUTA PARA QUALQUER JANELA VIR PARA A FRENTE AO CLICAR
+    // TRAVA DE CAPTURA ABSOLUTA PARA QUALQUER JANELA VIR PARA A FRENTE AO CLICAR OU TOCAR
     el.addEventListener("pointerdown", () => focusWin(w.id), { capture: true });
-    el.addEventListener("mousedown", () => focusWin(w.id), { capture: true });
 
     if (w.kind === "popup") {
-      el.addEventListener("mousedown", (e) => {
+      el.addEventListener("pointerdown", (e) => {
         e.stopPropagation();
         if (!el.classList.contains("explode-anim")) {
           playExplosionSound();
