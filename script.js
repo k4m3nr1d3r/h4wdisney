@@ -2,23 +2,60 @@
   "use strict";
 
   // ==========================================
-  // SCANNER DE EXTENSÕES BLINDADO (Auto-limpante)
+  // O GRANDE RADAR (Scanner Imbatível de Pastas e Extensões)
+  // Testa variações de maiúsculas, erros de digitação e pastas ocultas!
   // ==========================================
-  window.getAltImg = function(img) {
-     const exts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'PNG', 'JPG', 'JPEG', 'GIF', 'WEBP'];
+  window.getPathsToTest = function(baseFile) {
+      const exts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'PNG', 'JPG', 'JPEG', 'GIF', 'WEBP'];
+      let variations = [
+          baseFile,
+          'assets/' + baseFile,
+          baseFile.toLowerCase(),
+          'assets/' + baseFile.toLowerCase(),
+          baseFile.toUpperCase()
+      ];
+      
+      let moreVars = [];
+      variations.forEach(v => {
+          if (v.includes('exhibiti0ns')) {
+              moreVars.push(v.replace('exhibiti0ns', 'exhibitions'));
+              moreVars.push(v.replace('exhibiti0ns', 'Exhibitions'));
+          }
+          if (v.includes('beck_END')) {
+              moreVars.push(v.replace('beck_END', 'beck_end'));
+              moreVars.push(v.replace('beck_END', 'backend'));
+          }
+          if (v.includes('ACERVO')) {
+              moreVars.push(v.replace('ACERVO', 'Acervo'));
+              moreVars.push(v.replace('ACERVO', 'acervo'));
+          }
+      });
+      variations = variations.concat(moreVars);
+      
+      const uniqueVars = [...new Set(variations)];
+      const paths = [];
+      uniqueVars.forEach(v => { exts.forEach(ext => paths.push(v + '.' + ext)); });
+      return paths;
+  };
+
+  window.handleThumbErr = function(img) {
      let step = parseInt(img.dataset.step || "0");
+     let rawPath = img.dataset.filepath.replace(/\.[a-zA-Z0-9]+$/i, '');
+     let paths = window.getPathsToTest(rawPath);
      
-     if (step < exts.length) {
+     if (step < paths.length) {
          img.dataset.step = step + 1;
-         let rawPath = img.dataset.filepath.replace(/\.[a-zA-Z0-9]+$/i, '');
-         let nextFile = rawPath + '.' + exts[step];
-         img.src = nextFile.split("/").map(encodeURIComponent).join("/");
+         img.src = paths[step].split("/").map(encodeURIComponent).join("/");
      } else {
+         // Se não achar de jeito nenhum, limpa o ícone "OFF" e some de fininho
          let btn = img.closest('.image-entry');
          if (btn) btn.style.display = 'none';
      }
   };
 
+  // ==========================================
+  // FORÇAR MODO DESKTOP NO CELULAR
+  // ==========================================
   let metaViewport = document.querySelector('meta[name="viewport"]');
   if (!metaViewport) {
       metaViewport = document.createElement('meta');
@@ -46,7 +83,6 @@
     .frameless-art:before, .frameless-art:after { display: none !important; }
     
     .art-plate { overflow: visible; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: transparent !important; border: none !important; box-shadow: none !important; width: 100%; height: 100%; }
-    
     .img-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.05s linear; cursor: pointer; background: transparent !important; border: none !important; box-shadow: none !important; touch-action: none; }
     .img-wrapper img { display: block; touch-action: none; max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(3px 3px 12px rgba(0,0,0,0.8)); background: transparent !important; border: none !important; }
     
@@ -63,7 +99,7 @@
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
     /* ======================================================= */
-    /* ABOUT: REDUZIDO E COM MARGENS SIMÉTRICAS (25px) */
+    /* ABOUT: VIDRO ESCOVADO, COMPACTO E SIMÉTRICO */
     /* ======================================================= */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
     .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; height: 100% !important; text-align: left !important; overflow: hidden; }
@@ -80,32 +116,21 @@
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
     
-    /* EXPLOSÃO RADIAL 8-BITS */
     @keyframes realisticPixelExplosion {
       0% { box-shadow: 0 0 0 4px #fff, 0 0 0 8px #ffeb3b; background: transparent; transform: scale(0.6); opacity: 1; }
-      35% { box-shadow: 
-        0 -16px 0 3px #fff, 0 16px 0 3px #fff, 16px 0 0 3px #fff, -16px 0 0 3px #fff,
-        -12px -12px 0 4px #ffeb3b, 12px 12px 0 4px #ffeb3b, -12px 12px 0 4px #ffeb3b, 12px -12px 0 4px #ffeb3b,
-        0 -25px 0 3px #ff9800, 0 25px 0 3px #ff9800; transform: scale(1.1); opacity: 1; border: none; }
-      70% { box-shadow: 
-        0 -32px 0 4px #ff9800, 0 32px 0 4px #ff9800, 32px 0 4px #ff9800, -32px 0 4px #ff9800,
-        -22px -22px 0 4px #f44336, 22px 22px 0 4px #f44336, -22px 22px 0 4px #f44336, 22px -22px 0 4px #f44336,
-        -36px -36px 0 3px #ffeb3b, 36px 36px 0 3px #ffeb3b, 0 -45px 0 4px #f44336; transform: scale(1.4); opacity: 0.8; border: none; }
-      100% { box-shadow: 
-        0 -40px 0 1px rgba(211,47,47,0), 0 40px 0 1px rgba(211,47,47,0),
-        -30px -30px 0 1px rgba(255,152,0,0), 30px 30px 0 1px rgba(255,152,0,0); transform: scale(1.6); opacity: 0; display: none; border: none; }
+      35% { box-shadow: 0 -16px 0 3px #fff, 0 16px 0 3px #fff, 16px 0 0 3px #fff, -16px 0 0 3px #fff, -12px -12px 0 4px #ffeb3b, 12px 12px 0 4px #ffeb3b, -12px 12px 0 4px #ffeb3b, 12px -12px 0 4px #ffeb3b, 0 -25px 0 3px #ff9800, 0 25px 0 3px #ff9800; transform: scale(1.1); opacity: 1; border: none; }
+      70% { box-shadow: 0 -32px 0 4px #ff9800, 0 32px 0 4px #ff9800, 32px 0 4px #ff9800, -32px 0 4px #ff9800, -22px -22px 0 4px #f44336, 22px 22px 0 4px #f44336, -22px 22px 0 4px #f44336, 22px -22px 0 4px #f44336, -36px -36px 0 3px #ffeb3b, 36px 36px 0 3px #ffeb3b, 0 -45px 0 4px #f44336; transform: scale(1.4); opacity: 0.8; border: none; }
+      100% { box-shadow: 0 -40px 0 1px rgba(211,47,47,0), 0 40px 0 1px rgba(211,47,47,0), -30px -30px 0 1px rgba(255,152,0,0), 30px 30px 0 1px rgba(255,152,0,0); transform: scale(1.6); opacity: 0; display: none; border: none; }
     }
     .explode-anim { pointer-events: none !important; background: transparent !important; border: none !important; box-shadow: none !important; }
     .explode-anim .window-body { display: none !important; } 
     .explode-anim::after { content: ""; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; margin-top: -2px; margin-left: -2px; animation: realisticPixelExplosion 0.45s steps(5) forwards; }
     
-    /* TOAST MSN */
     @keyframes msnSlideIn { 0% { transform: translateY(250px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
     .msn-window { position: fixed !important; border-radius: 8px !important; background: linear-gradient(to bottom, #E6F0FA 0%, #CDE0F5 40%, #A4CBF0 100%) !important; border: 1px solid #6E98C7 !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.4) !important; animation: msnSlideIn 0.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; transition: height 0.15s ease-in-out, top 0.15s ease-in-out, left 0.15s ease-in-out; }
     .msn-window .titlebar { display: none !important; }
     .task-msn { background: linear-gradient(to bottom, #E6F0FA, #A4CBF0) !important; border: 1px solid #6E98C7 !important; color: #000 !important; }
     
-    /* TASKBAR E FILTROS CRT */
     .taskbar { display: flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; padding: 0 10px; }
     .task-strip { flex: 1; display: flex; gap: 4px; overflow: hidden; margin: 0 10px; min-width: 0; }
     .task-button { flex: 0 1 140px; min-width: 35px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -261,10 +286,10 @@
     
     if (kind === "folder") return { x: W * 0.05, y: H * 0.23, w: Math.min(600, W * 0.8), h: Math.min(420, H * 0.7) };
     
-    // ABOUT MENOR E COM MARGENS SIMÉTRICAS
+    // ABOUT MAIS COMPACTO COM PADDING SIMÉTRICO
     if (kind === "about") {
        const aW = Math.min(320, W * 0.9);
-       const aH = 340; 
+       const aH = 350; 
        return { x: clamp(W - aW - 20, 10, W - aW), y: clamp(H * 0.15, 10, H - aH), w: aW, h: aH };
     }
     
@@ -431,7 +456,7 @@
     return `
       <button class="work-item image-entry" type="button" data-work="${escapeHtml(item.id)}">
         <div class="work-thumb">
-           <img src="${escapeHtml(imageSrc(item))}" data-filepath="${rawPath}" alt="" loading="lazy" onerror="window.getAltImg(this)">
+           <img src="${escapeHtml(imageSrc(item))}" data-filepath="${rawPath}" alt="" loading="lazy" onerror="window.handleThumbErr(this)">
         </div>
         <span>${escapeHtml(item.title)}</span>
       </button>`;
@@ -507,7 +532,7 @@
         <div class="art-plate">
           <div class="img-wrapper">
              <button class="nav-art prev-art" data-dir="-1">❮</button>
-             <img src="${escapeHtml(imageSrc(w.work))}" data-filepath="${rawPath}" alt="${escapeHtml(w.title)}" onerror="window.getAltImg(this)">
+             <img src="${escapeHtml(imageSrc(w.work))}" data-filepath="${rawPath}" alt="${escapeHtml(w.title)}" onerror="window.handleThumbErr(this)">
              <button class="close-art" data-act="close">X</button>
              <button class="nav-art next-art" data-dir="1">❯</button>
              ${acervoPanel}
@@ -573,7 +598,9 @@
           e.preventDefault(); e.stopPropagation();
           if (btn.dataset.work) {
             const work = findItem(btn.dataset.work);
-            if (work) loadDimensions(work).then(() => addWindow("art", work, { isInit: false })).catch(()=>{}); 
+            // Ao invés de tentar o loadDimensions (que rejeitava a promessa invisível)
+            // Ele agora só abre a janela e deixa o Radar resolver a imagem final.
+            if (work) addWindow("art", work, { isInit: false }); 
           } else if (btn.dataset.folder) {
             navigateBrowser(w, btn.dataset.folder);
           }
@@ -644,13 +671,12 @@
                if (nextIdx >= sibs.list.length) nextIdx = 0;
                const nextWork = sibs.list[nextIdx];
                
-               loadDimensions(nextWork).then(() => {
-                  w.work = nextWork;
-                  w.title = nextWork.title;
-                  const body = el.querySelector(".window-body");
-                  if(body) body.innerHTML = windowBodyHTML(w);
-                  bindWindowBody(el, w);
-               }).catch(()=>{});
+               // Apenas carrega a próxima imagem usando o HTML novo, sem depender do fetch interno cego
+               w.work = nextWork;
+               w.title = nextWork.title;
+               const body = el.querySelector(".window-body");
+               if(body) body.innerHTML = windowBodyHTML(w);
+               bindWindowBody(el, w);
             }
          });
          btn.addEventListener("pointerdown", e => { e.stopPropagation(); focusWin(w.id); });
@@ -751,31 +777,6 @@
         }
       });
     }
-  }
-
-  function loadDimensions(work) {
-    return new Promise((resolve, reject) => {
-      const exts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'PNG', 'JPG', 'JPEG', 'GIF', 'WEBP'];
-      const baseFile = work.file.replace(/\.[a-zA-Z0-9]+$/i, '');
-      let step = 0;
-      
-      const tryNext = () => {
-        if (step >= exts.length) {
-           reject("Imagem não encontrada no Vercel"); 
-           return;
-        }
-        const ext = exts[step++];
-        const img = new Image();
-        img.onload = () => { 
-           work.file = baseFile + '.' + ext; 
-           work.nw = img.naturalWidth; work.nh = img.naturalHeight; 
-           resolve(work); 
-        };
-        img.onerror = tryNext;
-        img.src = asset(baseFile + '.' + ext);
-      };
-      tryNext();
-    });
   }
 
   function createWindow(w) {
@@ -975,18 +976,18 @@
       nowClock(); setInterval(nowClock, 1000);
       fixBackgroundCache();
 
+      // Deixa o radar agir naturalmente na montagem
       if (state.manifest.beckEnd && state.manifest.beckEnd.length >= 3) {
         const w1 = state.manifest.beckEnd[0];
         const w2 = state.manifest.beckEnd[1];
         const w3 = state.manifest.beckEnd[2];
 
-        loadDimensions(w3).then(() => { addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 }); }).catch(()=>{});
-        loadDimensions(w2).then(() => { addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 }); }).catch(()=>{});
+        addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 });
+        addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 });
 
         setTimeout(() => addWindow("folder", null, { z: 1002 }), 100);
         setTimeout(() => addWindow("about", null, { z: 1003 }), 200);
-        
-        setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { isInit: true, x: W * 0.22, y: H * 0.15, z: 1004 }); }).catch(()=>{}); }, 300);
+        setTimeout(() => addWindow("art", w1, { isInit: true, x: W * 0.22, y: H * 0.15, z: 1004 }), 300);
       } else {
         addWindow("folder"); addWindow("about");
       }
