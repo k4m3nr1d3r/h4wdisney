@@ -32,15 +32,14 @@
     
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
-    /* CONTÊINER DA PROPAGANDA SEM ALONGAR */
-    .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; background-image: none !important; border: 1px solid #0058e6 !important; box-shadow: 2px 2px 5px rgba(0,0,0,0.5) !important; padding: 0 !important; box-sizing: content-box; }
-    .popup-ad .titlebar { height: 20px; font-size: 11px; background: linear-gradient(to right, #0058e6, #3a93ff) !important; margin: 0 !important; border: none !important; padding: 0 6px; display: flex; align-items: center; justify-content: space-between; }
-    .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: calc(100% - 20px) !important; overflow: hidden; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
-    .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; }
+    /* POPUP ADS NÚS (Apenas Imagem) */
+    .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
+    .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
+    .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
     
-    /* RECONSTRUÇÃO DA EXPLOSÃO PIXELADA RADIAL 8-BITS */
+    /* EXPLOSÃO RADIAL ESTRELA A PARTIR DO CENTRO ABSOLUTO */
     @keyframes realisticPixelExplosion {
-      0% { box-shadow: 0 0 0 4px #fff, 0 0 0 8px #ffeb3b; background: transparent; transform: scale(0.6); opacity: 1; }
+      0% { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #ffeb3b; background: transparent; transform: scale(0.6); opacity: 1; }
       35% { box-shadow: 
         0 -16px 0 3px #fff, 0 16px 0 3px #fff, 16px 0 0 3px #fff, -16px 0 0 3px #fff,
         -12px -12px 0 4px #ffeb3b, 12px 12px 0 4px #ffeb3b, -12px 12px 0 4px #ffeb3b, 12px -12px 0 4px #ffeb3b,
@@ -49,10 +48,17 @@
         0 -32px 0 4px #ff9800, 0 32px 0 4px #ff9800, 32px 0 4px #ff9800, -32px 0 4px #ff9800,
         -22px -22px 0 4px #f44336, 22px 22px 0 4px #f44336, -22px 22px 0 4px #f44336, 22px -22px 0 4px #f44336,
         -36px -36px 0 3px #ffeb3b, 36px 36px 0 3px #ffeb3b, 0 -45px 0 4px #f44336; transform: scale(1.4); opacity: 0.8; border: none; }
-      100% { box-shadow: none; transform: scale(2); opacity: 0; display: none; }
+      100% { box-shadow: 
+        0 -40px 0 1px rgba(211,47,47,0), 0 40px 0 1px rgba(211,47,47,0),
+        -30px -30px 0 1px rgba(255,152,0,0), 30px 30px 0 1px rgba(255,152,0,0); transform: scale(1.6); opacity: 0; display: none; border: none; }
     }
-    .explode-anim { animation: realisticPixelExplosion 0.45s steps(5) forwards !important; pointer-events: none; background: transparent !important; border: none !important; box-shadow: none !important; }
-    .explode-anim .titlebar, .explode-anim .window-body { display: none !important; }
+    
+    .explode-anim { pointer-events: none !important; background: transparent !important; border: none !important; box-shadow: none !important; }
+    .explode-anim .window-body { display: none !important; } /* SOME A IMAGEM NA HORA */
+    .explode-anim::after {
+      content: ""; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; margin-top: -2px; margin-left: -2px;
+      animation: realisticPixelExplosion 0.45s steps(5) forwards;
+    }
     
     /* TOAST MSN MESSENGER */
     @keyframes msnSlideIn {
@@ -116,7 +122,7 @@
       const osc = ctx.createOscillator(), gain = ctx.createGain();
       osc.type = "sawtooth"; osc.frequency.setValueAtTime(120, ctx.currentTime);
       osc.frequency.linearRampToValueAtTime(30, ctx.currentTime + 0.35);
-      gain.gain.setValueAtTime(0.04, ctx.currentTime); // Baixinho
+      gain.gain.setValueAtTime(0.04, ctx.currentTime);
       gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 0.35);
       osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.35);
     } catch(_) {}
@@ -186,17 +192,17 @@
     if (kind === "folder") return { x: W * .05, y: H * .23, w: 600, h: 420 };
     if (kind === "about") return { x: clamp(W - 420, 80, W - 390), y: clamp(H * 0.2, 80, H - 250), w: 390, h: 392 };
     
-    // MSN ANCORADO E INICIADO PERFEITAMENTE NO CANTO INFERIOR DIREITO NA RAIZ
+    // MSN ANCORADO COM SEGURANÇA
     if (kind === "contact") return { x: W - 270, y: H - 205, w: 250, h: 160 }; 
     
     if (kind === "art" && work) {
       const nw = Number(work.nw) || 800; const nh = Number(work.nh) || 600;
       const scale = Math.min(clamp(W * .35, 250, 600) / nw, (H * 0.5) / nh, 1);
       
-      // DISPOSIÇÃO INICIAL DOS Z-INDEX DO TRIO DE ABERTURA
+      // DISPOSIÇÃO INICIAL DO TRIO
       if (work.title === "01") return { x: W * 0.12, y: H * 0.15, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1003 };
-      if (work.title === "02") return { x: W - 580, y: H * 0.28, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1001 }; // METADE APARECENDO ATRÁS DO ABOUT
-      if (work.title === "03") return { x: W * 0.02, y: H * 0.38, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1001 }; // ATRÁS DO EXPLORER
+      if (work.title === "02") return { x: W - 580, y: H * 0.28, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1001 }; 
+      if (work.title === "03") return { x: W * 0.02, y: H * 0.38, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1001 }; 
     }
     return { x: 180 + (n % 6) * 46, y: 120 + (n % 6) * 38, w: 350, h: 250 };
   }
@@ -210,8 +216,11 @@
     const iconHtml = work ? getIcon("art", "🖼") : getIcon(kind, ({ folder: "📁", about: "🗒", contact: "👥" }[kind]));
     
     const geom = defaultGeometry(kind, work);
+    
+    // ATUALIZAÇÃO SÓLIDA DE CAMADAS PARA GARANTIR FOCO LISO
     let targetedZ = opts.z || ++state.top;
     if (geom.initZ && !opts.z) targetedZ = geom.initZ;
+    if (targetedZ > state.top) state.top = targetedZ;
 
     const win = {
       id, kind, title: work ? (work.file || work.title) : titleMap[kind],
@@ -237,7 +246,8 @@
     if (!w || w.kind === "popup") return;
     const alreadyActive = (state.active === id && !w.min && !state.menuOpen);
     
-    w.z = ++state.top + (w.kind === "art" ? 950000 : 0); 
+    // TODA JANELA VEM PRA FRENTE INCONDICIONALMENTE (Sem boost gigante pra obras)
+    w.z = ++state.top; 
     w.min = false; state.active = id; state.menuOpen = false;
     
     if (!alreadyActive || forceRender) render();
@@ -438,6 +448,7 @@
               w.x = clamp(start.x + (ev.clientX - start.px), 96 - w.w + 140, innerWidth - 60);
               w.y = clamp(start.y + (ev.clientY - start.py), 38, innerHeight - 70);
               w.ratioX = w.x / innerWidth; w.ratioY = w.y / innerHeight;
+              w.anchor = null; // Remove a âncora fixa caso o usuário arraste
               el.style.left = `${w.x}px`; el.style.top = `${w.y}px`;
             };
             const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
@@ -456,13 +467,18 @@
            const isExpanded = expandArea.style.display !== "none";
            expandArea.style.display = isExpanded ? "none" : "block";
            w.h = isExpanded ? 160 : 255;
-           w.y = innerHeight - w.h - 45; // Crava o chão acima da barra de tarefas sempre
+           
+           if (w.anchor === "bottom-right") {
+              w.y = innerHeight - w.h - 45;
+           }
            w.ratioY = w.y / innerHeight;
            el.style.height = `${w.h}px`; el.style.top = `${w.y}px`;
        });
        sendBtn.addEventListener("click", () => {
            if(textArea.value.trim() === "") return;
-           expandArea.style.display = "none"; w.h = 160; w.y = innerHeight - 160 - 45; w.ratioY = w.y / innerHeight;
+           expandArea.style.display = "none"; w.h = 160; 
+           if(w.anchor === "bottom-right") w.y = innerHeight - w.h - 45; 
+           w.ratioY = w.y / innerHeight;
            el.style.height = `${w.h}px`; el.style.top = `${w.y}px`; textArea.value = "";
            alert("Mensagem enviada com sucesso!");
        });
@@ -548,7 +564,7 @@
       el.addEventListener("pointerdown", () => focusWin(w.id));
     }
     
-    if (w.kind !== "contact" && w.kind !== "art") el.appendChild(titlebar(w));
+    if (w.kind !== "contact" && w.kind !== "art" && w.kind !== "popup") el.appendChild(titlebar(w));
 
     const body = document.createElement("div");
     body.className = "window-body";
@@ -618,7 +634,7 @@
   }
 
   // ==========================================
-  // SPAWN AD: ACOPLAMENTO INTEGRAL SEM DISTORÇÃO
+  // PROPAGANDAS PURAS (Só Imagem) SEM DISTORÇÃO
   // ==========================================
   function spawnAd() {
     if (CUSTOM_ADS.length === 0) return; 
@@ -628,21 +644,16 @@
 
     const img = new Image();
     img.onload = () => {
-       const ratio = img.naturalWidth / img.naturalHeight;
-       let targetW = 120, targetH = 120;
+       const scale = Math.min(140 / img.naturalWidth, 140 / img.naturalHeight, 1);
+       const adW = Math.max(70, img.naturalWidth * scale);
+       const adH = Math.max(70, img.naturalHeight * scale);
        
-       if (ratio > 1) { targetH = targetW / ratio; } 
-       else { targetW = targetH * ratio; }
-       
-       const adW = Math.max(65, Math.round(targetW));
-       const adH = Math.max(65, Math.round(targetH));
-       
-       const contentHtml = `<img src="${img.src}" style="display:block; width:100%; height:100%; pointer-events:none;">`;
+       const contentHtml = `<img src="${img.src}" style="display:block; width:100%; height:100%; object-fit:contain; pointer-events:none;">`;
        
        const ad = {
           id, kind: "popup", title: "AD", iconHtml: "⚠",
           x: Math.random() * (innerWidth - adW), y: Math.random() * (innerHeight - adH - 20),
-          w: adW, h: adH + 20, z: 999999, min: false, max: false,
+          w: adW, h: adH, z: 999999, min: false, max: false,
           content: contentHtml, vx: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random()), vy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random())
        };
        
@@ -668,37 +679,33 @@
     img.src = adImageSrc;
   }
 
-  // Intervalo estrito e cíclico inquebrável para novas Ads
-  setInterval(() => {
-     if (state.wins.filter(w => w.kind === "popup").length < 4) spawnAd();
-  }, 25000);
+  function scheduleNextAd() {
+    if (state.wins.filter(w => w.kind === "popup").length < 4) spawnAd();
+    adMultiplier++;
+    setTimeout(scheduleNextAd, 45000 * adMultiplier);
+  }
 
   function init() {
     const W = innerWidth, H = innerHeight;
     state.manifest = generateAutomaticManifest();
     nowClock(); setInterval(nowClock, 1000);
 
-    // COREOGRAFIA DE CRIAÇÃO E Z-INDEX INICIAIS
     if (state.manifest.works && state.manifest.works.length >= 3) {
       const w1 = state.manifest.works[0];
       const w2 = state.manifest.works[1];
       const w3 = state.manifest.works[2];
 
-      // 1. Obras do fundo
       loadDimensions(w3).then(() => { addWindow("art", w3, { x: W * 0.02, y: H * 0.42, z: 1001 }); });
       loadDimensions(w2).then(() => { addWindow("art", w2, { x: W - 560, y: H * 0.26, z: 1001 }); });
 
-      // 2. Janelas nativas cobrindo os cantos
       setTimeout(() => addWindow("folder", null, { z: 1002 }), 100);
       setTimeout(() => addWindow("about", null, { z: 1002 }), 200);
 
-      // 3. Obra do centro na frente do explorer
       setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { x: W * 0.22, y: H * 0.15, z: 1003 }); }); }, 300);
     } else {
       addWindow("folder"); addWindow("about");
     }
 
-    // 4. Ancoragem imediata e correta do MSN Toast na raiz
     setTimeout(() => {
        addWindow("contact", null, { anchor: "bottom-right", x: W - 270, y: H - 205, z: 1005 });
     }, 1000);
@@ -710,7 +717,6 @@
     render();
   }
 
-  // GERENCIADOR RESPONSIVO COMPLETO (ARRASSTA TUDO JUNTO)
   window.addEventListener("resize", () => {
     state.wins.forEach(w => {
       if (w.anchor === "bottom-right") {
