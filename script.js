@@ -1,53 +1,56 @@
 (() => {
   "use strict";
 
-  // ==========================================
-  // LISTA SEQUENCIAL DE PROPAGANDAS (1 ao 10)
-  // O código vai rodar na ordem e aceitar tamanhos variados.
-  // ==========================================
-  const CUSTOM_ADS = [
-    "assets/ads/01.png", "assets/ads/02.gif", "assets/ads/03.png", "assets/ads/04.gif", "assets/ads/05.png",
-    "assets/ads/06.gif", "assets/ads/07.png", "assets/ads/08.png", "assets/ads/09.gif", "assets/ads/10.png"
-  ];
-  let currentAdIndex = 0; // Controla a sequência
-
+  // Injetando CSS: Frameless Art, Explosão Radial Realista, Drop-Shadow Inteligente
   const extraStyles = document.createElement('style');
   extraStyles.textContent = `
-    .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 15px; padding: 15px; background: #ffffff; min-height: 100%; }
-    .image-entry { display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid transparent; background: transparent !important; cursor: pointer; padding: 8px; border-radius: 2px; color: #000; }
+    /* Grade flexível para tamanhos variados e fundo transparente */
+    .file-grid { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; justify-content: flex-start; align-items: flex-end; background: #ffffff; min-height: 100%; }
+    .image-entry { display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid transparent; background: transparent !important; cursor: pointer; padding: 6px; border-radius: 2px; color: #000; max-width: 130px; }
     
     .image-entry:hover { background: #e5f3ff !important; border: 1px solid #d8ebf9 !important; }
     .image-entry.selected { background: #cce8ff !important; border: 1px solid #99d1ff !important; }
     
-    .work-thumb { width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; background: transparent !important; }
-    .work-thumb img { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 2px 2px 5px rgba(0,0,0,0.3); }
+    .work-thumb { width: auto; height: auto; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; background: transparent !important; }
     
-    .art-plate { overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: calc(100% - 40px); background: #111; }
-    .art-plate img { touch-action: none; transition: transform 0.05s linear; max-width: 100%; max-height: 100%; object-fit: contain; }
+    /* Drop-Shadow recorta perfeitamente PNGs sem fundo */
+    .work-thumb img { max-width: 100px; max-height: 80px; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); }
     
-    /* POPUP DE PROPAGANDA (Miniatura) */
-    .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; }
-    .popup-ad .window-body { padding: 0 !important; margin: 0; width: 100% !important; height: 100% !important; overflow: hidden; pointer-events: none; }
+    /* JANELA DE ARTE FLUTUANTE (Frameless) */
+    .frameless-art { background: transparent !important; border: none !important; box-shadow: none !important; overflow: visible !important; }
+    .frameless-art .window-body { height: 100% !important; background: transparent !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; border: none !important; }
     
-    /* ANIMAÇÃO DE EVAPORAÇÃO (FOGO DE BAIXO PARA CIMA) */
-    @keyframes burnUpward {
-      0% { clip-path: inset(0 0 0 0); filter: drop-shadow(0 0 0 transparent); transform: translateY(0); opacity: 1; }
-      30% { clip-path: inset(0 0 30% 0); filter: drop-shadow(0 -10px 10px #ff5500) brightness(1.5); transform: translateY(-5px); }
-      70% { clip-path: inset(0 0 70% 0); filter: drop-shadow(0 -20px 15px #ff0000) brightness(2) contrast(1.5) hue-rotate(-10deg); transform: translateY(-15px); }
-      100% { clip-path: inset(0 0 100% 0); filter: drop-shadow(0 -30px 20px #8b0000); transform: translateY(-25px); opacity: 0; }
+    .art-plate { overflow: visible; position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: transparent; }
+    .art-plate img { touch-action: none; transition: transform 0.05s linear; max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(3px 3px 12px rgba(0,0,0,0.8)); }
+    
+    /* O Botão 'X' vermelho solto */
+    .close-art { position: absolute; top: -15px; right: -15px; background: #e81123; color: #fff; border: 1px solid #fff; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); width: 26px; height: 26px; font-family: sans-serif; font-weight: bold; cursor: pointer; z-index: 100000; display: flex; align-items: center; justify-content: center; border-radius: 2px; }
+    .close-art:hover { background: #ff0000; }
+    
+    /* POPUP ADS QUE SE ADAPTAM */
+    .popup-ad { cursor: crosshair; border: 2px outset #dfdfdf; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); z-index: 999999 !important; overflow: visible !important; }
+    .popup-ad .window-body { padding: 0 !important; margin: 0; width: 100% !important; height: calc(100% - 20px) !important; overflow: hidden; pointer-events: none; background: #fff; }
+    .popup-ad .titlebar { height: 20px; font-size: 11px; }
+    
+    /* EXPLOSÃO RADIAL 8-BITS + EVAPORAÇÃO */
+    @keyframes pixelExplosion {
+      0% { box-shadow: 0 0 0 10px #fff, 0 0 0 20px #ffeb3b; background: #fff; transform: scale(0.5); opacity: 1; filter: contrast(1) blur(0px); }
+      20% { box-shadow: 0 0 0 15px #fff, 0 0 0 30px #ffeb3b, 0 0 0 45px #ff9800, -25px -25px 0 5px #ffeb3b, 25px 25px 0 5px #ffeb3b, -25px 25px 0 5px #ffeb3b, 25px -25px 0 5px #ffeb3b; background: #fff; border: none; transform: scale(1); filter: contrast(2) blur(1px) hue-rotate(45deg); }
+      40% { box-shadow: 0 0 0 20px #ffeb3b, 0 0 0 40px #ff9800, 0 0 0 60px #f44336, -50px -50px 0 8px #ff9800, 50px 50px 0 8px #ff9800, -50px 50px 0 8px #ff9800, 50px -50px 0 8px #ff9800, 0 -70px 0 6px #ffeb3b, 0 70px 0 6px #ffeb3b, -70px 0 0 6px #ffeb3b, 70px 0 0 6px #ffeb3b; background: #ffeb3b; border: none; transform: scale(1.2); filter: contrast(3) blur(2px) hue-rotate(90deg); opacity: 0.8; }
+      60% { box-shadow: 0 0 0 20px #ff9800, 0 0 0 40px #f44336, -80px -80px 0 6px #f44336, 80px 80px 0 6px #f44336, -80px 80px 0 6px #f44336, 80px -80px 0 6px #f44336, 0 -100px 0 5px #ff9800, 0 100px 0 5px #ff9800, -100px 0 0 5px #ff9800, 100px 0 0 5px #ff9800, -50px -90px 0 4px #ccc, 50px 90px 0 4px #ccc, 90px 50px 0 4px #ccc; background: transparent; border: none; transform: scale(1.4); opacity: 0.5; filter: contrast(4) blur(3px) hue-rotate(180deg); }
+      80% { box-shadow: 0 0 0 20px #f44336, -110px -110px 0 4px #f44336, 110px 110px 0 4px #f44336, -110px 110px 0 4px #f44336, 110px -110px 0 4px #f44336, 0 -130px 0 3px #f44336, 0 130px 0 3px #f44336, -130px 0 0 3px #f44336, 130px 0 0 3px #f44336, -70px -120px 0 3px #ccc, 70px 120px 0 3px #ccc; background: transparent; border: none; transform: scale(1.6); opacity: 0.2; }
+      100% { box-shadow: none; background: transparent; transform: scale(2); opacity: 0; display: none; filter: none; }
     }
     .explode-anim {
-      animation: burnUpward 0.6s ease-in forwards !important;
-      pointer-events: none; background: transparent !important; border: none !important; box-shadow: none !important;
+      animation: pixelExplosion 0.5s steps(6) forwards !important;
+      pointer-events: none; border: none !important;
     }
     .explode-anim .titlebar { display: none !important; }
     
-    /* MSN Messenger Widget */
     .msn-window { border-radius: 8px !important; background: linear-gradient(to bottom, #E6F0FA 0%, #CDE0F5 40%, #A4CBF0 100%) !important; border: 1px solid #6E98C7 !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.4) !important; transition: height 0.2s ease-in-out; }
     .msn-window .titlebar { display: none !important; }
     .task-msn { background: linear-gradient(to bottom, #E6F0FA, #A4CBF0) !important; border: 1px solid #6E98C7 !important; color: #000 !important; }
     
-    /* GLITCH DE CRT NO WALLPAPER */
     @keyframes crtWallpaperGlitch {
       0% { transform: scale(1) translate(0,0) skewX(0); filter: none; }
       20% { transform: scale(1.03) translate(-5px, 3px) skewX(4deg); filter: hue-rotate(120deg) contrast(1.8) saturate(2); }
@@ -57,7 +60,6 @@
       100% { transform: scale(1) translate(0,0) skewX(0); filter: none; }
     }
     .wallpaper-glitch-active { animation: crtWallpaperGlitch 1s steps(8) forwards !important; }
-    
     #bsod { z-index: 999999999 !important; }
   `;
   document.head.appendChild(extraStyles);
@@ -76,6 +78,7 @@
 
   let crashMultiplier = 1;
   let adMultiplier = 1;
+  let adSequenceIndex = 1; // De 1 a 10
 
   function getIcon(name, fallbackEmoji) {
     return `<img src="assets/icons/${name}.png" onerror="this.outerHTML='<span>${fallbackEmoji}</span>'" alt="" style="width:16px; height:16px; object-fit:contain; vertical-align:middle; margin-right:4px;">`;
@@ -87,7 +90,7 @@
   function escapeHtml(s) { return String(s).replace(/[&<>"']/g, m => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"}[m])); }
 
   // ==========================================
-  // O NOVO CÉREBRO AUTOMÁTICO (Adeus .json)
+  // CÉREBRO AUTOMÁTICO (1 a 15 arquivos por pasta)
   // ==========================================
   function generateAutomaticManifest() {
     const buildItems = (folderPath) => {
@@ -140,10 +143,10 @@
     
     if (kind === "art" && work) {
       const nw = Number(work.nw) || 800; const nh = Number(work.nh) || 600;
-      const scale = Math.min(clamp(W * .4, 300, 700) / nw, (H * 0.6) / nh, 1);
+      const scale = Math.min(clamp(W * .5, 300, 800) / nw, (H * 0.7) / nh, 1.2);
       return {
-        x: clamp(W * .25, 50, Math.max(50, W - 400)), y: clamp(H * .15, 50, Math.max(50, H - 300)),
-        w: Math.max(300, Math.round(nw * scale)) + 20, h: Math.round(nh * scale) + 90
+        x: clamp(W * .2, 50, Math.max(50, W - 400)), y: clamp(H * .1, 50, Math.max(50, H - 300)),
+        w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale)
       };
     }
     const n = state.cascade++;
@@ -303,15 +306,14 @@
   function windowBodyHTML(w) {
     if (w.kind === "folder") return browserBodyHTML(w);
 
+    // ==========================================
+    // JANELA DE OBRAS (FRAMELESS, SEM BARRA)
+    // ==========================================
     if (w.kind === "art") {
       return `
-        <div class="art-body" style="height:100%;">
-          <div class="art-plate">
-            <img src="${imageSrc(w.work)}" alt="${escapeHtml(w.title)}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'800\\' height=\\'600\\'><rect width=\\'800\\' height=\\'600\\' fill=\\'%23333\\'/><text x=\\'50%\\' y=\\'50%\\' fill=\\'%23fff\\' font-family=\\'sans-serif\\' font-size=\\'24\\' text-anchor=\\'middle\\'>Imagem n\u00E3o encontrada</text></svg>'">
-          </div>
-          <div class="caption" style="padding: 10px; text-align: center; background:#ddd; height:40px;">
-            <b>${escapeHtml(w.title)}</b> <i>(Use Alt + Scroll para Zoom. Arraste para mover)</i>
-          </div>
+        <div class="art-plate">
+          <img src="${imageSrc(w.work)}" alt="${escapeHtml(w.title)}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'800\\' height=\\'600\\'><rect width=\\'800\\' height=\\'600\\' fill=\\'%23333\\'/><text x=\\'50%\\' y=\\'50%\\' fill=\\'%23fff\\' font-family=\\'sans-serif\\' font-size=\\'24\\' text-anchor=\\'middle\\'>Imagem n\u00E3o encontrada</text></svg>'">
+          <button class="close-art" data-act="close">X</button>
         </div>`;
     }
 
@@ -404,13 +406,18 @@
        sendBtn.addEventListener("click", () => {
            if(textArea.value.trim() === "") return;
            expandArea.style.display = "none"; w.h = 160; el.style.height = `${w.h}px`; textArea.value = "";
-           alert("Mensagem enviada para o correio.");
+           alert("Mensagem enviada com sucesso!");
        });
     }
 
     if (w.kind === "art") {
       const img = $(".art-plate img", el);
       let scale = 1, panX = 0, panY = 0, isDragging = false, startX, startY;
+
+      // Botão X
+      $$('.close-art', el).forEach(btn => btn.addEventListener("click", e => {
+         e.preventDefault(); e.stopPropagation(); closeWindow(w.id);
+      }));
 
       img.addEventListener("wheel", e => {
         if (e.altKey) {
@@ -463,27 +470,44 @@
     el.style.zIndex = w.z;
     if (w.kind === "popup") el.style.position = "fixed";
     
-    // EVAPORAÇÃO: Clique em qualquer área detona a máscara de fumaça e fogo
+    // Adiciona classe para remover totalmente bordas nas artes
+    if (w.kind === "art") el.classList.add("frameless-art");
+
+    // CLIQUE PARA EXPLOSÃO NAS ADS
     if (w.kind === "popup") {
-      el.addEventListener("pointerdown", (e) => {
+      el.addEventListener("mousedown", (e) => {
         e.stopPropagation();
         if (!el.classList.contains("explode-anim")) {
           el.classList.add("explode-anim");
-          setTimeout(() => closeWindow(w.id), 580);
+          setTimeout(() => closeWindow(w.id), 490);
         }
       });
+      // Suporte extra para Touch Mobile
+      el.addEventListener("touchstart", (e) => {
+        e.stopPropagation();
+        if (!el.classList.contains("explode-anim")) {
+          el.classList.add("explode-anim");
+          setTimeout(() => closeWindow(w.id), 490);
+        }
+      }, {passive: true});
     } else {
       el.addEventListener("pointerdown", () => focusWin(w.id));
     }
     
-    if (w.kind !== "contact" && w.kind !== "popup") el.appendChild(titlebar(w));
+    // Apenas pastas ganham barra
+    if (w.kind !== "contact" && w.kind !== "popup" && w.kind !== "art") {
+        el.appendChild(titlebar(w));
+    } else if (w.kind === "popup") {
+        // Popups recebem o titlebar interno com X
+        el.appendChild(titlebar(w));
+    }
 
     const body = document.createElement("div");
     body.className = "window-body";
     body.innerHTML = w.kind === "popup" ? w.content : windowBodyHTML(w);
     el.appendChild(body);
 
-    if (!w.max && w.kind !== "popup" && w.kind !== "contact") {
+    if (!w.max && w.kind !== "popup" && w.kind !== "contact" && w.kind !== "art") {
       const grip = document.createElement("div");
       grip.className = "resize-grip";
       grip.addEventListener("pointerdown", e => { e.stopPropagation(); beginPointer(e, w.id, "size"); });
@@ -548,54 +572,66 @@
   }
 
   // ==========================================
-  // PROPAGANDA (Tamanho Miniatura Flexível com Fundo Transparente)
+  // PROPAGANDAS INTELIGENTES (GIF ou PNG) + BARRINHA DE TÍTULO
   // ==========================================
   function spawnAd() {
-    if (CUSTOM_ADS.length === 0) return; // Só lança se houver imagens configuradas na lista
-    
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
-    const adImageSrc = CUSTOM_ADS[currentAdIndex];
-    currentAdIndex = (currentAdIndex + 1) % CUSTOM_ADS.length;
+    const numStr = String(adSequenceIndex).padStart(2, '0');
+    adSequenceIndex = adSequenceIndex >= 10 ? 1 : adSequenceIndex + 1;
+    
+    const img = new Image();
+    let isGif = true;
 
-    // Tamanho flexível adaptado sem distorcer
-    const contentHtml = `<img src="${adImageSrc}" style="width:100%; height:100%; object-fit:contain; background:transparent;">`;
-
-    const ad = {
-      id, kind: "popup", title: "AD", icon: "⚠",
-      x: Math.random() * (innerWidth - 90), y: Math.random() * (innerHeight - 90),
-      w: 90, h: 90, z: 999999, min: false, max: false, 
-      content: contentHtml, vx: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random()), vy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random())
+    img.onload = () => {
+       // Calcula escala para manter a proporção com tamanho máximo adaptado
+       const scale = Math.min(140 / img.naturalWidth, 140 / img.naturalHeight, 1);
+       const adW = Math.max(90, img.naturalWidth * scale);
+       const adH = Math.max(90, img.naturalHeight * scale);
+       
+       const contentHtml = `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#fff; overflow:hidden;"><img src="${img.src}" style="width:100%; height:100%; object-fit:contain; background:transparent; pointer-events:none;"></div>`;
+       
+       const ad = {
+          id, kind: "popup", title: "AD", iconHtml: "⚠",
+          x: Math.random() * (innerWidth - adW), y: Math.random() * (innerHeight - adH - 25),
+          w: adW, h: adH + 20, z: 999999, min: false, max: false,
+          content: contentHtml, vx: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random()), vy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random())
+       };
+       state.wins.push(ad); render();
+       
+       requestAnimationFrame(function bounce() {
+          const winData = state.wins.find(w => w.id === id);
+          if (!winData) return; 
+          winData.x += winData.vx; winData.y += winData.vy;
+          if (winData.x <= 0 || winData.x + winData.w >= innerWidth) winData.vx *= -1;
+          if (winData.y <= 0 || winData.y + winData.h >= innerHeight) winData.vy *= -1;
+          const currentEl = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
+          if (currentEl && !currentEl.classList.contains("explode-anim")) { 
+            currentEl.style.left = `${winData.x}px`; currentEl.style.top = `${winData.y}px`; 
+          }
+          requestAnimationFrame(bounce);
+       });
     };
 
-    state.wins.push(ad); render();
-
-    function bounce() {
-      const winData = state.wins.find(w => w.id === id);
-      if (!winData) return; 
-      winData.x += winData.vx; winData.y += winData.vy;
-      if (winData.x <= 0 || winData.x + winData.w >= innerWidth) winData.vx *= -1;
-      if (winData.y <= 0 || winData.y + winData.h >= innerHeight) winData.vy *= -1;
-
-      const currentEl = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
-      if (currentEl && !currentEl.classList.contains("explode-anim")) { 
-        currentEl.style.left = `${winData.x}px`; currentEl.style.top = `${winData.y}px`; 
-      }
-      requestAnimationFrame(bounce);
-    }
-    requestAnimationFrame(bounce);
+    img.onerror = () => {
+       if (isGif) {
+           isGif = false;
+           img.src = `assets/ads/${numStr}.png`; // Tenta PNG se o GIF não existir
+       }
+    };
+    img.src = `assets/ads/${numStr}.gif`; // Tenta GIF primeiro
   }
 
   function scheduleNextAd() {
     if (state.wins.filter(w => w.kind === "popup").length < 4) spawnAd();
     adMultiplier++;
-    const nextAdDelay = 45000 * adMultiplier; // Começa demorando 45s, depois 90s, depois 135s...
+    const nextAdDelay = 45000 * adMultiplier; // Intervalos gigantes: 45s, 90s, 135s
     setTimeout(scheduleNextAd, nextAdDelay);
   }
 
   function init() {
     state.manifest = generateAutomaticManifest();
-    
     nowClock(); setInterval(nowClock, 1000);
+
     addWindow("folder"); 
     
     if (state.manifest.works && state.manifest.works.length > 0) {
@@ -605,10 +641,9 @@
 
     addWindow("contact"); addWindow("about");   
 
-    // Dispara a primeira propaganda após 5 segundos para não poluir logo no primeiro frame
-    setTimeout(spawnAd, 5000);
+    // Dispara a primeira AD após 8 segundos
+    setTimeout(spawnAd, 8000);
     
-    // Inicia os relógios dinâmicos
     setTimeout(scheduleNextAd, 45000);
     setTimeout(scheduleNextGlitch, 40000);
     setTimeout(scheduleNextCrash, 60000);
