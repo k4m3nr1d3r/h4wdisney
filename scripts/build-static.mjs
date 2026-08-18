@@ -8,9 +8,13 @@ const DIST = path.join(ROOT, 'dist');
 await fs.rm(DIST, { recursive: true, force: true });
 await fs.mkdir(DIST, { recursive: true });
 
-// Generate the gallery manifest from Vernissages/ and Obras/.
-const generator = new URL('./generate-gallery.mjs', import.meta.url);
-await import(generator);
+// Tenta gerar a galeria antiga, mas não trava se der erro
+try {
+  const generator = new URL('./generate-gallery.mjs', import.meta.url);
+  await import(generator);
+} catch (e) {
+  console.log('Ignorando gerador antigo. Usando manifesto interno do script.js');
+}
 
 const files = [
   'index.html',
@@ -23,10 +27,15 @@ const files = [
 for (const file of files) {
   const src = path.join(ROOT, file);
   const dest = path.join(DIST, file);
-  await fs.cp(src, dest, { recursive: true });
+  try {
+    await fs.cp(src, dest, { recursive: true });
+  } catch (err) {
+    if (err.code !== 'ENOENT') throw err;
+  }
 }
 
-for (const dir of ['assets', 'Obras', 'Vernissages']) {
+// A MÁGICA ACONTECE AQUI: A lista nova do porteiro da Vercel!
+for (const dir of ['assets', 'ACERVO', 'exhibiti0ns', 'beck_END']) {
   const src = path.join(ROOT, dir);
   const dest = path.join(DIST, dir);
   try {
