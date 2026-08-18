@@ -17,10 +17,14 @@
   const extraStyles = document.createElement('style');
   extraStyles.textContent = `
     .file-grid { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; justify-content: flex-start; align-items: flex-end; background: #ffffff; min-height: 100%; }
-    .image-entry { display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid transparent; background: transparent !important; cursor: pointer; padding: 8px; border-radius: 2px; color: #000; max-width: 130px; }
+    .image-entry { display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid transparent; background: transparent !important; cursor: pointer; padding: 8px; border-radius: 2px; color: #000; max-width: 130px; touch-action: manipulation; }
     
-    .image-entry:hover { background: #e5f3ff !important; border: 1px solid #d8ebf9 !important; }
+    /* PREVINE O BUG DO DOUBLE-TAP NO CELULAR (Aplica Hover só no Desktop) */
+    @media (hover: hover) {
+      .image-entry:hover { background: #e5f3ff !important; border: 1px solid #d8ebf9 !important; }
+    }
     .image-entry:active { background: #cce8ff !important; border: 1px solid #99d1ff !important; }
+    .image-entry.selected { background: #cce8ff !important; border: 1px solid #99d1ff !important; }
     
     .work-thumb { width: auto; height: auto; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; background: transparent !important; }
     .work-thumb img { max-width: 100px; max-height: 80px; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); }
@@ -223,7 +227,7 @@
     
     if (kind === "folder") return { x: W * 0.05, y: H * 0.23, w: Math.min(600, W * 0.8), h: Math.min(420, H * 0.7) };
     if (kind === "about") return { x: clamp(W - 420, 10, W - 390), y: clamp(H * 0.2, 10, H - 250), w: Math.min(390, W*0.9), h: Math.min(392, H*0.8) };
-    if (kind === "contact") return { x: W - 270, y: H - 205, w: 250, h: 160 }; 
+    if (kind === "contact") return { x: W - 270, y: H - 160 - 45, w: 250, h: 160 }; 
     
     if (kind === "art" && work) {
       const nw = Number(work.nw) || 800; const nh = Number(work.nh) || 600;
@@ -232,10 +236,10 @@
       const artH = Math.round(nh * scale);
       
       if (work.title === "01") return { x: W * 0.12, y: H * 0.15, w: artW, h: artH, initZ: 1003 };
-      if (work.title === "02") return { x: Math.max(10, W - artW - 80), y: H * 0.28, w: artW, h: artH, initZ: 1001 }; 
+      if (work.title === "02") return { x: Math.max(10, W - artW - 40), y: H * 0.28, w: artW, h: artH, initZ: 1001 }; 
       if (work.title === "03") return { x: W * 0.02, y: H * 0.38, w: artW, h: artH, initZ: 1001 }; 
     }
-    return { x: 180 + (n % 6) * 46, y: 120 + (n % 6) * 38, w: 350, h: 250 };
+    return { x: 180 + (n % 6) * 46, y: 120 + (n % 6) * 38, w: Math.min(350, W * 0.8), h: Math.min(250, H * 0.8) };
   }
 
   function addWindow(kind, work = null, opts = {}) {
@@ -298,6 +302,34 @@
     renderTasks();
   }
 
+  function beginPointer(e, id, mode) {
+    if (e.button !== undefined && e.button !== 0) return;
+    const w = state.wins.find(x => x.id === id);
+    if (!w || w.min) return;
+    focusWin(id);
+
+    const start = { px: e.clientX, py: e.clientY, x: w.x, y: w.y, width: w.w, height: w.h };
+
+    const move = ev => {
+      if (mode === "move" && !w.max) {
+        w.x = clamp(start.x + (ev.clientX - start.px), 96 - w.w + 140, innerWidth - 60);
+        w.y = clamp(start.y + (ev.clientY - start.py), 38, innerHeight - 70);
+        w.ratioX = w.x / innerWidth; w.ratioY = w.y / innerHeight;
+      }
+      if (mode === "size" && !w.max) {
+        w.w = Math.max(200, start.width + (ev.clientX - start.px));
+        w.h = Math.max(150, start.height + (ev.clientY - start.py));
+      }
+      if (windowsEl) {
+         const el = windowsEl.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
+         if (el) { el.style.left = `${w.x}px`; el.style.top = `${w.y}px`; el.style.width = `${w.w}px`; el.style.height = `${w.h}px`; }
+      }
+    };
+
+    const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
+    window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
+  }
+
   function titlebar(w) {
     const bar = document.createElement("div");
     bar.className = "titlebar";
@@ -306,25 +338,10 @@
       <span class="title-text">${w.title}</span>
       <span class="window-buttons"><button type="button" class="close" data-act="close">×</button></span>`;
     
-    bar.addEventListener("pointerdown", e => { 
-      if (!e.target.closest("button")) {
-        focusWin(w.id);
-        let start = { px: e.clientX, py: e.clientY, x: w.x, y: w.y };
-        const move = ev => {
-          w.x = clamp(start.x + (ev.clientX - start.px), 96 - w.w + 140, innerWidth - 60);
-          w.y = clamp(start.y + (ev.clientY - start.py), 38, innerHeight - 70);
-          w.ratioX = w.x / innerWidth; w.ratioY = w.y / innerHeight;
-          const el = windowsEl.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
-          if (el) { el.style.left = `${w.x}px`; el.style.top = `${w.y}px`; }
-        };
-        const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
-        window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
-      }
-    });
-    
-    $$(".window-buttons button", bar).forEach(btn => btn.addEventListener("pointerdown", e => {
+    bar.addEventListener("pointerdown", e => { if (!e.target.closest("button")) beginPointer(e, w.id, "move"); });
+    $$(".window-buttons button", bar).forEach(btn => btn.addEventListener("click", e => {
       e.preventDefault(); e.stopPropagation();
-      closeWindow(w.id);
+      if (btn.dataset.act === "close") closeWindow(w.id);
     }));
     return bar;
   }
@@ -421,7 +438,7 @@
           <div class="img-wrapper">
              <img src="${imageSrc(w.work)}" alt="${escapeHtml(w.title)}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'400\\' height=\\'400\\'><text x=\\'50%\\' y=\\'50%\\' fill=\\'%23fff\\' font-family=\\'sans-serif\\' font-size=\\'18\\' text-anchor=\\'middle\\'>Imagem n\u00E3o encontrada</text></svg>'">
              <button class="close-art" data-act="close">X</button>
-             <div class="art-instruction">Alt+Scroll / Pinça (Mobile) para Zoom</div>
+             <div class="art-instruction">Alt+Scroll: Zoom | 2 Dedos: Zoom / Arrastar</div>
           </div>
         </div>`;
     }
@@ -476,9 +493,13 @@
 
   function bindWindowBody(el, w) {
     if (w.kind === "folder") {
-      // Correção profunda do Mobile Tap nas pastas: Usando click limpo e seguro
+      // FIX DO DOUBLE-TAP HOVER PARA MOBILE: 
+      // Executa a ação diretamente no clique (o CSS já removeu o hover em touch)
       $$(".image-entry", el).forEach(btn => {
-        btn.addEventListener("click", e => {
+        btn.addEventListener("mouseenter", () => btn.classList.add("selected"));
+        btn.addEventListener("mouseleave", () => btn.classList.remove("selected"));
+        
+        const openAction = (e) => {
           e.preventDefault(); e.stopPropagation();
           if (btn.dataset.work) {
             const work = findItem(btn.dataset.work);
@@ -486,11 +507,32 @@
           } else if (btn.dataset.folder) {
             navigateBrowser(w, btn.dataset.folder);
           }
+        };
+
+        btn.addEventListener("click", openAction);
+        
+        let moved = false;
+        btn.addEventListener("touchmove", () => moved = true, { passive: true });
+        btn.addEventListener("touchstart", () => moved = false, { passive: true });
+        btn.addEventListener("touchend", e => {
+          if (!moved) {
+            e.preventDefault(); // Previne o clique duplicado do navegador
+            openAction(e);
+          }
         });
       });
-      $$('[data-nav="back"]', el).forEach(btn => btn.addEventListener("click", e => {
-        e.preventDefault(); e.stopPropagation(); goBack(w);
-      }));
+
+      $$('[data-nav="back"]', el).forEach(btn => {
+        const goBackAction = (e) => { e.preventDefault(); e.stopPropagation(); goBack(w); };
+        btn.addEventListener("click", goBackAction);
+        
+        let moved = false;
+        btn.addEventListener("touchmove", () => moved = true, { passive: true });
+        btn.addEventListener("touchstart", () => moved = false, { passive: true });
+        btn.addEventListener("touchend", e => {
+          if (!moved) { e.preventDefault(); goBackAction(e); }
+        });
+      });
     }
 
     if (w.kind === "contact") {
@@ -529,7 +571,7 @@
       let scale = 1, panX = 0, panY = 0, isDragging = false;
       let startMouseX = 0, startMouseY = 0, initialPanX = 0, initialPanY = 0;
       
-      // Controle de Toque (Mobile)
+      // Controle Mobile (Touch 2 Dedos)
       let initialTouchDist = 0, initialTouchScale = 1;
       let initialTouchMidX = 0, initialTouchMidY = 0;
       let touchStartPanX = 0, touchStartPanY = 0;
@@ -577,7 +619,7 @@
         }
       });
 
-      // Efeitos Touch de Celular Avançados (Pinça para Zoom e 2 Dedos para Arrastar)
+      // TOUCH COM 2 DEDOS (PINÇA PARA ZOOM E ARRASTE NO CELULAR)
       wrapper.addEventListener("touchstart", e => {
         focusWin(w.id);
         if (e.touches.length === 2) {
@@ -648,16 +690,19 @@
 
     // TRAVA DE CAPTURA ABSOLUTA PARA QUALQUER JANELA VIR PARA A FRENTE AO CLICAR OU TOCAR
     el.addEventListener("pointerdown", () => focusWin(w.id), { capture: true });
+    el.addEventListener("touchstart", () => focusWin(w.id), { capture: true, passive: true });
 
     if (w.kind === "popup") {
-      el.addEventListener("pointerdown", (e) => {
+      const explodeAd = (e) => {
         e.stopPropagation();
         if (!el.classList.contains("explode-anim")) {
           playExplosionSound();
           el.classList.add("explode-anim");
           setTimeout(() => closeWindow(w.id), 450);
         }
-      });
+      };
+      el.addEventListener("mousedown", explodeAd);
+      el.addEventListener("touchstart", explodeAd, { passive: true });
     } else {
       el.addEventListener("pointerdown", e => {
          if (!e.target.closest("button") && !e.target.closest("a") && !e.target.closest("textarea") && !el.classList.contains("frameless-art") && !e.target.closest(".browser-body")) {
@@ -742,9 +787,6 @@
     setTimeout(scheduleNextCrash, 60000 * crashMultiplier);
   }
 
-  // ==========================================
-  // PROPAGANDAS COMPLETAMENTE NÚAS E SEGURAS
-  // ==========================================
   function spawnAd() {
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
     const numStr = String(currentAdIndex).padStart(2, '0');
