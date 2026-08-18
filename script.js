@@ -3,7 +3,9 @@
 
   let currentAdIndex = 1; // Controla a sequência de anúncios (1 a 10)
   
-  // INJEÇÃO DE CSS: MALHA CRT OSCILANTE, LOGO COM SHAKE CROMÁTICO E ADS SOLTAS
+  // ==========================================
+  // INJEÇÃO DE CSS: BLINDAGEM VISUAL E EFEITOS
+  // ==========================================
   const extraStyles = document.createElement('style');
   extraStyles.textContent = `
     .file-grid { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; justify-content: flex-start; align-items: flex-end; background: #ffffff; min-height: 100%; }
@@ -22,7 +24,7 @@
     
     .art-plate { overflow: visible; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: transparent !important; border: none !important; box-shadow: none !important; }
     
-    /* GRUDA O TEXTO E O X DIRETAMENTE NA IMAGEM */
+    /* GRUDA O TEXTO E O X DIRETAMENTE NA IMAGEM PARA SE MOVEREM JUNTOS */
     .img-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.05s linear; cursor: pointer; background: transparent !important; border: none !important; box-shadow: none !important; }
     .img-wrapper img { display: block; touch-action: none; max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(3px 3px 12px rgba(0,0,0,0.8)); background: transparent !important; border: none !important; }
     
@@ -31,12 +33,12 @@
     
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
-    /* POPUP ADS NÚS (Apenas Imagem) */
+    /* POPUP ADS NÚS (Apenas a Imagem Fluindo na Tela) */
     .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
     
-    /* ANIMAÇÃO EXPLOSÃO PIXELADA RADIAL 8-BITS */
+    /* ANIMAÇÃO EXPLOSÃO PIXELADA RADIAL 8-BITS PURA */
     @keyframes realisticPixelExplosion {
       0% { box-shadow: 0 0 0 4px #fff, 0 0 0 8px #ffeb3b; background: transparent; transform: scale(0.6); opacity: 1; }
       35% { box-shadow: 
@@ -47,7 +49,9 @@
         0 -32px 0 4px #ff9800, 0 32px 0 4px #ff9800, 32px 0 4px #ff9800, -32px 0 4px #ff9800,
         -22px -22px 0 4px #f44336, 22px 22px 0 4px #f44336, -22px 22px 0 4px #f44336, 22px -22px 0 4px #f44336,
         -36px -36px 0 3px #ffeb3b, 36px 36px 0 3px #ffeb3b, 0 -45px 0 4px #f44336; transform: scale(1.4); opacity: 0.8; border: none; }
-      100% { box-shadow: none; transform: scale(2); opacity: 0; display: none; border: none; }
+      100% { box-shadow: 
+        0 -40px 0 1px rgba(211,47,47,0), 0 40px 0 1px rgba(211,47,47,0),
+        -30px -30px 0 1px rgba(255,152,0,0), 30px 30px 0 1px rgba(255,152,0,0); transform: scale(1.6); opacity: 0; display: none; border: none; }
     }
     .explode-anim { pointer-events: none !important; background: transparent !important; border: none !important; box-shadow: none !important; }
     .explode-anim .window-body { display: none !important; } 
@@ -69,18 +73,17 @@
     .system-tray-container { display: flex; align-items: center; gap: 8px; flex-shrink: 0; background: linear-gradient(to bottom, #0c82dc, #045cc0); padding: 0 8px; height: 100%; border-left: 1px solid #08449c; }
     .system-tray-icons { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #fff; cursor: default; }
     
-    /* FILTRO GLITCH CRT WALLPAPER */
+    /* FILTROS E GLITCHES DE FUNDO E LOGO */
     @keyframes crtWallpaperGlitch {
       0% { transform: scale(1) translate(0,0) skewX(0); filter: none; }
       20% { transform: scale(1.02) translate(-3px, 2px) skewX(2deg); filter: hue-rotate(90deg) contrast(1.5) saturate(1.8); }
       40% { transform: scale(0.99) translate(4px, -3px) skewX(-3deg); filter: hue-rotate(-45deg) brightness(1.3) contrast(1.7); }
-      65% { transform: scale(1.03) translate(-1px, -1px) skewY(2deg); filter: invert(0.05) hue-rotate(140deg); }
+      65% { transform: scale(1.03) translate(-1px, -1px) skewY(1deg); filter: invert(0.05) hue-rotate(140deg); }
       85% { transform: scale(1) translate(2px, 1px) skewX(4deg); filter: brightness(1.5) contrast(1.2); }
       100% { transform: scale(1) translate(0,0) skewX(0); filter: none; }
     }
     .wallpaper-glitch-active { animation: crtWallpaperGlitch 0.9s steps(6) forwards !important; }
     
-    /* OSCILAÇÃO DA MALHA CRT */
     @keyframes crtLinesOscillation {
       0% { transform: translateY(0px); opacity: 0.94; }
       50% { transform: translateY(1.5px); opacity: 1; }
@@ -88,7 +91,6 @@
     }
     .crt::after { animation: crtLinesOscillation 0.18s steps(2) infinite !important; }
     
-    /* TREMOR CROMÁTICO DA LOGO PRINCIPAL */
     @keyframes logoRgbShake {
       0% { transform: translate(0, 0) skewX(0deg); filter: none; }
       15% { transform: translate(-4px, 2px) skewX(3deg); filter: drop-shadow(3px 0 0 #ff0055) drop-shadow(-3px 0 0 #00f0ff) contrast(1.5); }
@@ -110,7 +112,7 @@
   const $$ = (s, root = document) => [...root.querySelectorAll(s)];
 
   const state = { wins: [], top: 1000, active: null, menuOpen: false, cascade: 0, manifest: null, browserPath: [] };
-  const windowsEl = $("#windows");
+  const windowsEl = $("#windows") || document.body;
   const taskStrip = $("#taskStrip");
   const bsod = $("#bsod");
   const clockEl = $("#clock");
@@ -121,6 +123,9 @@
   let adMultiplier = 1;
   let msnNotified = false;
 
+  // ==========================================
+  // EFEITOS SONOROS
+  // ==========================================
   function playMsnSound() {
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -206,17 +211,18 @@
   function defaultGeometry(kind, work = null) {
     const W = innerWidth, H = innerHeight;
     const n = state.cascade++;
-    if (kind === "folder") return { x: W * .05, y: H * .23, w: 600, h: 420 };
+    if (kind === "folder") return { x: W * 0.05, y: H * 0.23, w: 600, h: 420 };
     if (kind === "about") return { x: clamp(W - 420, 80, W - 390), y: clamp(H * 0.2, 80, H - 250), w: 390, h: 392 };
     if (kind === "contact") return { x: W - 270, y: H - 205, w: 250, h: 160 }; 
     
     if (kind === "art" && work) {
       const nw = Number(work.nw) || 800; const nh = Number(work.nh) || 600;
-      const scale = Math.min(clamp(W * .35, 250, 600) / nw, (H * 0.5) / nh, 1);
+      const scale = Math.min(clamp(W * 0.35, 250, 600) / nw, (H * 0.5) / nh, 1);
       
-      if (work.title === "01") return { x: W * 0.12, y: H * 0.15, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale) };
-      if (work.title === "02") return { x: W - 580, y: H * 0.28, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale) }; 
-      if (work.title === "03") return { x: W * 0.02, y: H * 0.38, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale) }; 
+      // DISPOSIÇÃO INICIAL EXATA COM METADE DA IMAGEM PARA FORA
+      if (work.title === "01") return { x: W * 0.12, y: H * 0.15, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1003 };
+      if (work.title === "02") return { x: Math.max(10, W - 580), y: H * 0.28, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1001 }; 
+      if (work.title === "03") return { x: W * 0.02, y: H * 0.38, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1001 }; 
     }
     return { x: 180 + (n % 6) * 46, y: 120 + (n % 6) * 38, w: 350, h: 250 };
   }
@@ -231,6 +237,7 @@
     
     const geom = defaultGeometry(kind, work);
     let targetedZ = opts.z || ++state.top;
+    if (geom.initZ && !opts.z) targetedZ = geom.initZ;
 
     const win = {
       id, kind, title: work ? (work.file || work.title) : titleMap[kind],
@@ -245,14 +252,18 @@
     if (targetedZ > state.top) state.top = targetedZ;
     state.wins.push(win); state.active = id; state.menuOpen = false;
     
-    windowsEl.appendChild(createWindow(win));
+    if (windowsEl) {
+      windowsEl.appendChild(createWindow(win));
+    }
     renderTasks();
   }
 
   function closeWindow(id) {
     state.wins = state.wins.filter(w => w.id !== id);
-    const el = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
-    if (el) el.remove();
+    if (windowsEl) {
+       const el = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
+       if (el) el.remove();
+    }
     
     if (state.active === id) {
       state.active = state.wins.filter(w => !w.min).sort((a, b) => b.z - a.z)[0]?.id || null;
@@ -261,6 +272,9 @@
     renderTasks();
   }
 
+  // ==========================================
+  // NOVO MOTOR Z-INDEX: TUDO VEM PARA A FRENTE AO CLICAR
+  // ==========================================
   function focusWin(id) {
     const w = state.wins.find(x => x.id === id);
     if (!w || w.kind === "popup") return;
@@ -268,13 +282,15 @@
     w.z = ++state.top; 
     w.min = false; state.active = id; state.menuOpen = false;
     
-    const el = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
-    if (el) el.style.zIndex = w.z;
-    
-    $$(".window", windowsEl).forEach(win => {
-      if (win.dataset.id === id) win.classList.remove("inactive");
-      else win.classList.add("inactive");
-    });
+    if (windowsEl) {
+       const el = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
+       if (el) el.style.zIndex = w.z;
+       
+       $$(".window", windowsEl).forEach(win => {
+         if (win.dataset.id === id) win.classList.remove("inactive");
+         else win.classList.add("inactive");
+       });
+    }
     
     renderTasks();
   }
@@ -297,8 +313,10 @@
         w.w = Math.max(200, start.width + (ev.clientX - start.px));
         w.h = Math.max(150, start.height + (ev.clientY - start.py));
       }
-      const el = windowsEl.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
-      if (el) { el.style.left = `${w.x}px`; el.style.top = `${w.y}px`; el.style.width = `${w.w}px`; el.style.height = `${w.h}px`; }
+      if (windowsEl) {
+         const el = windowsEl.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
+         if (el) { el.style.left = `${w.x}px`; el.style.top = `${w.y}px`; el.style.width = `${w.w}px`; el.style.height = `${w.h}px`; }
+      }
     };
 
     const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
@@ -327,11 +345,13 @@
     if (JSON.stringify(next) === JSON.stringify(current)) return;
     win.browserHistory.push(next); win.browserPath = next; focusWin(win.id);
     
-    const el = windowsEl.querySelector(`[data-id="${CSS.escape(win.id)}"]`);
-    if(el) {
-       const body = el.querySelector(".window-body");
-       if(body) body.innerHTML = windowBodyHTML(win);
-       bindWindowBody(el, win);
+    if (windowsEl) {
+       const el = windowsEl.querySelector(`[data-id="${CSS.escape(win.id)}"]`);
+       if(el) {
+          const body = el.querySelector(".window-body");
+          if(body) body.innerHTML = windowBodyHTML(win);
+          bindWindowBody(el, win);
+       }
     }
   }
 
@@ -339,11 +359,13 @@
     if (!Array.isArray(win.browserHistory) || win.browserHistory.length <= 1) return;
     win.browserHistory.pop(); win.browserPath = [...win.browserHistory.at(-1)]; focusWin(win.id);
     
-    const el = windowsEl.querySelector(`[data-id="${CSS.escape(win.id)}"]`);
-    if(el) {
-       const body = el.querySelector(".window-body");
-       if(body) body.innerHTML = windowBodyHTML(win);
-       bindWindowBody(el, win);
+    if (windowsEl) {
+       const el = windowsEl.querySelector(`[data-id="${CSS.escape(win.id)}"]`);
+       if(el) {
+          const body = el.querySelector(".window-body");
+          if(body) body.innerHTML = windowBodyHTML(win);
+          bindWindowBody(el, win);
+       }
     }
   }
 
@@ -498,13 +520,18 @@
            const isExpanded = expandArea.style.display !== "none";
            expandArea.style.display = isExpanded ? "none" : "block";
            w.h = isExpanded ? 160 : 255;
-           w.y = innerHeight - w.h - 45; 
+           
+           if (w.anchor === "bottom-right") {
+              w.y = innerHeight - w.h - 45;
+           }
            w.ratioY = w.y / innerHeight;
            el.style.height = `${w.h}px`; el.style.top = `${w.y}px`;
        });
        sendBtn.addEventListener("click", () => {
            if(textArea.value.trim() === "") return;
-           expandArea.style.display = "none"; w.h = 160; w.y = innerHeight - 160 - 45; w.ratioY = w.y / innerHeight;
+           expandArea.style.display = "none"; w.h = 160; 
+           if(w.anchor === "bottom-right") w.y = innerHeight - w.h - 45; 
+           w.ratioY = w.y / innerHeight;
            el.style.height = `${w.h}px`; el.style.top = `${w.y}px`; textArea.value = "";
            alert("Mensagem enviada com sucesso!");
        });
@@ -558,176 +585,13 @@
     }
   }
 
-  function renderTasks() {
-    taskStrip.innerHTML = "";
-    state.wins.filter(w => w.kind !== "popup").forEach(w => {
-      const b = document.createElement("button");
-      b.className = `task-button ${state.active === w.id && !w.min ? "focused" : ""} ${w.kind === "contact" ? "task-msn" : ""}`;
-      b.innerHTML = `${w.iconHtml || ""} ${w.title}`;
-      b.addEventListener("click", () => { if (state.active === w.id && !w.min) { w.min = true; renderTasks(); } else focusWin(w.id); });
-      taskStrip.appendChild(b);
+  function loadDimensions(work) {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => { work.nw = img.naturalWidth; work.nh = img.naturalHeight; resolve(work); };
+      img.onerror = () => { work.nw = 800; work.nh = 600; resolve(work); };
+      img.src = imageSrc(work);
     });
-
-    let tray = $(".system-tray-container");
-    if (!tray) {
-       tray = document.createElement("div"); tray.className = "system-tray-container";
-       tray.innerHTML = `<div class="system-tray-icons"><span title="Volume">🔊</span><span title="Wi-Fi">📶</span></div>`;
-       clockEl.parentNode.insertBefore(tray, clockEl);
-    }
-  }
-
-  function openByKind(kind) {
-    if (kind === "folder") { addWindow("folder"); return; }
-    if (kind === "crash") { bsod.classList.remove("hidden"); return; }
-    if (kind === "about" || kind === "contact") addWindow(kind);
-  }
-
-  document.addEventListener("click", e => {
-    const open = e.target.closest("[data-open]");
-    if (open) openByKind(open.dataset.open);
-  });
-  bsod.addEventListener("click", () => bsod.classList.add("hidden"));
-
-  function nowClock() {
-    if (!clockEl) return;
-    const d = new Date();
-    clockEl.textContent = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
-  }
-
-  function triggerCrtWallpaperGlitch() {
-    if (!wallpaperEl) return;
-    wallpaperEl.classList.add("wallpaper-glitch-active");
-    setTimeout(() => { wallpaperEl.classList.remove("wallpaper-glitch-active"); }, 1000); 
-  }
-
-  function scheduleNextGlitch() {
-    triggerCrtWallpaperGlitch();
-    setTimeout(scheduleNextGlitch, 40000); 
-  }
-
-  function scheduleNextCrash() {
-    bsod.classList.remove("hidden");
-    crashMultiplier++;
-    setTimeout(scheduleNextCrash, 60000 * crashMultiplier);
-  }
-
-  // ==========================================
-  // BLINDAGEM DO MOTOR DE ADs (Prevenção de erro assíncrono)
-  // ==========================================
-  function spawnAd() {
-    const id = "popup_" + Math.random().toString(36).slice(2, 8);
-    const numStr = String(currentAdIndex).padStart(2, '0');
-    currentAdIndex = (currentAdIndex % 10) + 1; // Incrementa sequencialmente de 1 a 10
-
-    const extensions = ['gif', 'png', 'jpg', 'webp'];
-    
-    const tryLoad = () => {
-       if (extensions.length === 0) return;
-       const ext = extensions.shift();
-       const img = new Image();
-       
-       img.onload = () => {
-          const scale = Math.min(140 / img.naturalWidth, 140 / img.naturalHeight, 1);
-          const adW = Math.max(70, Math.round(img.naturalWidth * scale));
-          const adH = Math.max(70, Math.round(img.naturalHeight * scale));
-          
-          const contentHtml = `<img src="${img.src}" style="display:block; width:100%; height:100%; object-fit:contain; pointer-events:none;">`;
-          
-          const ad = {
-             id, kind: "popup", title: "AD", iconHtml: "⚠",
-             x: Math.random() * (innerWidth - adW), y: Math.random() * (innerHeight - adH - 20),
-             w: adW, h: adH, z: 999999, min: false, max: false,
-             content: contentHtml, vx: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random()), vy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random())
-          };
-          
-          ad.ratioX = ad.x / innerWidth; ad.ratioY = ad.y / innerHeight;
-          state.wins.push(ad); 
-          windowsEl.appendChild(createWindow(ad)); 
-          
-          requestAnimationFrame(function bounce() {
-             const winData = state.wins.find(w => w.id === id);
-             if (!winData) return; 
-             winData.x += winData.vx; winData.y += winData.vy;
-             if (winData.x <= 0 || winData.x + winData.w >= innerWidth) winData.vx *= -1;
-             if (winData.y <= 0 || winData.y + winData.h >= innerHeight) winData.vy *= -1;
-             
-             winData.ratioX = winData.x / innerWidth; winData.ratioY = winData.y / innerHeight;
-
-             const currentEl = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
-             if (currentEl && !currentEl.classList.contains("explode-anim")) { 
-               currentEl.style.left = `${winData.x}px`; currentEl.style.top = `${winData.y}px`; 
-             }
-             requestAnimationFrame(bounce);
-          });
-       };
-       
-       // Aumentada a margem de tempo para o servidor Vercel entregar o arquivo GIF pesado
-       img.onerror = () => { setTimeout(tryLoad, 80); };
-       img.src = `assets/ads/${numStr}.${ext}`;
-    };
-    
-    tryLoad();
-  }
-
-  function scheduleNextAd() {
-    if (state.wins.filter(w => w.kind === "popup").length < 4) spawnAd();
-    adMultiplier++;
-    setTimeout(scheduleNextAd, 45000 * adMultiplier);
-  }
-
-  function scheduleNextLogoShake() {
-     if (logoEl) {
-        logoEl.classList.add("logo-shake-active");
-        setTimeout(() => { logoEl.classList.remove("logo-shake-active"); }, 460);
-     }
-     setTimeout(scheduleNextLogoShake, Math.floor(Math.random() * 6000) + 4000);
-  }
-
-  function fixBackgroundCache() {
-    const wallpaper = $(".wallpaper");
-    if (!wallpaper) return;
-    wallpaper.style.backgroundImage =
-      `url("assets/background.gif?v=${Date.now()}"), linear-gradient(180deg,#07225f 0%,#1156c4 18%,#3f9ce8 42%,#a8dcf5 60%,#e9d9b6 62%,#d8a878 74%,#b9743f 92%,#8c4a24 100%)`;
-  }
-
-  // ==========================================
-  // INICIALIZAÇÃO COM INDEPENDÊNCIA DE ERROS (Try/Catch total)
-  // ==========================================
-  function init() {
-    try {
-      const W = innerWidth, H = innerHeight;
-      state.manifest = generateAutomaticManifest();
-      nowClock(); setInterval(nowClock, 1000);
-      fixBackgroundCache();
-
-      if (state.manifest.works && state.manifest.works.length >= 3) {
-        const w1 = state.manifest.works[0];
-        const w2 = state.manifest.works[1];
-        const w3 = state.manifest.works[2];
-
-        loadDimensions(w3).then(() => { addWindow("art", w3, { x: W * 0.02, y: H * 0.42, z: 1001 }); });
-        loadDimensions(w2).then(() => { addWindow("art", w2, { x: W - 560, y: H * 0.26, z: 1001 }); });
-
-        setTimeout(() => addWindow("folder", null, { z: 1002 }), 100);
-        setTimeout(() => addWindow("about", null, { z: 1003 }), 200);
-        setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { x: W * 0.22, y: H * 0.15, z: 1004 }); }); }, 300);
-      } else {
-        addWindow("folder"); addWindow("about");
-      }
-
-      setTimeout(() => {
-         addWindow("contact", null, { anchor: "bottom-right", x: W - 270, y: H - 205, z: 1005 });
-      }, 1000);
-
-      setTimeout(spawnAd, 5000); 
-      setTimeout(scheduleNextAd, 45000);
-      setTimeout(scheduleNextGlitch, 40000);
-      setTimeout(scheduleNextCrash, 60000);
-      setTimeout(scheduleNextLogoShake, 4000);
-      
-    } catch(err) {
-      console.error("Erro ignorado no init para manter o portfólio rodando:", err);
-    }
   }
 
   function createWindow(w) {
@@ -750,6 +614,7 @@
         }
       });
     } else {
+      // PERMITE TRAZER PARA A FRENTE AO CLICAR EM QUALQUER ÁREA DA JANELA
       el.addEventListener("pointerdown", () => focusWin(w.id));
       
       el.addEventListener("pointerdown", e => {
@@ -778,6 +643,178 @@
     bindWindowBody(el, w); return el;
   }
 
+  function renderTasks() {
+    if (!taskStrip) return;
+    taskStrip.innerHTML = "";
+    state.wins.filter(w => w.kind !== "popup").forEach(w => {
+      const b = document.createElement("button");
+      b.className = `task-button ${state.active === w.id && !w.min ? "focused" : ""} ${w.kind === "contact" ? "task-msn" : ""}`;
+      b.innerHTML = `${w.iconHtml || ""} ${w.title}`;
+      b.addEventListener("click", () => { if (state.active === w.id && !w.min) { w.min = true; renderTasks(); } else focusWin(w.id); });
+      taskStrip.appendChild(b);
+    });
+
+    if (clockEl && clockEl.parentNode) {
+        let tray = $(".system-tray-container");
+        if (!tray) {
+           tray = document.createElement("div"); tray.className = "system-tray-container";
+           tray.innerHTML = `<div class="system-tray-icons"><span title="Volume">🔊</span><span title="Wi-Fi">📶</span></div>`;
+           clockEl.parentNode.insertBefore(tray, clockEl);
+        }
+    }
+  }
+
+  function openByKind(kind) {
+    if (kind === "folder") { addWindow("folder"); return; }
+    if (kind === "crash") { if (bsod) bsod.classList.remove("hidden"); return; }
+    if (kind === "about" || kind === "contact") addWindow(kind);
+  }
+
+  document.addEventListener("click", e => {
+    const open = e.target.closest("[data-open]");
+    if (open) openByKind(open.dataset.open);
+  });
+  
+  if (bsod) bsod.addEventListener("click", () => bsod.classList.add("hidden"));
+
+  function nowClock() {
+    if (!clockEl) return;
+    const d = new Date();
+    clockEl.textContent = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+  }
+
+  function triggerCrtWallpaperGlitch() {
+    if (!wallpaperEl) return;
+    wallpaperEl.classList.add("wallpaper-glitch-active");
+    setTimeout(() => { wallpaperEl.classList.remove("wallpaper-glitch-active"); }, 1000); 
+  }
+
+  function scheduleNextGlitch() {
+    triggerCrtWallpaperGlitch();
+    setTimeout(scheduleNextGlitch, 40000); 
+  }
+
+  function scheduleNextCrash() {
+    if (bsod) bsod.classList.remove("hidden");
+    crashMultiplier++;
+    setTimeout(scheduleNextCrash, 60000 * crashMultiplier);
+  }
+
+  // ==========================================
+  // PROPAGANDAS COMPLETAMENTE NÚAS E SEGURAS
+  // ==========================================
+  function spawnAd() {
+    const id = "popup_" + Math.random().toString(36).slice(2, 8);
+    const numStr = String(currentAdIndex).padStart(2, '0');
+    currentAdIndex = (currentAdIndex % 10) + 1; 
+
+    const extensions = ['gif', 'png', 'jpg', 'webp'];
+    
+    const tryLoad = () => {
+       if (extensions.length === 0) return;
+       const ext = extensions.shift();
+       const img = new Image();
+       
+       img.onload = () => {
+          const scale = Math.min(140 / img.naturalWidth, 140 / img.naturalHeight, 1);
+          const adW = Math.max(60, Math.round(img.naturalWidth * scale));
+          const adH = Math.max(60, Math.round(img.naturalHeight * scale));
+          
+          const contentHtml = `<img src="${img.src}" style="display:block; width:100%; height:100%; object-fit:contain; pointer-events:none;">`;
+          
+          const ad = {
+             id, kind: "popup", title: "AD", iconHtml: "⚠",
+             x: Math.random() * (innerWidth - adW), y: Math.random() * (innerHeight - adH - 20),
+             w: adW, h: adH, z: 999999, min: false, max: false,
+             content: contentHtml, vx: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random()), vy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random())
+          };
+          
+          ad.ratioX = ad.x / innerWidth; ad.ratioY = ad.y / innerHeight;
+          state.wins.push(ad); 
+          
+          if (windowsEl) windowsEl.appendChild(createWindow(ad)); 
+          
+          requestAnimationFrame(function bounce() {
+             const winData = state.wins.find(w => w.id === id);
+             if (!winData) return; 
+             winData.x += winData.vx; winData.y += winData.vy;
+             if (winData.x <= 0 || winData.x + winData.w >= innerWidth) winData.vx *= -1;
+             if (winData.y <= 0 || winData.y + winData.h >= innerHeight) winData.vy *= -1;
+             
+             winData.ratioX = winData.x / innerWidth; winData.ratioY = winData.y / innerHeight;
+
+             if (windowsEl) {
+               const currentEl = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
+               if (currentEl && !currentEl.classList.contains("explode-anim")) { 
+                 currentEl.style.left = `${winData.x}px`; currentEl.style.top = `${winData.y}px`; 
+               }
+             }
+             requestAnimationFrame(bounce);
+          });
+       };
+       
+       img.onerror = () => { setTimeout(tryLoad, 80); };
+       img.src = `assets/ads/${numStr}.${ext}`;
+    };
+    tryLoad();
+  }
+
+  function scheduleNextAd() {
+    if (state.wins.filter(w => w.kind === "popup").length < 4) spawnAd();
+    adMultiplier++;
+    setTimeout(scheduleNextAd, 45000 * adMultiplier);
+  }
+
+  function scheduleNextLogoShake() {
+     if (logoEl) {
+        logoEl.classList.add("logo-shake-active");
+        setTimeout(() => { logoEl.classList.remove("logo-shake-active"); }, 460);
+     }
+     setTimeout(scheduleNextLogoShake, Math.floor(Math.random() * 6000) + 4000);
+  }
+
+  function fixBackgroundCache() {
+    if (!wallpaperEl) return;
+    wallpaperEl.style.backgroundImage = `url("assets/background.gif?v=${Date.now()}"), linear-gradient(180deg,#07225f 0%,#1156c4 18%,#3f9ce8 42%,#a8dcf5 60%,#e9d9b6 62%,#d8a878 74%,#b9743f 92%,#8c4a24 100%)`;
+  }
+
+  function init() {
+    try {
+      const W = innerWidth, H = innerHeight;
+      state.manifest = generateAutomaticManifest();
+      nowClock(); setInterval(nowClock, 1000);
+      fixBackgroundCache();
+
+      if (state.manifest.works && state.manifest.works.length >= 3) {
+        const w1 = state.manifest.works[0];
+        const w2 = state.manifest.works[1];
+        const w3 = state.manifest.works[2];
+
+        loadDimensions(w3).then(() => { addWindow("art", w3, { x: W * 0.02, y: H * 0.42, z: 1001 }); });
+        loadDimensions(w2).then(() => { addWindow("art", w2, { x: Math.max(10, W - 580), y: H * 0.28, z: 1001 }); });
+
+        setTimeout(() => addWindow("folder", null, { z: 1002 }), 100);
+        setTimeout(() => addWindow("about", null, { z: 1003 }), 200);
+        setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { x: W * 0.22, y: H * 0.15, z: 1004 }); }); }, 300);
+      } else {
+        addWindow("folder"); addWindow("about");
+      }
+
+      setTimeout(() => {
+         addWindow("contact", null, { anchor: "bottom-right", x: W - 270, y: H - 205, z: 1005 });
+      }, 1000);
+
+      setTimeout(spawnAd, 5000); 
+      setTimeout(scheduleNextAd, 45000);
+      setTimeout(scheduleNextGlitch, 40000);
+      setTimeout(scheduleNextCrash, 60000);
+      setTimeout(scheduleNextLogoShake, 4000);
+      
+    } catch(err) {
+      console.error("Erro inicial tratado em background:", err);
+    }
+  }
+
   window.addEventListener("resize", () => {
     state.wins.forEach(w => {
       if (w.anchor === "bottom-right") {
@@ -787,8 +824,10 @@
          w.x = clamp(w.ratioX * innerWidth, 0, innerWidth - w.w);
          w.y = clamp(w.ratioY * innerHeight, 38, innerHeight - w.h - 40);
       }
-      const el = windowsEl.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
-      if (el) { el.style.left = `${w.x}px`; el.style.top = `${w.y}px`; }
+      if (windowsEl) {
+         const el = windowsEl.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
+         if (el) { el.style.left = `${w.x}px`; el.style.top = `${w.y}px`; }
+      }
     });
   });
 
