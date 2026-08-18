@@ -2,17 +2,23 @@
   "use strict";
 
   // ==========================================
-  // MOTOR UNIVERSAL DE EXTENSÕES (Resolve Maiúsculas/Minúsculas)
+  // SCANNER DE EXTENSÕES BLINDADO (Auto-limpante)
+  // Testa silenciosamente se a foto existe. Se não existir, some com o ícone.
   // ==========================================
-  window.getAltImg = function(img, basePath) {
+  window.getAltImg = function(img) {
      const exts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'PNG', 'JPG', 'JPEG', 'GIF', 'WEBP'];
      let step = parseInt(img.dataset.step || "0");
+     
      if (step < exts.length) {
          img.dataset.step = step + 1;
-         let nextFile = basePath + '.' + exts[step];
+         let rawPath = img.dataset.filepath.replace(/\.[a-zA-Z0-9]+$/i, '');
+         let nextFile = rawPath + '.' + exts[step];
          img.src = nextFile.split("/").map(encodeURIComponent).join("/");
      } else {
-         img.outerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"><rect width="50" height="50" fill="rgba(255,255,255,0.1)" stroke="#ff0000" stroke-width="2" stroke-dasharray="4"/><text x="25" y="25" fill="#ff0000" font-size="10" font-family="sans-serif" text-anchor="middle" dominant-baseline="middle">OFF</text></svg>';
+         // Se testou todas as extensões e não achou nada, a foto não existe no Vercel.
+         // Esconde o botão para a galeria ficar limpa apenas com o que existe!
+         let btn = img.closest('.image-entry');
+         if (btn) btn.style.display = 'none';
      }
   };
 
@@ -41,7 +47,6 @@
     .work-thumb { width: auto; height: auto; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; background: transparent !important; }
     .work-thumb img { max-width: 100px; max-height: 80px; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); }
     
-    /* REMOÇÃO ABSOLUTA DE BORDAS DAS JANELAS DE ARTE */
     .frameless-art { background: transparent !important; background-image: none !important; border: none !important; box-shadow: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; outline: none !important; }
     .frameless-art .window-body { height: auto !important; background: transparent !important; background-image: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; border: none !important; box-shadow: none !important; }
     .frameless-art:before, .frameless-art:after { display: none !important; }
@@ -64,16 +69,16 @@
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
     /* ======================================================= */
-    /* ABOUT: MAIS ALTO, COM MARGEM RESPIRO E TEXTOS À ESQUERDA */
+    /* ABOUT: VIDRO ESCOVADO, PADDING SUPERIOR REDUZIDO */
     /* ======================================================= */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
-    .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; height: 100% !important; text-align: left !important; overflow-y: auto !important; }
+    .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; height: 100% !important; text-align: left !important; overflow: hidden; }
     .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); text-align: left !important; }
     
-    /* MARGEM INFERIOR (PADDING-BOTTOM) BEM MAIOR PARA DAR RESPIRO: 100px */
-    .about-content-box { text-align: left !important; padding: 25px 25px 100px 25px !important; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block !important; width: 100% !important; box-sizing: border-box; }
+    /* Padding-top agora é 15px para acompanhar a margem dos parágrafos, fundo com bastante respiro (80px) */
+    .about-content-box { text-align: left !important; padding: 15px 25px 80px 25px !important; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block !important; width: 100% !important; box-sizing: border-box; height: 100%; overflow-y: auto; }
     .about-content-box * { text-align: left !important; justify-content: flex-start !important; align-items: flex-start !important; }
-    .about-content-box h2 { font-size: 24px; margin-bottom: 10px; margin-top: 0; text-align: left !important; width: 100%; display: block; }
+    .about-content-box h2 { font-size: 24px; margin-bottom: 15px; margin-top: 0; text-align: left !important; width: 100%; display: block; }
     .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.5; text-align: left !important; width: 100%; display: block; }
     .about-content-box .chronology { font-family: monospace; font-size: 13px; line-height: 1.8; background: transparent; padding: 0; border-radius: 0; text-align: left !important; display: block; width: 100%; }
     
@@ -201,6 +206,7 @@
     const buildItems = (folderPath, type) => {
       return Array.from({ length: 15 }, (_, i) => {
         const num = String(i + 1).padStart(2, '0');
+        // Inicializa com .png. O window.getAltImg ou loadDimensions corrige automático.
         return { id: `${folderPath}/${num}.png`, file: `${folderPath}/${num}.png`, title: `${num}`, type: type };
       });
     };
@@ -263,10 +269,10 @@
     
     if (kind === "folder") return { x: W * 0.05, y: H * 0.23, w: Math.min(600, W * 0.8), h: Math.min(420, H * 0.7) };
     
-    // ABOUT BEM MAIOR PARA DAR RESPIRO NA BORDA INFERIOR
+    // ABOUT MAIOR E MAIS ALTO PARA CABER O RESPIRO INFERIOR E NÃO CORTAR TEXTO
     if (kind === "about") {
-       const aW = Math.min(320, W * 0.9);
-       const aH = 500; 
+       const aW = Math.min(330, W * 0.9);
+       const aH = 460; 
        return { x: clamp(W - aW - 20, 10, W - aW), y: clamp(H * 0.15, 10, H - aH), w: aW, h: aH };
     }
     
@@ -429,10 +435,12 @@
   }
 
   function imageCard(item) {
-    const baseFile = escapeHtml(item.file.replace(/\.[a-zA-Z0-9]+$/i, ''));
+    const rawPath = escapeHtml(item.file);
     return `
       <button class="work-item image-entry" type="button" data-work="${escapeHtml(item.id)}">
-        <div class="work-thumb"><img src="${escapeHtml(imageSrc(item))}" alt="" loading="lazy" onerror="window.getAltImg(this, '${baseFile}')"></div>
+        <div class="work-thumb">
+           <img src="${escapeHtml(imageSrc(item))}" data-filepath="${rawPath}" alt="" loading="lazy" onerror="window.getAltImg(this)">
+        </div>
         <span>${escapeHtml(item.title)}</span>
       </button>`;
   }
@@ -493,7 +501,7 @@
         <div class="acervo-toast" style="position: absolute; left: calc(100% + 60px); top: 20px; background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 15px; border: 1px solid rgba(255,255,255,0.4); border-radius: 4px; color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; width: max-content; min-width: 220px; box-shadow: 2px 2px 10px rgba(0,0,0,0.5); text-align: left; cursor: default; touch-action: auto;">
            <div style="font-size: 16px; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px; text-transform: uppercase;">OBRA ${escapeHtml(w.title)}</div>
            <div style="font-size: 12px; line-height: 1.8;">
-             <strong style="color:#A4CBF0; display:inline-block; width:80px;">STATUS:</strong> <a href="mailto:h4wnee@gmail.com?subject=Interesse%20na%20obra%20${escapeHtml(w.title)}" target="_blank" style="color:#F4D03F; text-decoration:none; border-bottom:1px dashed #F4D03F;">[ SOLICITAR INFO ]</a><br>
+             <strong style="color:#A4CBF0; display:inline-block; width:80px;">STATUS:</strong> <a href="mailto:h4wnee@gmail.com?subject=Interesse%20na%20obra%20${escapeHtml(w.work.id)}" target="_blank" style="color:#F4D03F; text-decoration:none; border-bottom:1px dashed #F4D03F;">[ SOLICITAR INFO ]</a><br>
              <strong style="color:#A4CBF0; display:inline-block; width:80px;">ANO:</strong> 2026<br>
              <strong style="color:#A4CBF0; display:inline-block; width:80px;">MATERIAL:</strong> ...<br>
              <strong style="color:#A4CBF0; display:inline-block; width:80px;">DIMENSÕES:</strong> ...<br>
@@ -502,12 +510,12 @@
         </div>
       ` : '';
 
-      const baseFile = escapeHtml(w.work.file.replace(/\.[a-zA-Z0-9]+$/i, ''));
+      const rawPath = escapeHtml(w.work.file);
       return `
         <div class="art-plate">
           <div class="img-wrapper">
              <button class="nav-art prev-art" data-dir="-1">❮</button>
-             <img src="${imageSrc(w.work)}" alt="${escapeHtml(w.title)}" onerror="window.getAltImg(this, '${baseFile}')">
+             <img src="${escapeHtml(imageSrc(w.work))}" data-filepath="${rawPath}" alt="${escapeHtml(w.title)}" onerror="window.getAltImg(this)">
              <button class="close-art" data-act="close">X</button>
              <button class="nav-art next-art" data-dir="1">❯</button>
              ${acervoPanel}
@@ -573,14 +581,13 @@
           e.preventDefault(); e.stopPropagation();
           if (btn.dataset.work) {
             const work = findItem(btn.dataset.work);
-            if (work) loadDimensions(work).then(() => addWindow("art", work, { isInit: false })); 
+            if (work) loadDimensions(work).then(() => addWindow("art", work, { isInit: false })).catch(()=>{}); 
           } else if (btn.dataset.folder) {
             navigateBrowser(w, btn.dataset.folder);
           }
         };
 
         btn.addEventListener("click", openAction);
-        
         let moved = false;
         btn.addEventListener("touchmove", () => moved = true, { passive: true });
         btn.addEventListener("touchstart", () => moved = false, { passive: true });
@@ -590,7 +597,6 @@
       $$('[data-nav="back"]', el).forEach(btn => {
         const goBackAction = (e) => { e.preventDefault(); e.stopPropagation(); goBack(w); };
         btn.addEventListener("click", goBackAction);
-        
         let moved = false;
         btn.addEventListener("touchmove", () => moved = true, { passive: true });
         btn.addEventListener("touchstart", () => moved = false, { passive: true });
@@ -612,10 +618,7 @@
            const isExpanded = expandArea.style.display !== "none";
            expandArea.style.display = isExpanded ? "none" : "block";
            w.h = isExpanded ? 160 : 255;
-           
-           if (w.anchor === "bottom-right") {
-              w.y = innerHeight - w.h - 45;
-           }
+           if (w.anchor === "bottom-right") { w.y = innerHeight - w.h - 45; }
            w.ratioY = w.y / innerHeight;
            el.style.height = `${w.h}px`; el.style.top = `${w.y}px`;
        });
@@ -655,7 +658,7 @@
                   const body = el.querySelector(".window-body");
                   if(body) body.innerHTML = windowBodyHTML(w);
                   bindWindowBody(el, w);
-               });
+               }).catch(()=>{});
             }
          });
          btn.addEventListener("pointerdown", e => { e.stopPropagation(); focusWin(w.id); });
@@ -759,18 +762,19 @@
   }
 
   // ==========================================
-  // CARREGAMENTO PROTEGIDO DE DIMENSÕES
+  // CARREGAMENTO PROTEGIDO PARA AS OBRAS GRANDES
+  // O código testa todas as extensões antes de abrir a janela
   // ==========================================
   function loadDimensions(work) {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       const exts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'PNG', 'JPG', 'JPEG', 'GIF', 'WEBP'];
       const baseFile = work.file.replace(/\.[a-zA-Z0-9]+$/i, '');
       let step = 0;
       
       const tryNext = () => {
         if (step >= exts.length) {
-           work.file = baseFile + '.png'; // Fallback final
-           work.nw = 800; work.nh = 600; resolve(work); return;
+           reject("Imagem não encontrada"); 
+           return;
         }
         const ext = exts[step++];
         const img = new Image();
@@ -976,6 +980,9 @@
     wallpaperEl.style.backgroundImage = `url("assets/background.gif?v=${Date.now()}"), linear-gradient(180deg,#07225f 0%,#1156c4 18%,#3f9ce8 42%,#a8dcf5 60%,#e9d9b6 62%,#d8a878 74%,#b9743f 92%,#8c4a24 100%)`;
   }
 
+  // ==========================================
+  // INICIALIZAÇÃO SEGURA (Abre a pasta beck_END se existir)
+  // ==========================================
   function init() {
     try {
       const W = innerWidth, H = innerHeight;
@@ -988,17 +995,16 @@
         const w2 = state.manifest.beckEnd[1];
         const w3 = state.manifest.beckEnd[2];
 
-        // w3 é 03 (Nasce na esquerda)
-        loadDimensions(w3).then(() => { addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 }); });
-        
+        // w3 é 03 (Nasce na esquerda) - Oculta erro se falhar
+        loadDimensions(w3).then(() => { addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 }); }).catch(()=>{});
         // w2 é 02 (Nasce na direita)
-        loadDimensions(w2).then(() => { addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 }); });
+        loadDimensions(w2).then(() => { addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 }); }).catch(()=>{});
 
         setTimeout(() => addWindow("folder", null, { z: 1002 }), 100);
         setTimeout(() => addWindow("about", null, { z: 1003 }), 200);
         
         // w1 é 01 (Nasce no centro)
-        setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { isInit: true, x: W * 0.22, y: H * 0.15, z: 1004 }); }); }, 300);
+        setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { isInit: true, x: W * 0.22, y: H * 0.15, z: 1004 }); }).catch(()=>{}); }, 300);
       } else {
         addWindow("folder"); addWindow("about");
       }
