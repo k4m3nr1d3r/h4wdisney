@@ -3,7 +3,6 @@
 
   // ==========================================
   // O GRANDE RADAR (Scanner Imbatível de Pastas e Extensões)
-  // Testa variações de maiúsculas, erros de digitação e pastas ocultas!
   // ==========================================
   window.getPathsToTest = function(baseFile) {
       const exts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'PNG', 'JPG', 'JPEG', 'GIF', 'WEBP'];
@@ -38,6 +37,7 @@
       return paths;
   };
 
+  // NOME DA FUNÇÃO CORRIGIDA AQUI!
   window.handleThumbErr = function(img) {
      let step = parseInt(img.dataset.step || "0");
      let rawPath = img.dataset.filepath.replace(/\.[a-zA-Z0-9]+$/i, '');
@@ -47,11 +47,42 @@
          img.dataset.step = step + 1;
          img.src = paths[step].split("/").map(encodeURIComponent).join("/");
      } else {
-         // Se não achar de jeito nenhum, limpa o ícone "OFF" e some de fininho
          let btn = img.closest('.image-entry');
          if (btn) btn.style.display = 'none';
+         if (!btn) {
+             img.outerHTML = '<div style="display:flex; align-items:center; justify-content:center; width:100%; height:100%; color:#fff; font-family:sans-serif; text-shadow:1px 1px 2px #000;">Imagem não encontrada no servidor</div>';
+         }
      }
   };
+
+  // ==========================================
+  // CARREGAMENTO PROTEGIDO PARA ABRIR OBRAS
+  // ==========================================
+  function loadDimensions(work) {
+    return new Promise((resolve) => {
+      const rawPath = work.file.replace(/\.[a-zA-Z0-9]+$/i, '');
+      const paths = window.getPathsToTest(rawPath);
+      let step = 0;
+      
+      const tryNext = () => {
+        if (step >= paths.length) {
+           work.nw = 800; work.nh = 600; 
+           resolve(work); 
+           return;
+        }
+        const testPath = paths[step++];
+        const img = new Image();
+        img.onload = () => { 
+           work.file = testPath; 
+           work.nw = img.naturalWidth; work.nh = img.naturalHeight; 
+           resolve(work); 
+        };
+        img.onerror = tryNext;
+        img.src = testPath.split("/").map(encodeURIComponent).join("/");
+      };
+      tryNext();
+    });
+  }
 
   // ==========================================
   // FORÇAR MODO DESKTOP NO CELULAR
@@ -99,13 +130,13 @@
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
     /* ======================================================= */
-    /* ABOUT: VIDRO ESCOVADO, COMPACTO E SIMÉTRICO */
+    /* ABOUT PRESERVADO: COMPACTO, SIMÉTRICO E ALINHADO */
     /* ======================================================= */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
     .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; height: 100% !important; text-align: left !important; overflow: hidden; }
     .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); text-align: left !important; }
     
-    .about-content-box { text-align: left !important; padding: 25px !important; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block !important; width: 100% !important; box-sizing: border-box; height: 100%; overflow-y: auto; }
+    .about-content-box { text-align: left !important; padding: 15px 25px 80px 25px !important; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block !important; width: 100% !important; box-sizing: border-box; height: 100%; overflow-y: auto; }
     .about-content-box * { text-align: left !important; justify-content: flex-start !important; align-items: flex-start !important; }
     .about-content-box h2 { font-size: 24px; margin-bottom: 15px; margin-top: 0; text-align: left !important; width: 100%; display: block; }
     .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.5; text-align: left !important; width: 100%; display: block; }
@@ -116,6 +147,7 @@
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
     
+    /* EXPLOSÃO RADIAL 8-BITS */
     @keyframes realisticPixelExplosion {
       0% { box-shadow: 0 0 0 4px #fff, 0 0 0 8px #ffeb3b; background: transparent; transform: scale(0.6); opacity: 1; }
       35% { box-shadow: 0 -16px 0 3px #fff, 0 16px 0 3px #fff, 16px 0 0 3px #fff, -16px 0 0 3px #fff, -12px -12px 0 4px #ffeb3b, 12px 12px 0 4px #ffeb3b, -12px 12px 0 4px #ffeb3b, 12px -12px 0 4px #ffeb3b, 0 -25px 0 3px #ff9800, 0 25px 0 3px #ff9800; transform: scale(1.1); opacity: 1; border: none; }
@@ -126,11 +158,13 @@
     .explode-anim .window-body { display: none !important; } 
     .explode-anim::after { content: ""; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; margin-top: -2px; margin-left: -2px; animation: realisticPixelExplosion 0.45s steps(5) forwards; }
     
+    /* TOAST MSN */
     @keyframes msnSlideIn { 0% { transform: translateY(250px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
     .msn-window { position: fixed !important; border-radius: 8px !important; background: linear-gradient(to bottom, #E6F0FA 0%, #CDE0F5 40%, #A4CBF0 100%) !important; border: 1px solid #6E98C7 !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.4) !important; animation: msnSlideIn 0.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; transition: height 0.15s ease-in-out, top 0.15s ease-in-out, left 0.15s ease-in-out; }
     .msn-window .titlebar { display: none !important; }
     .task-msn { background: linear-gradient(to bottom, #E6F0FA, #A4CBF0) !important; border: 1px solid #6E98C7 !important; color: #000 !important; }
     
+    /* TASKBAR E FILTROS CRT */
     .taskbar { display: flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; padding: 0 10px; }
     .task-strip { flex: 1; display: flex; gap: 4px; overflow: hidden; margin: 0 10px; min-width: 0; }
     .task-button { flex: 0 1 140px; min-width: 35px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -286,7 +320,6 @@
     
     if (kind === "folder") return { x: W * 0.05, y: H * 0.23, w: Math.min(600, W * 0.8), h: Math.min(420, H * 0.7) };
     
-    // ABOUT MAIS COMPACTO COM PADDING SIMÉTRICO
     if (kind === "about") {
        const aW = Math.min(320, W * 0.9);
        const aH = 350; 
@@ -598,9 +631,7 @@
           e.preventDefault(); e.stopPropagation();
           if (btn.dataset.work) {
             const work = findItem(btn.dataset.work);
-            // Ao invés de tentar o loadDimensions (que rejeitava a promessa invisível)
-            // Ele agora só abre a janela e deixa o Radar resolver a imagem final.
-            if (work) addWindow("art", work, { isInit: false }); 
+            if (work) loadDimensions(work).then(() => addWindow("art", work, { isInit: false })); 
           } else if (btn.dataset.folder) {
             navigateBrowser(w, btn.dataset.folder);
           }
@@ -671,12 +702,13 @@
                if (nextIdx >= sibs.list.length) nextIdx = 0;
                const nextWork = sibs.list[nextIdx];
                
-               // Apenas carrega a próxima imagem usando o HTML novo, sem depender do fetch interno cego
-               w.work = nextWork;
-               w.title = nextWork.title;
-               const body = el.querySelector(".window-body");
-               if(body) body.innerHTML = windowBodyHTML(w);
-               bindWindowBody(el, w);
+               loadDimensions(nextWork).then(() => {
+                  w.work = nextWork;
+                  w.title = nextWork.title;
+                  const body = el.querySelector(".window-body");
+                  if(body) body.innerHTML = windowBodyHTML(w);
+                  bindWindowBody(el, w);
+               });
             }
          });
          btn.addEventListener("pointerdown", e => { e.stopPropagation(); focusWin(w.id); });
@@ -976,18 +1008,17 @@
       nowClock(); setInterval(nowClock, 1000);
       fixBackgroundCache();
 
-      // Deixa o radar agir naturalmente na montagem
       if (state.manifest.beckEnd && state.manifest.beckEnd.length >= 3) {
         const w1 = state.manifest.beckEnd[0];
         const w2 = state.manifest.beckEnd[1];
         const w3 = state.manifest.beckEnd[2];
 
-        addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 });
-        addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 });
+        loadDimensions(w3).then(() => { addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 }); });
+        loadDimensions(w2).then(() => { addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 }); });
 
         setTimeout(() => addWindow("folder", null, { z: 1002 }), 100);
         setTimeout(() => addWindow("about", null, { z: 1003 }), 200);
-        setTimeout(() => addWindow("art", w1, { isInit: true, x: W * 0.22, y: H * 0.15, z: 1004 }), 300);
+        setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { isInit: true, x: W * 0.22, y: H * 0.15, z: 1004 }); }); }, 300);
       } else {
         addWindow("folder"); addWindow("about");
       }
@@ -1003,7 +1034,7 @@
       setTimeout(scheduleNextLogoShake, 4000);
       
     } catch(err) {
-      console.error("Erro inicial tratado em background:", err);
+      console.error("Erro inicial:", err);
     }
   }
 
