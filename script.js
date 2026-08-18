@@ -2,12 +2,12 @@
   "use strict";
 
   // ==========================================
-  // O GRANDE RADAR (Scanner de Força Bruta)
-  // Testa 150+ combinações para driblar o bloqueio do Vercel/Linux
+  // O RADAR NÍVEL DEUS (Buscador Absoluto)
+  // Testa variações infinitas para driblar o cache do GitHub e da Vercel
   // ==========================================
   window.getPathsToTest = function(baseFile) {
       const exts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'PNG', 'JPG', 'JPEG', 'GIF', 'WEBP'];
-      const doubleExts = ['png.png', 'jpg.jpg', 'jpeg.jpeg']; // O clássico erro de extensão oculta no Windows
+      const doubleExts = ['png.png', 'jpg.jpg', 'jpeg.jpeg']; 
       const allExts = exts.concat(doubleExts);
       
       let parts = baseFile.split('/');
@@ -15,13 +15,27 @@
       let folder = parts.join('/'); 
 
       let folders = [folder, 'assets/' + folder, folder.toLowerCase(), folder.toUpperCase()];
-      if (folder === 'exhibiti0ns') folders.push('exhibitions');
-      if (folder === 'beck_END') { folders.push('beck_end'); folders.push('backend'); }
-      if (folder === 'ACERVO') folders.push('acervo');
+      
+      // Se o GitHub travou nos nomes antigos, o radar busca por eles!
+      if (folder.includes('exhibiti0n')) {
+          folders.push(folder.replace('exhibiti0n', 'exhibiti0ns'));
+          folders.push(folder.replace('exhibiti0n', 'exhibitions'));
+          folders.push(folder.replace('exhibiti0n', 'vernissagem'));
+          folders.push(folder.replace('exhibiti0n', 'Vernissages'));
+      }
+      if (folder.includes('ACERVO')) {
+          folders.push(folder.replace('ACERVO', 'acervo'));
+          folders.push(folder.replace('ACERVO', 'Obras'));
+          folders.push(folder.replace('ACERVO', 'obras'));
+      }
+      if (folder.includes('beck_END')) {
+          folders.push(folder.replace('beck_END', 'beck_end'));
+          folders.push(folder.replace('beck_END', 'backend'));
+      }
 
       let files = [filename];
-      if (filename.startsWith('0')) files.push(filename.substring(1)); // Transforma "01" em "1"
-      else if (filename.length === 1) files.push('0' + filename); // Transforma "1" em "01"
+      if (filename.startsWith('0')) files.push(filename.substring(1)); // Testa '1' em vez de '01'
+      else if (filename.length === 1) files.push('0' + filename); // Testa '01' em vez de '1'
       
       let paths = [];
       [...new Set(folders)].forEach(f => {
@@ -43,7 +57,6 @@
          img.dataset.step = step + 1;
          img.src = paths[step].split("/").map(encodeURIComponent).join("/");
      } else {
-         // Se não achar, oculta o botão da galeria para manter o site limpo
          let btn = img.closest('.image-entry');
          if (btn) btn.style.display = 'none';
      }
@@ -94,9 +107,7 @@
     
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
-    /* ======================================================= */
-    /* ABOUT PRESERVADO: COMPACTO, SIMÉTRICO E ALINHADO */
-    /* ======================================================= */
+    /* ABOUT PRESERVADO */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
     .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; height: 100% !important; text-align: left !important; overflow: hidden; }
     .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); text-align: left !important; }
@@ -107,7 +118,6 @@
     .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.5; text-align: left !important; width: 100%; display: block; }
     .about-content-box .chronology { font-family: monospace; font-size: 13px; line-height: 1.8; background: transparent; padding: 0; border-radius: 0; text-align: left !important; display: block; width: 100%; }
     
-    /* POPUP ADS NÚS */
     .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
@@ -220,15 +230,16 @@
     const buildItems = (folderPath, type) => {
       return Array.from({ length: 15 }, (_, i) => {
         const num = String(i + 1).padStart(2, '0');
+        // Agora com o nome exato exhibiti0n (sem o S)
         return { id: `${folderPath}/${num}.png`, file: `${folderPath}/${num}.png`, title: `${num}`, type: type };
       });
     };
     return {
       version: 1,
       exhibitions: [
-        { id: "exhibiti0ns:utopias_piratas_2021", name: "utopias_piratas_2021", year: 2021, items: buildItems("exhibiti0ns/utopias_piratas_2021", "exhibiti0ns") },
-        { id: "exhibiti0ns:Hyperlinks, Distortion e Mormasso", name: "Hyperlinks, Distortion e Mormasso", year: 2022, items: buildItems("exhibiti0ns/Hyperlinks, Distortion e Mormasso", "exhibiti0ns") },
-        { id: "exhibiti0ns:RAW 2025 (HOA+FDAG)", name: "RAW 2025 (HOA+FDAG)", year: 2025, items: buildItems("exhibiti0ns/RAW 2025 (HOA+FDAG)", "exhibiti0ns") }
+        { id: "exhibiti0n:utopias_piratas_2021", name: "utopias_piratas_2021", year: 2021, items: buildItems("exhibiti0n/utopias_piratas_2021", "exhibiti0n") },
+        { id: "exhibiti0n:Hyperlinks, Distortion e Mormasso", name: "Hyperlinks, Distortion e Mormasso", year: 2022, items: buildItems("exhibiti0n/Hyperlinks, Distortion e Mormasso", "exhibiti0n") },
+        { id: "exhibiti0n:RAW 2025 (HOA+FDAG)", name: "RAW 2025 (HOA+FDAG)", year: 2025, items: buildItems("exhibiti0n/RAW 2025 (HOA+FDAG)", "exhibiti0n") }
       ],
       acervo: buildItems("ACERVO", "ACERVO"),
       beckEnd: buildItems("beck_END", "beck_END")
@@ -257,11 +268,11 @@
   function currentBrowser(win) {
     const path = Array.isArray(win.browserPath) ? win.browserPath : [];
     if (path.length === 0) return browserRoot();
-    if (path[0] === "exhibiti0ns") {
-      if (path.length === 1) return { kind: "exhibiti0ns", name: "exhibiti0ns", path };
+    if (path[0] === "exhibiti0n") {
+      if (path.length === 1) return { kind: "exhibiti0n", name: "exhibiti0n", path };
       const name = path.slice(1).join("/");
       const group = state.manifest.exhibitions.find(x => x.name === name);
-      return group ? { kind: "exhibition", name: group.name, path, group } : { kind: "exhibiti0ns", name: "exhibiti0ns", path: ["exhibiti0ns"] };
+      return group ? { kind: "exhibition", name: group.name, path, group } : { kind: "exhibiti0n", name: "exhibiti0n", path: ["exhibiti0n"] };
     }
     if (path[0] === "ACERVO") return { kind: "ACERVO", name: "ACERVO", path };
     if (path[0] === "beck_END") return { kind: "beck_END", name: "beck_END", path };
@@ -270,7 +281,7 @@
 
   function folderEntries() {
     return [
-      { type: "folder", id: "exhibiti0ns", name: "exhibiti0ns", subtitle: `3 exposições` },
+      { type: "folder", id: "exhibiti0n", name: "exhibiti0n", subtitle: `3 exposições` },
       { type: "folder", id: "ACERVO", name: "ACERVO", subtitle: `15 arquivos` },
       { type: "folder", id: "beck_END", name: "beck_END", subtitle: `15 arquivos` }
     ];
@@ -292,7 +303,6 @@
     
     if (kind === "art" && work) {
       const nw = Number(work.nw) || 800; const nh = Number(work.nh) || 600;
-      
       let scaleFactorW = opts.isInit ? 0.35 : 0.85;
       let scaleFactorH = opts.isInit ? 0.50 : 0.85;
       
@@ -466,9 +476,9 @@
           <strong>${escapeHtml(entry.name)}</strong>
         </button>`).join("") + `</div>`;
     } 
-    else if (current.kind === "exhibiti0ns") {
+    else if (current.kind === "exhibiti0n") {
       content = `<div class="file-grid">` + state.manifest.exhibitions.map(group => `
-        <button class="work-item image-entry" type="button" data-folder="${escapeHtml(`exhibiti0ns/${group.name}`)}">
+        <button class="work-item image-entry" type="button" data-folder="${escapeHtml(`exhibiti0n/${group.name}`)}">
           <div class="work-thumb">${FOLDER_SVG}</div>
           <span>${escapeHtml(group.name)}</span>
         </button>`).join("") + `</div>`;
@@ -586,35 +596,6 @@
     return "";
   }
 
-  // ==========================================
-  // CARREGAMENTO PROTEGIDO PARA OBRAS GIGANTES
-  // Agora ele te avisa com um Alerta caso a Vercel negue as 150 tentativas
-  // ==========================================
-  function loadDimensions(work) {
-    return new Promise((resolve, reject) => {
-      const rawPath = work.file.replace(/\.[a-zA-Z0-9]+$/i, '');
-      const paths = window.getPathsToTest(rawPath);
-      let step = 0;
-      
-      const tryNext = () => {
-        if (step >= paths.length) {
-           reject("Imagem não encontrada"); 
-           return;
-        }
-        const testPath = paths[step++];
-        const img = new Image();
-        img.onload = () => { 
-           work.file = testPath; 
-           work.nw = img.naturalWidth; work.nh = img.naturalHeight; 
-           resolve(work); 
-        };
-        img.onerror = tryNext;
-        img.src = testPath.split("/").map(encodeURIComponent).join("/");
-      };
-      tryNext();
-    });
-  }
-
   function bindWindowBody(el, w) {
     if (w.kind === "folder") {
       $$(".image-entry", el).forEach(btn => {
@@ -623,11 +604,10 @@
           if (btn.dataset.work) {
             const work = findItem(btn.dataset.work);
             if (work) {
-               // SE O SERVIDOR NEGAR TUDO, ELE GERA O ALERTA DO SISTEMA
                loadDimensions(work).then(() => {
                   addWindow("art", work, { isInit: false }); 
                }).catch(() => {
-                  alert("ERRO DO SISTEMA 404:\\n\\nO servidor da Vercel informou que a foto da obra '" + work.id + "' NÃO existe dentro da pasta.\\n\\nDICA DE OURO:\\n1. Você salvou como '1.png' e o código pede '01'?\\n2. A extensão duplicou ('01.png.png')?\\n3. A pasta está escondida dentro de uma pasta 'assets'?\\n\\nConfira o arquivo no seu PC e tente o Push novamente!");
+                  alert("IMAGEM NÃO LOCALIZADA NO SERVIDOR VERCEL\\n\\nO código testou 150 variações e ela não existe. Verifique no seu PC:\\n1. A pasta chama-se exatamente '" + work.type + "'?\\n2. A imagem foi apagada?\\n3. A Vercel travou no cache?");
                });
             }
           } else if (btn.dataset.folder) {
@@ -809,6 +789,34 @@
         }
       });
     }
+  }
+
+  // ==========================================
+  // CARREGAMENTO PROTEGIDO PARA ABRIR OBRAS
+  // ==========================================
+  function loadDimensions(work) {
+    return new Promise((resolve, reject) => {
+      const rawPath = work.file.replace(/\.[a-zA-Z0-9]+$/i, '');
+      const paths = window.getPathsToTest(rawPath);
+      let step = 0;
+      
+      const tryNext = () => {
+        if (step >= paths.length) {
+           reject("Imagem não encontrada"); 
+           return;
+        }
+        const testPath = paths[step++];
+        const img = new Image();
+        img.onload = () => { 
+           work.file = testPath; 
+           work.nw = img.naturalWidth; work.nh = img.naturalHeight; 
+           resolve(work); 
+        };
+        img.onerror = tryNext;
+        img.src = testPath.split("/").map(encodeURIComponent).join("/");
+      };
+      tryNext();
+    });
   }
 
   function createWindow(w) {
@@ -1035,7 +1043,7 @@
       setTimeout(scheduleNextLogoShake, 4000);
       
     } catch(err) {
-      console.error("Erro inicial:", err);
+      console.error("Erro inicial tratado em background:", err);
     }
   }
 
