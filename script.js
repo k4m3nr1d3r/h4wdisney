@@ -3,7 +3,6 @@
 
   // ==========================================
   // O RADAR NÍVEL DEUS (Buscador Absoluto)
-  // Testa variações infinitas para driblar o cache do GitHub e da Vercel
   // ==========================================
   window.getPathsToTest = function(baseFile) {
       const exts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'PNG', 'JPG', 'JPEG', 'GIF', 'WEBP'];
@@ -16,12 +15,12 @@
 
       let folders = [folder, 'assets/' + folder, folder.toLowerCase(), folder.toUpperCase()];
       
-      // Se o GitHub travou nos nomes antigos, o radar busca por eles!
-      if (folder.includes('exhibiti0n')) {
-          folders.push(folder.replace('exhibiti0n', 'exhibiti0ns'));
-          folders.push(folder.replace('exhibiti0n', 'exhibitions'));
-          folders.push(folder.replace('exhibiti0n', 'vernissagem'));
-          folders.push(folder.replace('exhibiti0n', 'Vernissages'));
+      // Variações para quebrar o cache de nomes antigos
+      if (folder.includes('exhibiti0ns')) {
+          folders.push(folder.replace('exhibiti0ns', 'exhibiti0n'));
+          folders.push(folder.replace('exhibiti0ns', 'exhibitions'));
+          folders.push(folder.replace('exhibiti0ns', 'vernissagem'));
+          folders.push(folder.replace('exhibiti0ns', 'Vernissages'));
       }
       if (folder.includes('ACERVO')) {
           folders.push(folder.replace('ACERVO', 'acervo'));
@@ -107,7 +106,9 @@
     
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
-    /* ABOUT PRESERVADO */
+    /* ======================================================= */
+    /* ABOUT PRESERVADO: COMPACTO, SIMÉTRICO E ALINHADO */
+    /* ======================================================= */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
     .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; height: 100% !important; text-align: left !important; overflow: hidden; }
     .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); text-align: left !important; }
@@ -118,6 +119,7 @@
     .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.5; text-align: left !important; width: 100%; display: block; }
     .about-content-box .chronology { font-family: monospace; font-size: 13px; line-height: 1.8; background: transparent; padding: 0; border-radius: 0; text-align: left !important; display: block; width: 100%; }
     
+    /* POPUP ADS NÚS */
     .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
@@ -230,16 +232,16 @@
     const buildItems = (folderPath, type) => {
       return Array.from({ length: 15 }, (_, i) => {
         const num = String(i + 1).padStart(2, '0');
-        // Agora com o nome exato exhibiti0n (sem o S)
+        // Agora apontando exatamente para exhibiti0ns (com o S)
         return { id: `${folderPath}/${num}.png`, file: `${folderPath}/${num}.png`, title: `${num}`, type: type };
       });
     };
     return {
       version: 1,
       exhibitions: [
-        { id: "exhibiti0n:utopias_piratas_2021", name: "utopias_piratas_2021", year: 2021, items: buildItems("exhibiti0n/utopias_piratas_2021", "exhibiti0n") },
-        { id: "exhibiti0n:Hyperlinks, Distortion e Mormasso", name: "Hyperlinks, Distortion e Mormasso", year: 2022, items: buildItems("exhibiti0n/Hyperlinks, Distortion e Mormasso", "exhibiti0n") },
-        { id: "exhibiti0n:RAW 2025 (HOA+FDAG)", name: "RAW 2025 (HOA+FDAG)", year: 2025, items: buildItems("exhibiti0n/RAW 2025 (HOA+FDAG)", "exhibiti0n") }
+        { id: "exhibiti0ns:utopias_piratas_2021", name: "utopias_piratas_2021", year: 2021, items: buildItems("exhibiti0ns/utopias_piratas_2021", "exhibiti0ns") },
+        { id: "exhibiti0ns:Hyperlinks, Distortion e Mormasso", name: "Hyperlinks, Distortion e Mormasso", year: 2022, items: buildItems("exhibiti0ns/Hyperlinks, Distortion e Mormasso", "exhibiti0ns") },
+        { id: "exhibiti0ns:RAW 2025 (HOA+FDAG)", name: "RAW 2025 (HOA+FDAG)", year: 2025, items: buildItems("exhibiti0ns/RAW 2025 (HOA+FDAG)", "exhibiti0ns") }
       ],
       acervo: buildItems("ACERVO", "ACERVO"),
       beckEnd: buildItems("beck_END", "beck_END")
@@ -268,11 +270,11 @@
   function currentBrowser(win) {
     const path = Array.isArray(win.browserPath) ? win.browserPath : [];
     if (path.length === 0) return browserRoot();
-    if (path[0] === "exhibiti0n") {
-      if (path.length === 1) return { kind: "exhibiti0n", name: "exhibiti0n", path };
+    if (path[0] === "exhibiti0ns") {
+      if (path.length === 1) return { kind: "exhibiti0ns", name: "exhibiti0ns", path };
       const name = path.slice(1).join("/");
       const group = state.manifest.exhibitions.find(x => x.name === name);
-      return group ? { kind: "exhibition", name: group.name, path, group } : { kind: "exhibiti0n", name: "exhibiti0n", path: ["exhibiti0n"] };
+      return group ? { kind: "exhibition", name: group.name, path, group } : { kind: "exhibiti0ns", name: "exhibiti0ns", path: ["exhibiti0ns"] };
     }
     if (path[0] === "ACERVO") return { kind: "ACERVO", name: "ACERVO", path };
     if (path[0] === "beck_END") return { kind: "beck_END", name: "beck_END", path };
@@ -281,7 +283,7 @@
 
   function folderEntries() {
     return [
-      { type: "folder", id: "exhibiti0n", name: "exhibiti0n", subtitle: `3 exposições` },
+      { type: "folder", id: "exhibiti0ns", name: "exhibiti0ns", subtitle: `3 exposições` },
       { type: "folder", id: "ACERVO", name: "ACERVO", subtitle: `15 arquivos` },
       { type: "folder", id: "beck_END", name: "beck_END", subtitle: `15 arquivos` }
     ];
@@ -303,6 +305,7 @@
     
     if (kind === "art" && work) {
       const nw = Number(work.nw) || 800; const nh = Number(work.nh) || 600;
+      
       let scaleFactorW = opts.isInit ? 0.35 : 0.85;
       let scaleFactorH = opts.isInit ? 0.50 : 0.85;
       
@@ -476,9 +479,9 @@
           <strong>${escapeHtml(entry.name)}</strong>
         </button>`).join("") + `</div>`;
     } 
-    else if (current.kind === "exhibiti0n") {
+    else if (current.kind === "exhibiti0ns") {
       content = `<div class="file-grid">` + state.manifest.exhibitions.map(group => `
-        <button class="work-item image-entry" type="button" data-folder="${escapeHtml(`exhibiti0n/${group.name}`)}">
+        <button class="work-item image-entry" type="button" data-folder="${escapeHtml(`exhibiti0ns/${group.name}`)}">
           <div class="work-thumb">${FOLDER_SVG}</div>
           <span>${escapeHtml(group.name)}</span>
         </button>`).join("") + `</div>`;
@@ -607,7 +610,7 @@
                loadDimensions(work).then(() => {
                   addWindow("art", work, { isInit: false }); 
                }).catch(() => {
-                  alert("IMAGEM NÃO LOCALIZADA NO SERVIDOR VERCEL\\n\\nO código testou 150 variações e ela não existe. Verifique no seu PC:\\n1. A pasta chama-se exatamente '" + work.type + "'?\\n2. A imagem foi apagada?\\n3. A Vercel travou no cache?");
+                  alert("IMAGEM NÃO LOCALIZADA NO SERVIDOR VERCEL\n\nO código testou mais de 100 variações e ela não existe. Verifique no seu PC:\n1. A pasta chama-se exatamente '" + work.type + "'?\n2. A imagem foi apagada?\n3. A Vercel travou no cache?");
                });
             }
           } else if (btn.dataset.folder) {
@@ -791,9 +794,6 @@
     }
   }
 
-  // ==========================================
-  // CARREGAMENTO PROTEGIDO PARA ABRIR OBRAS
-  // ==========================================
   function loadDimensions(work) {
     return new Promise((resolve, reject) => {
       const rawPath = work.file.replace(/\.[a-zA-Z0-9]+$/i, '');
