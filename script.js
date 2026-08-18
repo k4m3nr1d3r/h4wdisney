@@ -1,12 +1,8 @@
 (() => {
   "use strict";
 
-  const CUSTOM_ADS = [
-    "assets/ads/01.png", "assets/ads/02.gif", "assets/ads/03.png", "assets/ads/04.gif", "assets/ads/05.png",
-    "assets/ads/06.gif", "assets/ads/07.png", "assets/ads/08.png", "assets/ads/09.gif", "assets/ads/10.png"
-  ];
-  let currentAdIndex = 0;
-
+  let currentAdIndex = 1; // Controla a sequência de anúncios (1 a 10)
+  
   const extraStyles = document.createElement('style');
   extraStyles.textContent = `
     .file-grid { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; justify-content: flex-start; align-items: flex-end; background: #ffffff; min-height: 100%; }
@@ -18,12 +14,14 @@
     .work-thumb { width: auto; height: auto; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; background: transparent !important; }
     .work-thumb img { max-width: 100px; max-height: 80px; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); }
     
-    /* ANIQUILAÇÃO TOTAL DE REQUADROS NAS ARTES SOLTAS */
+    /* ANIQUILAÇÃO TOTAL DE REQUADROS E BORDAS NAS ARTES */
     .frameless-art { background: transparent !important; background-image: none !important; border: none !important; box-shadow: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; outline: none !important; }
     .frameless-art .window-body { height: auto !important; background: transparent !important; background-image: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; border: none !important; box-shadow: none !important; }
     .frameless-art:before, .frameless-art:after { display: none !important; }
     
     .art-plate { overflow: visible; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: transparent !important; border: none !important; box-shadow: none !important; }
+    
+    /* GRUDA O TEXTO E O X DIRETAMENTE NA IMAGEM PARA SE MOVEREM JUNTOS */
     .img-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.05s linear; cursor: pointer; background: transparent !important; border: none !important; box-shadow: none !important; }
     .img-wrapper img { display: block; touch-action: none; max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(3px 3px 12px rgba(0,0,0,0.8)); background: transparent !important; border: none !important; }
     
@@ -32,14 +30,14 @@
     
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
-    /* POPUP ADS NÚS (Apenas Imagem) */
-    .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
+    /* POPUP ADS NÚS (Sem barra, sem fundo, proporção perfeita) */
+    .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; background-image: none !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
     
-    /* EXPLOSÃO RADIAL ESTRELA A PARTIR DO CENTRO ABSOLUTO */
+    /* ANIMAÇÃO EXPLOSÃO PIXELADA RADIAL 8-BITS (A partir do centro) */
     @keyframes realisticPixelExplosion {
-      0% { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #ffeb3b; background: transparent; transform: scale(0.6); opacity: 1; }
+      0% { box-shadow: 0 0 0 4px #fff, 0 0 0 8px #ffeb3b; background: transparent; transform: scale(0.6); opacity: 1; }
       35% { box-shadow: 
         0 -16px 0 3px #fff, 0 16px 0 3px #fff, 16px 0 0 3px #fff, -16px 0 0 3px #fff,
         -12px -12px 0 4px #ffeb3b, 12px 12px 0 4px #ffeb3b, -12px 12px 0 4px #ffeb3b, 12px -12px 0 4px #ffeb3b,
@@ -52,13 +50,9 @@
         0 -40px 0 1px rgba(211,47,47,0), 0 40px 0 1px rgba(211,47,47,0),
         -30px -30px 0 1px rgba(255,152,0,0), 30px 30px 0 1px rgba(255,152,0,0); transform: scale(1.6); opacity: 0; display: none; border: none; }
     }
-    
     .explode-anim { pointer-events: none !important; background: transparent !important; border: none !important; box-shadow: none !important; }
-    .explode-anim .window-body { display: none !important; } /* SOME A IMAGEM NA HORA */
-    .explode-anim::after {
-      content: ""; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; margin-top: -2px; margin-left: -2px;
-      animation: realisticPixelExplosion 0.45s steps(5) forwards;
-    }
+    .explode-anim .window-body { display: none !important; } /* Esconde a imagem instantaneamente */
+    .explode-anim::after { content: ""; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; margin-top: -2px; margin-left: -2px; animation: realisticPixelExplosion 0.45s steps(5) forwards; }
     
     /* TOAST MSN MESSENGER */
     @keyframes msnSlideIn {
@@ -102,6 +96,7 @@
   const wallpaperEl = $(".wallpaper");
 
   let crashMultiplier = 1;
+  let adMultiplier = 1;
   let msnNotified = false;
 
   function playMsnSound() {
@@ -192,17 +187,16 @@
     if (kind === "folder") return { x: W * .05, y: H * .23, w: 600, h: 420 };
     if (kind === "about") return { x: clamp(W - 420, 80, W - 390), y: clamp(H * 0.2, 80, H - 250), w: 390, h: 392 };
     
-    // MSN ANCORADO COM SEGURANÇA
     if (kind === "contact") return { x: W - 270, y: H - 205, w: 250, h: 160 }; 
     
     if (kind === "art" && work) {
       const nw = Number(work.nw) || 800; const nh = Number(work.nh) || 600;
       const scale = Math.min(clamp(W * .35, 250, 600) / nw, (H * 0.5) / nh, 1);
       
-      // DISPOSIÇÃO INICIAL DO TRIO
-      if (work.title === "01") return { x: W * 0.12, y: H * 0.15, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1003 };
-      if (work.title === "02") return { x: W - 580, y: H * 0.28, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1001 }; 
-      if (work.title === "03") return { x: W * 0.02, y: H * 0.38, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale), initZ: 1001 }; 
+      // DISPOSIÇÃO INICIAL COREOGRAFADA
+      if (work.title === "01") return { x: W * 0.12, y: H * 0.15, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale) };
+      if (work.title === "02") return { x: W - 580, y: H * 0.28, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale) }; 
+      if (work.title === "03") return { x: W * 0.02, y: H * 0.38, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale) }; 
     }
     return { x: 180 + (n % 6) * 46, y: 120 + (n % 6) * 38, w: 350, h: 250 };
   }
@@ -216,11 +210,7 @@
     const iconHtml = work ? getIcon("art", "🖼") : getIcon(kind, ({ folder: "📁", about: "🗒", contact: "👥" }[kind]));
     
     const geom = defaultGeometry(kind, work);
-    
-    // ATUALIZAÇÃO SÓLIDA DE CAMADAS PARA GARANTIR FOCO LISO
     let targetedZ = opts.z || ++state.top;
-    if (geom.initZ && !opts.z) targetedZ = geom.initZ;
-    if (targetedZ > state.top) state.top = targetedZ;
 
     const win = {
       id, kind, title: work ? (work.file || work.title) : titleMap[kind],
@@ -232,58 +222,42 @@
       ...opts
     };
 
-    state.wins.push(win); state.active = id; state.menuOpen = false; render();
+    if (targetedZ > state.top) state.top = targetedZ;
+    state.wins.push(win); state.active = id; state.menuOpen = false;
+    
+    windowsEl.appendChild(createWindow(win));
+    renderTasks();
   }
 
   function closeWindow(id) {
     state.wins = state.wins.filter(w => w.id !== id);
-    if (state.active === id) state.active = state.wins.filter(w => !w.min).sort((a, b) => b.z - a.z)[0]?.id || null;
-    render();
+    const el = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
+    if (el) el.remove();
+    
+    if (state.active === id) {
+      state.active = state.wins.filter(w => !w.min).sort((a, b) => b.z - a.z)[0]?.id || null;
+      if (state.active) focusWin(state.active);
+    }
+    renderTasks();
   }
 
-  function focusWin(id, forceRender = false) {
+  // ATUALIZAÇÃO DINÂMICA DE Z-INDEX PARA TRAZER QUALQUER JANELA PARA FRENTE
+  function focusWin(id) {
     const w = state.wins.find(x => x.id === id);
     if (!w || w.kind === "popup") return;
-    const alreadyActive = (state.active === id && !w.min && !state.menuOpen);
     
-    // TODA JANELA VEM PRA FRENTE INCONDICIONALMENTE (Sem boost gigante pra obras)
     w.z = ++state.top; 
     w.min = false; state.active = id; state.menuOpen = false;
     
-    if (!alreadyActive || forceRender) render();
-    else {
-      const el = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
-      if (el) {
-        el.style.zIndex = w.z;
-        $$(".window", windowsEl).forEach(win => win.classList.toggle("inactive", win.dataset.id !== id));
-      }
-    }
-  }
-
-  function beginPointer(e, id, mode) {
-    if (e.button !== undefined && e.button !== 0) return;
-    const w = state.wins.find(x => x.id === id);
-    if (!w || w.min) return;
-    focusWin(id);
-
-    const start = { px: e.clientX, py: e.clientY, x: w.x, y: w.y, width: w.w, height: w.h };
-
-    const move = ev => {
-      if (mode === "move" && !w.max) {
-        w.x = clamp(start.x + (ev.clientX - start.px), 96 - w.w + 140, innerWidth - 60);
-        w.y = clamp(start.y + (ev.clientY - start.py), 38, innerHeight - 70);
-        w.ratioX = w.x / innerWidth; w.ratioY = w.y / innerHeight;
-      }
-      if (mode === "size" && !w.max) {
-        w.w = Math.max(200, start.width + (ev.clientX - start.px));
-        w.h = Math.max(150, start.height + (ev.clientY - start.py));
-      }
-      const el = windowsEl.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
-      if (el) { el.style.left = `${w.x}px`; el.style.top = `${w.y}px`; el.style.width = `${w.w}px`; el.style.height = `${w.h}px`; }
-    };
-
-    const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
-    window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
+    const el = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
+    if (el) el.style.zIndex = w.z;
+    
+    $$(".window", windowsEl).forEach(win => {
+      if (win.dataset.id === id) win.classList.remove("inactive");
+      else win.classList.add("inactive");
+    });
+    
+    renderTasks();
   }
 
   function titlebar(w) {
@@ -294,7 +268,6 @@
       <span class="title-text">${w.title}</span>
       <span class="window-buttons"><button type="button" class="close" data-act="close">×</button></span>`;
     
-    bar.addEventListener("pointerdown", e => { if (!e.target.closest("button")) beginPointer(e, w.id, "move"); });
     $$(".window-buttons button", bar).forEach(btn => btn.addEventListener("click", e => {
       e.preventDefault(); e.stopPropagation();
       if (btn.dataset.act === "close") closeWindow(w.id);
@@ -306,12 +279,26 @@
     const next = target.split('/').filter(Boolean);
     const current = Array.isArray(win.browserPath) ? win.browserPath : [];
     if (JSON.stringify(next) === JSON.stringify(current)) return;
-    win.browserHistory.push(next); win.browserPath = next; focusWin(win.id, true);
+    win.browserHistory.push(next); win.browserPath = next; focusWin(win.id);
+    
+    const el = windowsEl.querySelector(`[data-id="${CSS.escape(win.id)}"]`);
+    if(el) {
+       const body = el.querySelector(".window-body");
+       if(body) body.innerHTML = windowBodyHTML(win);
+       bindWindowBody(el, win);
+    }
   }
 
   function goBack(win) {
     if (!Array.isArray(win.browserHistory) || win.browserHistory.length <= 1) return;
-    win.browserHistory.pop(); win.browserPath = [...win.browserHistory.at(-1)]; focusWin(win.id, true);
+    win.browserHistory.pop(); win.browserPath = [...win.browserHistory.at(-1)]; focusWin(win.id);
+    
+    const el = windowsEl.querySelector(`[data-id="${CSS.escape(win.id)}"]`);
+    if(el) {
+       const body = el.querySelector(".window-body");
+       if(body) body.innerHTML = windowBodyHTML(win);
+       bindWindowBody(el, win);
+    }
   }
 
   function imageCard(item) {
@@ -440,21 +427,6 @@
     }
 
     if (w.kind === "contact") {
-       el.addEventListener("pointerdown", e => {
-         if (!e.target.closest("button") && !e.target.closest("a") && !e.target.closest("textarea")) {
-            focusWin(w.id);
-            let start = { px: e.clientX, py: e.clientY, x: w.x, y: w.y };
-            const move = ev => {
-              w.x = clamp(start.x + (ev.clientX - start.px), 96 - w.w + 140, innerWidth - 60);
-              w.y = clamp(start.y + (ev.clientY - start.py), 38, innerHeight - 70);
-              w.ratioX = w.x / innerWidth; w.ratioY = w.y / innerHeight;
-              w.anchor = null; // Remove a âncora fixa caso o usuário arraste
-              el.style.left = `${w.x}px`; el.style.top = `${w.y}px`;
-            };
-            const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
-            window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
-         }
-       });
        $$('[data-act="close"]', el).forEach(btn => btn.addEventListener("click", e => {
          e.preventDefault(); e.stopPropagation(); closeWindow(w.id);
        }));
@@ -464,6 +436,7 @@
 
        toggleBtn.addEventListener("click", e => {
            e.preventDefault(); e.stopPropagation();
+           focusWin(w.id);
            const isExpanded = expandArea.style.display !== "none";
            expandArea.style.display = isExpanded ? "none" : "block";
            w.h = isExpanded ? 160 : 255;
@@ -561,7 +534,24 @@
         }
       });
     } else {
+      // QUALQUER CLIQUE NA JANELA (INCLUSIVE BORDAS) PUXA PRO TOPO
       el.addEventListener("pointerdown", () => focusWin(w.id));
+      
+      // Permite arrastar qualquer janela livre pelo fundo dela
+      el.addEventListener("pointerdown", e => {
+         if (!e.target.closest("button") && !e.target.closest("a") && !e.target.closest("textarea") && !el.classList.contains("frameless-art") && !e.target.closest(".browser-body")) {
+            let start = { px: e.clientX, py: e.clientY, x: w.x, y: w.y };
+            const move = ev => {
+              w.x = clamp(start.x + (ev.clientX - start.px), 96 - w.w + 140, innerWidth - 60);
+              w.y = clamp(start.y + (ev.clientY - start.py), 38, innerHeight - 70);
+              w.ratioX = w.x / innerWidth; w.ratioY = w.y / innerHeight;
+              w.anchor = null; 
+              el.style.left = `${w.x}px`; el.style.top = `${w.y}px`;
+            };
+            const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
+            window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
+         }
+      });
     }
     
     if (w.kind !== "contact" && w.kind !== "art" && w.kind !== "popup") el.appendChild(titlebar(w));
@@ -574,18 +564,13 @@
     bindWindowBody(el, w); return el;
   }
 
-  function renderWindowLayer() {
-    windowsEl.innerHTML = "";
-    state.wins.filter(w => !w.min).sort((a, b) => a.z - b.z).forEach(w => windowsEl.appendChild(createWindow(w)));
-  }
-
   function renderTasks() {
     taskStrip.innerHTML = "";
     state.wins.filter(w => w.kind !== "popup").forEach(w => {
       const b = document.createElement("button");
       b.className = `task-button ${state.active === w.id && !w.min ? "focused" : ""} ${w.kind === "contact" ? "task-msn" : ""}`;
       b.innerHTML = `${w.iconHtml || ""} ${w.title}`;
-      b.addEventListener("click", () => { if (state.active === w.id && !w.min) { w.min = true; render(); } else focusWin(w.id, true); });
+      b.addEventListener("click", () => { if (state.active === w.id && !w.min) { w.min = true; renderTasks(); } else focusWin(w.id); });
       taskStrip.appendChild(b);
     });
 
@@ -596,7 +581,6 @@
        clockEl.parentNode.insertBefore(tray, clockEl);
     }
   }
-  function render() { renderWindowLayer(); renderTasks(); }
 
   function openByKind(kind) {
     if (kind === "folder") { addWindow("folder"); return; }
@@ -634,49 +618,61 @@
   }
 
   // ==========================================
-  // PROPAGANDAS PURAS (Só Imagem) SEM DISTORÇÃO
+  // PROPAGANDAS TOTALMENTE NÚAS (SÓ A IMAGEM)
+  // O código testa qual a extensão do seu arquivo até achar a certa
   // ==========================================
   function spawnAd() {
-    if (CUSTOM_ADS.length === 0) return; 
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
-    const adImageSrc = CUSTOM_ADS[currentAdIndex];
-    currentAdIndex = (currentAdIndex + 1) % CUSTOM_ADS.length;
+    const numStr = String(currentAdIndex + 1).padStart(2, '0');
+    currentAdIndex = (currentAdIndex + 1) % 10;
 
-    const img = new Image();
-    img.onload = () => {
-       const scale = Math.min(140 / img.naturalWidth, 140 / img.naturalHeight, 1);
-       const adW = Math.max(70, img.naturalWidth * scale);
-       const adH = Math.max(70, img.naturalHeight * scale);
+    const extensions = ['gif', 'png', 'jpg', 'webp'];
+    
+    const tryLoad = () => {
+       if (extensions.length === 0) return; 
+       const ext = extensions.shift();
+       const img = new Image();
        
-       const contentHtml = `<img src="${img.src}" style="display:block; width:100%; height:100%; object-fit:contain; pointer-events:none;">`;
-       
-       const ad = {
-          id, kind: "popup", title: "AD", iconHtml: "⚠",
-          x: Math.random() * (innerWidth - adW), y: Math.random() * (innerHeight - adH - 20),
-          w: adW, h: adH, z: 999999, min: false, max: false,
-          content: contentHtml, vx: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random()), vy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random())
+       img.onload = () => {
+          const scale = Math.min(140 / img.naturalWidth, 140 / img.naturalHeight, 1);
+          const adW = Math.max(60, Math.round(img.naturalWidth * scale));
+          const adH = Math.max(60, Math.round(img.naturalHeight * scale));
+          
+          const contentHtml = `<img src="${img.src}" style="display:block; width:100%; height:100%; object-fit:contain; pointer-events:none;">`;
+          
+          const ad = {
+             id, kind: "popup", title: "AD", iconHtml: "⚠",
+             x: Math.random() * (innerWidth - adW), y: Math.random() * (innerHeight - adH - 20),
+             w: adW, h: adH, z: 999999, min: false, max: false,
+             content: contentHtml, vx: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random()), vy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random())
+          };
+          
+          ad.ratioX = ad.x / innerWidth; ad.ratioY = ad.y / innerHeight;
+          state.wins.push(ad); 
+          windowsEl.appendChild(createWindow(ad)); 
+          
+          requestAnimationFrame(function bounce() {
+             const winData = state.wins.find(w => w.id === id);
+             if (!winData) return; 
+             winData.x += winData.vx; winData.y += winData.vy;
+             if (winData.x <= 0 || winData.x + winData.w >= innerWidth) winData.vx *= -1;
+             if (winData.y <= 0 || winData.y + winData.h >= innerHeight) winData.vy *= -1;
+             
+             winData.ratioX = winData.x / innerWidth; winData.ratioY = winData.y / innerHeight;
+
+             const currentEl = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
+             if (currentEl && !currentEl.classList.contains("explode-anim")) { 
+               currentEl.style.left = `${winData.x}px`; currentEl.style.top = `${winData.y}px`; 
+             }
+             requestAnimationFrame(bounce);
+          });
        };
        
-       ad.ratioX = ad.x / innerWidth; ad.ratioY = ad.y / innerHeight;
-       state.wins.push(ad); render();
-       
-       requestAnimationFrame(function bounce() {
-          const winData = state.wins.find(w => w.id === id);
-          if (!winData) return; 
-          winData.x += winData.vx; winData.y += winData.vy;
-          if (winData.x <= 0 || winData.x + winData.w >= innerWidth) winData.vx *= -1;
-          if (winData.y <= 0 || winData.y + winData.h >= innerHeight) winData.vy *= -1;
-          
-          winData.ratioX = winData.x / innerWidth; winData.ratioY = winData.y / innerHeight;
-
-          const currentEl = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
-          if (currentEl && !currentEl.classList.contains("explode-anim")) { 
-            currentEl.style.left = `${winData.x}px`; currentEl.style.top = `${winData.y}px`; 
-          }
-          requestAnimationFrame(bounce);
-       });
+       img.onerror = () => { tryLoad(); };
+       img.src = `assets/ads/${numStr}.${ext}`;
     };
-    img.src = adImageSrc;
+    
+    tryLoad();
   }
 
   function scheduleNextAd() {
@@ -699,22 +695,21 @@
       loadDimensions(w2).then(() => { addWindow("art", w2, { x: W - 560, y: H * 0.26, z: 1001 }); });
 
       setTimeout(() => addWindow("folder", null, { z: 1002 }), 100);
-      setTimeout(() => addWindow("about", null, { z: 1002 }), 200);
+      setTimeout(() => addWindow("about", null, { z: 1003 }), 200);
 
-      setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { x: W * 0.22, y: H * 0.15, z: 1003 }); }); }, 300);
+      setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { x: W * 0.22, y: H * 0.15, z: 1004 }); }); }, 300);
     } else {
       addWindow("folder"); addWindow("about");
     }
 
     setTimeout(() => {
-       addWindow("contact", null, { anchor: "bottom-right", x: W - 270, y: H - 205, z: 1005 });
+       addWindow("contact", null, { anchor: "bottom-right", x: W - 270, y: H - 205, z: 1006 });
     }, 1000);
 
     setTimeout(spawnAd, 8000);
+    setTimeout(scheduleNextAd, 45000);
     setTimeout(scheduleNextGlitch, 40000);
     setTimeout(scheduleNextCrash, 60000);
-
-    render();
   }
 
   window.addEventListener("resize", () => {
@@ -729,7 +724,6 @@
       const el = windowsEl.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
       if (el) { el.style.left = `${w.x}px`; el.style.top = `${w.y}px`; }
     });
-    render();
   });
 
   init();
