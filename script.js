@@ -18,47 +18,61 @@
     .work-thumb { width: auto; height: auto; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; background: transparent !important; }
     .work-thumb img { max-width: 100px; max-height: 80px; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); }
     
-    /* ANIQUILAÇÃO TOTAL DE REQUADROS E RETÂNGULOS NAS ARTES SOLTAS */
-    .frameless-art { background: transparent !important; background-image: none !important; border: none !important; box-shadow: none !important; overflow: visible !important; }
+    /* REMOÇÃO ABSOLUTA E SUPREMA DE BORDAS E REQUADROS NAS ARTES */
+    .frameless-art { background: transparent !important; background-image: none !important; border: none !important; box-shadow: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; outline: none !important; }
     .frameless-art .window-body { height: auto !important; background: transparent !important; background-image: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; border: none !important; box-shadow: none !important; }
     .frameless-art:before, .frameless-art:after { display: none !important; }
     
-    .art-plate { overflow: visible; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: transparent; }
-    .img-wrapper { position: relative; display: inline-block; transition: transform 0.05s linear; cursor: pointer; }
-    .img-wrapper img { display: block; touch-action: none; max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(3px 3px 12px rgba(0,0,0,0.8)); }
+    .art-plate { overflow: visible; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: transparent !important; border: none !important; box-shadow: none !important; }
+    
+    /* GRUDA O TEXTO E O X DIRETAMENTE NA IMAGEM */
+    .img-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.05s linear; cursor: pointer; background: transparent !important; border: none !important; box-shadow: none !important; }
+    .img-wrapper img { display: block; touch-action: none; max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(3px 3px 12px rgba(0,0,0,0.8)); background: transparent !important; border: none !important; }
     
     .close-art { position: absolute; top: -12px; right: -12px; background: #e81123; color: #fff; border: 1px solid #fff; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); width: 24px; height: 26px; font-family: sans-serif; font-weight: bold; cursor: pointer; z-index: 100000; display: flex; align-items: center; justify-content: center; border-radius: 2px; }
     .close-art:hover { background: #ff0000; }
     
-    /* TEXTO DE AJUSTE SUTIL BRANCO COM BORDA PRETA */
-    .art-instruction { margin-top: 10px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; }
+    /* TEXTO COLADO EM BAIXO DA IMAGEM */
+    .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
     /* POPUP ADS MOLDADOS À IMAGEM */
     .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; background-image: none !important; border: 1px solid #0058e6 !important; box-shadow: 2px 2px 5px rgba(0,0,0,0.5) !important; }
     .popup-ad .titlebar { height: 20px; font-size: 11px; background: linear-gradient(to right, #0058e6, #3a93ff) !important; margin: 0 !important; border: none !important; padding: 0 6px; }
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: calc(100% - 20px) !important; overflow: hidden; pointer-events: none; background: transparent !important; border: none !important; }
     
-    /* EXPLOSÃO 8-BITS COM EVAPORAÇÃO */
-    @keyframes burnUpward {
-      0% { clip-path: inset(0 0 0 0); filter: drop-shadow(0 0 0 transparent); transform: translateY(0); opacity: 1; }
-      30% { clip-path: inset(0 0 30% 0); filter: drop-shadow(0 -12px 12px #ff5500) brightness(1.5); transform: translateY(-5px); }
-      70% { clip-path: inset(0 0 70% 0); filter: drop-shadow(0 -22px 18px #ff0000) brightness(2) contrast(1.5) hue-rotate(-10deg); transform: translateY(-15px); }
-      100% { clip-path: inset(0 0 100% 0); filter: drop-shadow(0 -32px 25px #8b0000); transform: translateY(-25px); opacity: 0; display: none; }
+    /* ANIMAÇÃO EXPLOSÃO PIXELADA REALISTA (ESTRELA RADIAL) */
+    @keyframes realisticPixelExplosion {
+      0% { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #ffeb3b; background: transparent; transform: scale(0.8); opacity: 1; }
+      30% { box-shadow: 
+        0 -12px 0 2px #fff, 0 12px 0 2px #fff, 12px 0 0 2px #fff, -12px 0 0 2px #fff,
+        -8px -8px 0 3px #ffeb3b, 8px 8px 0 3px #ffeb3b, -8px 8px 0 3px #ffeb3b, 8px -8px 0 3px #ffeb3b,
+        0 -20px 0 2px #ff9800, 0 20px 0 2px #ff9800; transform: scale(1.1); opacity: 1; }
+      60% { box-shadow: 
+        0 -24px 0 3px #ff9800, 0 24px 0 3px #ff9800, 24px 0 0 3px #ff9800, -24px 0 0 3px #ff9800,
+        -16px -16px 0 3px #f44336, 16px 16px 0 3px #f44336, -16px 16px 0 3px #f44336, 16px -16px 0 3px #f44336,
+        -28px -28px 0 2px #ffeb3b, 28px 28px 0 2px #ffeb3b, 0 -35px 0 3px #f44336; transform: scale(1.3); opacity: 0.7; }
+      100% { box-shadow: 
+        0 -40px 0 1px rgba(211,47,47,0), 0 40px 0 1px rgba(211,47,47,0),
+        -30px -30px 0 1px rgba(255,152,0,0), 30px 30px 0 1px rgba(255,152,0,0); transform: scale(1.6); opacity: 0; display: none; }
     }
-    .explode-anim { animation: burnUpward 0.6s ease-in forwards !important; pointer-events: none; background: transparent !important; border: none !important; box-shadow: none !important; }
+    .explode-anim { animation: realisticPixelExplosion 0.45s steps(5) forwards !important; pointer-events: none; background: transparent !important; border: none !important; box-shadow: none !important; }
     .explode-anim .titlebar { display: none !important; }
     
-    /* NOTIFICAÇÃO DO MSN SURGINDO DE BAIXO */
+    /* NOTIFICAÇÃO DO MSN AJUSTADA ACIMA DA BARRA */
     @keyframes msnSlideIn {
-      0% { transform: translateY(200px); opacity: 0; }
+      0% { transform: translateY(250px); opacity: 0; }
       100% { transform: translateY(0); opacity: 1; }
     }
-    .msn-window { position: fixed !important; border-radius: 8px !important; background: linear-gradient(to bottom, #E6F0FA 0%, #CDE0F5 40%, #A4CBF0 100%) !important; border: 1px solid #6E98C7 !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.4) !important; animation: msnSlideIn 0.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; transition: height 0.2s ease-in-out; }
+    .msn-window { position: fixed !important; border-radius: 8px !important; background: linear-gradient(to bottom, #E6F0FA 0%, #CDE0F5 40%, #A4CBF0 100%) !important; border: 1px solid #6E98C7 !important; box-shadow: 2px 2px 10px rgba(0,0,0,0.4) !important; animation: msnSlideIn 0.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; transition: height 0.15s ease-in-out, top 0.15s ease-in-out; }
     .msn-window .titlebar { display: none !important; }
     .task-msn { background: linear-gradient(to bottom, #E6F0FA, #A4CBF0) !important; border: 1px solid #6E98C7 !important; color: #000 !important; }
     
-    /* SINAIS DO SISTEMA NA TASKBAR */
-    .system-tray-icons { display: flex; align-items: center; gap: 6px; margin-right: 8px; font-size: 14px; color: #fff; cursor: default; }
+    /* RESPONSIVIDADE PROFISSIONAL DA BARRA DE TAREFAS */
+    .taskbar { display: flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; padding: 0 10px; }
+    .task-strip { flex: 1; display: flex; gap: 4px; overflow: hidden; margin: 0 10px; min-width: 0; }
+    .task-button { flex: 0 1 140px; min-width: 35px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .system-tray-container { display: flex; align-items: center; gap: 8px; flex-shrink: 0; background: linear-gradient(to bottom, #0c82dc, #045cc0); padding: 0 8px; height: 100%; border-left: 1px solid #08449c; }
+    .system-tray-icons { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #fff; }
     
     @keyframes crtWallpaperGlitch {
       0% { transform: scale(1) translate(0,0) skewX(0); filter: none; }
@@ -87,19 +101,17 @@
 
   let crashMultiplier = 1;
   let adMultiplier = 1;
+  let msnNotified = false;
 
-  // ==========================================
-  // SINTETIZADORES DE ÁUDIO 8-BITS E ALERTA
-  // ==========================================
   function playMsnSound() {
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const osc = ctx.createOscillator(), gain = ctx.createGain();
-      osc.type = "sine"; osc.frequency.setValueAtTime(880, ctx.currentTime); // Notificação cristalina
+      osc.type = "sine"; osc.frequency.setValueAtTime(880, ctx.currentTime);
       osc.frequency.setValueAtTime(1200, ctx.currentTime + 0.08);
-      gain.gain.setValueAtTime(0.15, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-      osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.3);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+      osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.25);
     } catch(_) {}
   }
 
@@ -107,13 +119,21 @@
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const osc = ctx.createOscillator(), gain = ctx.createGain();
-      osc.type = "sawtooth"; osc.frequency.setValueAtTime(150, ctx.currentTime);
-      osc.frequency.linearRampToValueAtTime(40, ctx.currentTime + 0.4);
-      gain.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-      osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.4);
+      osc.type = "sawtooth"; osc.frequency.setValueAtTime(120, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(30, ctx.currentTime + 0.35);
+      gain.gain.setValueAtTime(0.08, ctx.currentTime); // Som mais baixo e suave
+      gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+      osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.35);
     } catch(_) {}
   }
+
+  // Ativa o som do MSN no primeiro clique caso o navegador bloqueie áudio automático
+  document.addEventListener("click", () => {
+    if (!msnNotified) {
+      playMsnSound();
+      msnNotified = true;
+    }
+  }, { once: true });
 
   function getIcon(name, fallbackEmoji) {
     return `<img src="assets/icons/${name}.png" onerror="this.outerHTML='<span>${fallbackEmoji}</span>'" alt="" style="width:16px; height:16px; object-fit:contain; vertical-align:middle; margin-right:4px;">`;
@@ -168,21 +188,22 @@
 
   function defaultGeometry(kind, work = null) {
     const W = innerWidth, H = innerHeight;
-    const n = state.cascade++;
-    if (kind === "folder") return { x: W * .05, y: H * .2, w: 600, h: 420 };
+    if (kind === "folder") return { x: W * .05, y: H * .23, w: 600, h: 420 };
     
-    // MSN posicionado cirurgicamente no canto inferior direito, logo acima da taskbar
-    if (kind === "contact") return { x: W - 270, y: H - 210, w: 250, h: 160 }; 
+    // MSN posicionado acima da barra inferior sem desajustar ao expandir
+    if (kind === "contact") return { x: W - 270, y: H - 205, w: 250, h: 160 }; 
     if (kind === "about") return { x: clamp(W - 420, 80, W - 390), y: clamp(H * 0.2, 80, H - 250), w: 390, h: 392 };
     
     if (kind === "art" && work) {
       const nw = Number(work.nw) || 800; const nh = Number(work.nh) || 600;
       const scale = Math.min(clamp(W * .35, 250, 600) / nw, (H * 0.5) / nh, 1);
-      return {
-        x: 120 + (n % 4) * 60, y: 100 + (n % 4) * 50,
-        w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale)
-      };
+      
+      // Organização de posições iniciais customizadas para o trio de obras
+      if (work.title === "01") return { x: W * 0.12, y: H * 0.15, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale) };
+      if (work.title === "02") return { x: W - 490, y: H * 0.38, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale) }; // Por trás do About
+      if (work.title === "03") return { x: W * 0.03, y: H * 0.32, w: Math.max(200, Math.round(nw * scale)), h: Math.round(nh * scale) }; // Por trás do Explorer
     }
+    const n = state.cascade++;
     return { x: 180 + (n % 6) * 46, y: 120 + (n % 6) * 38, w: 350, h: 250 };
   }
 
@@ -237,14 +258,13 @@
     const start = { px: e.clientX, py: e.clientY, x: w.x, y: w.y, width: w.w, height: w.h };
 
     const move = ev => {
-      const dx = ev.clientX - start.px; const dy = ev.clientY - start.py;
       if (mode === "move" && !w.max) {
-        w.x = clamp(start.x + dx, 96 - w.w + 140, innerWidth - 60);
-        w.y = clamp(start.y + dy, 38, innerHeight - 70);
+        w.x = clamp(start.x + (ev.clientX - start.px), 96 - w.w + 140, innerWidth - 60);
+        w.y = clamp(start.y + (ev.clientY - start.py), 38, innerHeight - 70);
       }
       if (mode === "size" && !w.max) {
-        w.w = Math.max(200, start.width + dx);
-        w.h = Math.max(150, start.height + dy);
+        w.w = Math.max(200, start.width + (ev.clientX - start.px));
+        w.h = Math.max(150, start.height + (ev.clientY - start.py));
       }
       const el = windowsEl.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
       if (el) { el.style.left = `${w.x}px`; el.style.top = `${w.y}px`; el.style.width = `${w.w}px`; el.style.height = `${w.h}px`; }
@@ -344,8 +364,8 @@
           <div class="img-wrapper">
              <img src="${imageSrc(w.work)}" alt="${escapeHtml(w.title)}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'400\\' height=\\'400\\'><text x=\\'50%\\' y=\\'50%\\' fill=\\'%23fff\\' font-family=\\'sans-serif\\' font-size=\\'18\\' text-anchor=\\'middle\\'>Imagem n\u00E3o encontrada</text></svg>'">
              <button class="close-art" data-act="close">X</button>
+             <div class="art-instruction">Alt + Scroll: Zoom | Clique: Mover/Travar</div>
           </div>
-          <div class="art-instruction">Alt + Scroll: Zoom | Clique: Mover/Travar</div>
         </div>`;
     }
 
@@ -432,11 +452,17 @@
            e.preventDefault(); e.stopPropagation();
            const isExpanded = expandArea.style.display !== "none";
            expandArea.style.display = isExpanded ? "none" : "block";
-           w.h = isExpanded ? 160 : 255; el.style.height = `${w.h}px`;
+           w.h = isExpanded ? 160 : 255;
+           
+           // Expande para baixo fixando o fundo acima da barra de tarefas
+           w.y = isExpanded ? (innerHeight - 205) : (innerHeight - 300);
+           el.style.height = `${w.h}px`;
+           el.style.top = `${w.y}px`;
        });
        sendBtn.addEventListener("click", () => {
            if(textArea.value.trim() === "") return;
-           expandArea.style.display = "none"; w.h = 160; el.style.height = `${w.h}px`; textArea.value = "";
+           expandArea.style.display = "none"; w.h = 160; w.y = innerHeight - 205;
+           el.style.height = `${w.h}px`; el.style.top = `${w.y}px`; textArea.value = "";
            alert("Mensagem enviada com sucesso!");
        });
     }
@@ -502,16 +528,16 @@
     el.style.left = `${w.x}px`; el.style.top = `${w.y}px`;
     el.style.width = `${w.w}px`; el.style.height = `${w.h}px`;
     el.style.zIndex = w.z;
-    if (w.kind === "popup") el.style.position = "fixed";
+    if (w.kind === "popup" || w.kind === "contact") el.style.position = "fixed";
     if (w.kind === "art") el.classList.add("frameless-art");
 
     if (w.kind === "popup") {
       el.addEventListener("mousedown", (e) => {
         e.stopPropagation();
         if (!el.classList.contains("explode-anim")) {
-          playExplosionSound(); // Áudio Retro
+          playExplosionSound();
           el.classList.add("explode-anim");
-          setTimeout(() => closeWindow(w.id), 580);
+          setTimeout(() => closeWindow(w.id), 450);
         }
       });
     } else if (w.kind !== "contact") {
@@ -543,11 +569,11 @@
       taskStrip.appendChild(b);
     });
 
-    // Injeta os ícones de Rede e Som estáticos e o Relógio na bandeja
-    let tray = $(".system-tray-icons");
+    // Injeção Responsiva Dinâmica da Bandeja de Sistema
+    let tray = $(".system-tray-container");
     if (!tray) {
-       tray = document.createElement("div"); tray.className = "system-tray-icons";
-       tray.innerHTML = `<span title="Volume">🔊</span><span title="Wi-Fi">📶</span>`;
+       tray = document.createElement("div"); tray.className = "system-tray-container";
+       tray.innerHTML = `<div class="system-tray-icons"><span title="Volume">🔊</span><span title="Wi-Fi">📶</span></div>`;
        clockEl.parentNode.insertBefore(tray, clockEl);
     }
   }
@@ -588,9 +614,6 @@
     setTimeout(scheduleNextCrash, 60000 * crashMultiplier);
   }
 
-  // ==========================================
-  // SPAWN AD: ACOPLAMENTO FIEL ÀS PROPORÇÕES
-  // ==========================================
   function spawnAd() {
     if (CUSTOM_ADS.length === 0) return; 
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
@@ -639,10 +662,8 @@
     state.manifest = generateAutomaticManifest();
     nowClock(); setInterval(nowClock, 1000);
 
-    // 1. Explorador principal
     addWindow("folder"); 
     
-    // 2. Abertura TRIPLA das primeiras imagens da galeria de obras
     if (state.manifest.works && state.manifest.works.length >= 3) {
       const w1 = state.manifest.works[0];
       const w2 = state.manifest.works[1];
@@ -652,13 +673,14 @@
       loadDimensions(w3).then(() => { addWindow("art", w3); });
     }
 
-    // 3. Janelas Auxiliares
     addWindow("about");   
 
-    // 4. Notificação do MSN programada para surgir 1 segundo após a inicialização
+    // Dispara o MSN Toast após 1 segundo exato
     setTimeout(() => {
        addWindow("contact");
-       playMsnSound(); // Alerta sonoro clássico
+       // O som é engatado, mas o navegador exigirá que o usuário tenha interagido (clicado)
+       // para executá-lo. Por segurança, o clique global também o executa.
+       playMsnSound(); 
     }, 1000);
 
     setTimeout(spawnAd, 8000);
