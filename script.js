@@ -2,26 +2,25 @@
   "use strict";
 
   // ==========================================
-  // SCANNER DE EXTENSÕES GLOBAL (Salva as imagens JPG/GIF perdidas)
+  // SCANNER DE EXTENSÕES BLINDADO (Resolve erro de Maiúscula/Minúscula no Vercel)
   // ==========================================
   window.handleThumbErr = function(img) {
-     if (!img.dataset.errStep) {
-        img.dataset.errStep = "1";
-        img.src = img.src.replace(/\.png$/i, '.jpg');
-     } else if (img.dataset.errStep === "1") {
-        img.dataset.errStep = "2";
-        img.src = img.src.replace(/\.jpg$/i, '.jpeg');
-     } else if (img.dataset.errStep === "2") {
-        img.dataset.errStep = "3";
-        img.src = img.src.replace(/\.jpeg$/i, '.gif');
+     const exts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'PNG', 'JPG', 'JPEG', 'GIF', 'WEBP'];
+     let step = parseInt(img.dataset.errStep || "0");
+     
+     if (step < exts.length) {
+        let url = img.src.split('?')[0]; // Remove query tags se houver
+        let baseSrc = url.substring(0, url.lastIndexOf('.'));
+        img.dataset.errStep = step + 1;
+        img.src = baseSrc + '.' + exts[step];
      } else {
-        // Se a imagem realmente não existir, desenha um quadradinho tracejado
+        // Se a imagem não for achada de jeito nenhum
         img.outerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><rect width="50" height="50" fill="transparent" stroke="#ccc" stroke-dasharray="4"/></svg>';
      }
   };
 
   // ==========================================
-  // FORÇAR MODO DESKTOP NO CELULAR (Zoom e Pan livres)
+  // FORÇAR MODO DESKTOP NO CELULAR (Zoom livre no site)
   // ==========================================
   let metaViewport = document.querySelector('meta[name="viewport"]');
   if (!metaViewport) {
@@ -45,22 +44,18 @@
     .work-thumb { width: auto; height: auto; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; background: transparent !important; }
     .work-thumb img { max-width: 100px; max-height: 80px; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); }
     
-    /* REMOÇÃO ABSOLUTA DE BORDAS DAS JANELAS DE ARTE */
     .frameless-art { background: transparent !important; background-image: none !important; border: none !important; box-shadow: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; outline: none !important; }
     .frameless-art .window-body { height: auto !important; background: transparent !important; background-image: none !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; border: none !important; box-shadow: none !important; }
     .frameless-art:before, .frameless-art:after { display: none !important; }
     
     .art-plate { overflow: visible; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; background: transparent !important; border: none !important; box-shadow: none !important; width: 100%; height: 100%; }
     
-    /* GRUPO PRINCIPAL QUE PRENDE A IMAGEM, O "X" E AS SETAS JUNTOS */
     .img-wrapper { position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.05s linear; cursor: pointer; background: transparent !important; border: none !important; box-shadow: none !important; touch-action: none; }
     .img-wrapper img { display: block; touch-action: none; max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(3px 3px 12px rgba(0,0,0,0.8)); background: transparent !important; border: none !important; }
     
-    /* BOTÃO FECHAR GRUDADO */
     .close-art { position: absolute; top: -12px; right: -12px; background: #e81123; color: #fff; border: 1px solid #fff; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); width: 24px; height: 26px; font-family: sans-serif; font-weight: bold; cursor: pointer; z-index: 100000; display: flex; align-items: center; justify-content: center; border-radius: 2px; touch-action: manipulation; }
     .close-art:hover { background: #ff0000; }
     
-    /* SETAS DE NAVEGAÇÃO GRUDADAS NA IMAGEM */
     .nav-art { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.5); width: 34px; height: 34px; font-size: 16px; font-weight: bold; cursor: pointer; z-index: 100001; border-radius: 50%; display: flex; align-items: center; justify-content: center; touch-action: manipulation; transition: background 0.2s, transform 0.1s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); padding-bottom: 2px; }
     .nav-art:hover { background: rgba(255,255,255,0.9); color: #000; }
     .nav-art:active { transform: translateY(-50%) scale(0.9); }
@@ -71,18 +66,17 @@
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
     /* ======================================================= */
-    /* ABOUT: MAIS ALTO, COM MARGEM RESPIRO E TEXTOS À ESQUERDA */
+    /* ABOUT: VIDRO ESCOVADO COM RESPIRO AUMENTADO NO FUNDO */
     /* ======================================================= */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
-    .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; text-align: left !important; }
+    .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; height: 100% !important; text-align: left !important; overflow: hidden; }
     .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); text-align: left !important; }
     
-    /* MARGEM INFERIOR (PADDING-BOTTOM) BEM MAIOR PARA DAR RESPIRO: 80px */
-    .about-content-box { text-align: left !important; padding: 25px 25px 80px 25px !important; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block !important; width: 100% !important; box-sizing: border-box; }
+    .about-content-box { text-align: left !important; padding: 25px 25px 70px 25px !important; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); font-family: 'Segoe UI', Tahoma, sans-serif; display: block !important; width: 100% !important; box-sizing: border-box; height: 100%; overflow-y: auto; }
     .about-content-box * { text-align: left !important; justify-content: flex-start !important; align-items: flex-start !important; }
-    .about-content-box h2 { font-size: 24px; margin-bottom: 10px; margin-top: 0; text-align: left !important; width: 100%; }
-    .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.4; text-align: left !important; width: 100%; }
-    .about-content-box .chronology { font-family: monospace; font-size: 12px; line-height: 1.6; background: transparent; padding: 0; border-radius: 0; text-align: left !important; display: block; width: 100%; }
+    .about-content-box h2 { font-size: 24px; margin-bottom: 10px; margin-top: 0; text-align: left !important; width: 100%; display: block; }
+    .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.5; text-align: left !important; width: 100%; display: block; }
+    .about-content-box .chronology { font-family: monospace; font-size: 13px; line-height: 1.8; background: transparent; padding: 0; border-radius: 0; text-align: left !important; display: block; width: 100%; }
     
     /* POPUP ADS NÚS */
     .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
@@ -114,14 +108,13 @@
     .msn-window .titlebar { display: none !important; }
     .task-msn { background: linear-gradient(to bottom, #E6F0FA, #A4CBF0) !important; border: 1px solid #6E98C7 !important; color: #000 !important; }
     
-    /* TASKBAR */
+    /* TASKBAR E FILTROS CRT */
     .taskbar { display: flex; align-items: center; justify-content: space-between; width: 100%; box-sizing: border-box; padding: 0 10px; }
     .task-strip { flex: 1; display: flex; gap: 4px; overflow: hidden; margin: 0 10px; min-width: 0; }
     .task-button { flex: 0 1 140px; min-width: 35px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .system-tray-container { display: flex; align-items: center; gap: 8px; flex-shrink: 0; background: linear-gradient(to bottom, #0c82dc, #045cc0); padding: 0 8px; height: 100%; border-left: 1px solid #08449c; }
     .system-tray-icons { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #fff; cursor: default; }
     
-    /* FILTROS E GLITCHES */
     @keyframes crtWallpaperGlitch {
       0% { transform: scale(1) translate(0,0) skewX(0); filter: none; }
       20% { transform: scale(1.02) translate(-3px, 2px) skewX(2deg); filter: hue-rotate(90deg) contrast(1.5) saturate(1.8); }
@@ -131,7 +124,6 @@
       100% { transform: scale(1) translate(0,0) skewX(0); filter: none; }
     }
     .wallpaper-glitch-active { animation: crtWallpaperGlitch 0.9s steps(6) forwards !important; }
-    
     @keyframes crtLinesOscillation { 0% { transform: translateY(0px); opacity: 0.94; } 50% { transform: translateY(1.5px); opacity: 1; } 100% { transform: translateY(0px); opacity: 0.94; } }
     .crt::after { animation: crtLinesOscillation 0.18s steps(2) infinite !important; }
     
@@ -145,7 +137,6 @@
       100% { transform: translate(0, 0) skewX(0deg); filter: none; }
     }
     .logo-shake-active { animation: logoRgbShake 0.45s steps(4) forwards !important; }
-    
     #bsod { z-index: 999999999 !important; }
   `;
   document.head.appendChild(extraStyles);
@@ -211,7 +202,7 @@
     const buildItems = (folderPath, type) => {
       return Array.from({ length: 15 }, (_, i) => {
         const num = String(i + 1).padStart(2, '0');
-        // Inicialmente assume .png, mas o motor vai testar e consertar o caminho se for jpg ou gif
+        // Inicializa com .png, mas o motor loadDimensions corrige a extensão caso necessário!
         return { id: `${folderPath}/${num}.png`, file: `${folderPath}/${num}.png`, title: `${num}`, type: type };
       });
     };
@@ -274,11 +265,11 @@
     
     if (kind === "folder") return { x: W * 0.05, y: H * 0.23, w: Math.min(600, W * 0.8), h: Math.min(420, H * 0.7) };
     
-    // ABOUT MUITO MAIS ALTO PARA CABER O RESPIRO (Mínimo 420px de altura)
+    // ABOUT MAIOR E MAIS ALTO PARA CABER O RESPIRO INFERIOR
     if (kind === "about") {
        const aW = Math.min(320, W * 0.9);
-       const aH = Math.min(420, H * 0.8);
-       return { x: clamp(W - aW - 20, 10, W - aW), y: clamp(H * 0.2, 10, H - aH), w: aW, h: aH };
+       const aH = 460; 
+       return { x: clamp(W - aW - 20, 10, W - aW), y: clamp(H * 0.15, 10, H - aH), w: aW, h: aH };
     }
     
     if (kind === "contact") return { x: W - 270, y: H - 205, w: 250, h: 160 }; 
@@ -295,7 +286,7 @@
       
       if (opts.isInit) {
          if (work.title === "01") return { x: W * 0.22, y: H * 0.15, w: artW, h: artH, initZ: 1004 };
-         if (work.title === "02") return { x: Math.max(10, W - 580), y: H * 0.28, w: artW, h: artH, initZ: 1001 }; 
+         if (work.title === "02") return { x: Math.max(10, W - artW - 40), y: H * 0.28, w: artW, h: artH, initZ: 1001 }; 
          if (work.title === "03") return { x: W * 0.02, y: H * 0.42, w: artW, h: artH, initZ: 1001 }; 
       }
       return { x: clamp((W - artW) / 2, 0, W), y: clamp((H - artH) / 2, 0, H), w: artW, h: artH };
@@ -501,7 +492,7 @@
     if (w.kind === "art") {
       const acervoPanel = w.work.type === "ACERVO" ? `
         <div class="acervo-toast" style="position: absolute; left: calc(100% + 60px); top: 20px; background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 15px; border: 1px solid rgba(255,255,255,0.4); border-radius: 4px; color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; width: max-content; min-width: 220px; box-shadow: 2px 2px 10px rgba(0,0,0,0.5); text-align: left; cursor: default; touch-action: auto;">
-           <div style="font-size: 16px; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px; text-transform: uppercase;">${escapeHtml(w.work.id)}</div>
+           <div style="font-size: 16px; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px; text-transform: uppercase;">OBRA ${escapeHtml(w.title)}</div>
            <div style="font-size: 12px; line-height: 1.8;">
              <strong style="color:#A4CBF0; display:inline-block; width:80px;">STATUS:</strong> <a href="mailto:h4wnee@gmail.com?subject=Interesse%20na%20obra%20${escapeHtml(w.work.id)}" target="_blank" style="color:#F4D03F; text-decoration:none; border-bottom:1px dashed #F4D03F;">[ SOLICITAR INFO ]</a><br>
              <strong style="color:#A4CBF0; display:inline-block; width:80px;">ANO:</strong> 2026<br>
@@ -769,12 +760,11 @@
 
   // ==========================================
   // MOTOR DE CARREGAMENTO SEGURO DE EXTENSÕES
-  // Testa silenciosamente a extensão real da imagem (png, jpg ou gif)
   // ==========================================
   function loadDimensions(work) {
     return new Promise(resolve => {
-      const exts = ['png', 'jpg', 'jpeg', 'gif'];
-      const baseFile = work.file.replace(/\.[a-z]+$/i, '');
+      const exts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'PNG', 'JPG', 'JPEG', 'GIF', 'WEBP'];
+      const baseFile = work.file.replace(/\.[a-zA-Z0-9]+$/i, '');
       
       const tryNext = () => {
         if (exts.length === 0) {
@@ -783,7 +773,7 @@
         const ext = exts.shift();
         const img = new Image();
         img.onload = () => { 
-           work.file = baseFile + '.' + ext; // Grava a extensão certa pro site inteiro usar
+           work.file = baseFile + '.' + ext; 
            work.nw = img.naturalWidth; work.nh = img.naturalHeight; 
            resolve(work); 
         };
@@ -914,7 +904,7 @@
     const numStr = String(currentAdIndex).padStart(2, '0');
     currentAdIndex = (currentAdIndex % 10) + 1; 
 
-    const extensions = ['gif', 'png', 'jpg', 'webp'];
+    const extensions = ['gif', 'png', 'jpg', 'webp', 'GIF', 'PNG', 'JPG', 'WEBP'];
     
     const tryLoad = () => {
        if (extensions.length === 0) return;
@@ -960,7 +950,7 @@
        };
        
        img.onerror = () => { setTimeout(tryLoad, 80); };
-       img.src = `assets/ads/${numStr}.${ext}`;
+       img.src = `assets/ads/${numStr}.${ext}?v=${Date.now()}`;
     };
     tryLoad();
   }
@@ -991,17 +981,21 @@
       nowClock(); setInterval(nowClock, 1000);
       fixBackgroundCache();
 
-      // INICIA COM A PASTA beck_END (AS 3 PRIMEIRAS IMAGENS)
       if (state.manifest.beckEnd && state.manifest.beckEnd.length >= 3) {
         const w1 = state.manifest.beckEnd[0];
         const w2 = state.manifest.beckEnd[1];
         const w3 = state.manifest.beckEnd[2];
 
+        // w3 é 03.png (Nasce na esquerda)
         loadDimensions(w3).then(() => { addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 }); });
+        
+        // w2 é 02.png (Nasce na direita)
         loadDimensions(w2).then(() => { addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 }); });
 
         setTimeout(() => addWindow("folder", null, { z: 1002 }), 100);
         setTimeout(() => addWindow("about", null, { z: 1003 }), 200);
+        
+        // w1 é 01.png (Nasce no centro)
         setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { isInit: true, x: W * 0.22, y: H * 0.15, z: 1004 }); }); }, 300);
       } else {
         addWindow("folder"); addWindow("about");
