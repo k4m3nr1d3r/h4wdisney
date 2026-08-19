@@ -8,12 +8,11 @@ const DIST = path.join(ROOT, 'dist');
 await fs.rm(DIST, { recursive: true, force: true });
 await fs.mkdir(DIST, { recursive: true });
 
-// Tenta gerar a galeria antiga, mas não trava se der erro
 try {
   const generator = new URL('./generate-gallery.mjs', import.meta.url);
   await import(generator);
 } catch (e) {
-  console.log('Ignorando gerador antigo. Usando manifesto interno do script.js');
+  console.log('Ignorando gerador antigo.');
 }
 
 const files = [
@@ -34,7 +33,7 @@ for (const file of files) {
   }
 }
 
-// A lista do porteiro atualizada com 'archives'
+// Porteiro atualizado: Troca 'beck_END' por 'archives'
 for (const dir of ['assets', 'ACERVO', 'exhibiti0ns', 'archives']) {
   const src = path.join(ROOT, dir);
   const dest = path.join(DIST, dir);

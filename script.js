@@ -2,7 +2,7 @@
   "use strict";
 
   // ==========================================
-  // O RADAR NÍVEL DEUS (Agora apontando para 'archives')
+  // O RADAR NÍVEL DEUS
   // ==========================================
   window.getPathsToTest = function(baseFile) {
       const exts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'PNG', 'JPG', 'JPEG', 'GIF', 'WEBP'];
@@ -98,6 +98,7 @@
     
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
+    /* ABOUT */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
     .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; height: 100% !important; text-align: left !important; overflow: hidden; }
     .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); text-align: left !important; }
@@ -108,10 +109,14 @@
     .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.5; text-align: left !important; width: 100%; display: block; }
     .about-content-box .chronology { font-family: monospace; font-size: 13px; line-height: 1.8; background: transparent; padding: 0; border-radius: 0; text-align: left !important; display: block; width: 100%; }
     
-    /* Z-Index Removido para permitir que fiquem embaixo das Obras! */
+    /* ESTILOS DE PROPAGANDAS E PUBLI (ADS) */
     .popup-ad { cursor: crosshair; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
+    
+    .publi-ad { cursor: pointer; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; position: fixed !important; }
+    .publi-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
+    .publi-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(3px 3px 10px rgba(0,0,0,0.6)); pointer-events: none; }
     
     @keyframes realisticPixelExplosion {
       0% { box-shadow: 0 0 0 4px #fff, 0 0 0 8px #ffeb3b; background: transparent; transform: scale(0.6); opacity: 1; }
@@ -165,7 +170,10 @@
   const $ = (s, root = document) => root.querySelector(s);
   const $$ = (s, root = document) => [...root.querySelectorAll(s)];
 
-  const state = { wins: [], top: 1000, active: null, menuOpen: false, cascade: 0, manifest: null, browserPath: [] };
+  // ENGENHARIA DE CAMADAS (Z-INDEX)
+  const state = { wins: [], top: 1000, focusedTop: 10000, active: null, menuOpen: false, cascade: 0, manifest: null, browserPath: [] };
+  let adZCounter = 5000; // Propagandas ficam presas na camada 5000 (abaixo das Obras ativas)
+  
   const windowsEl = $("#windows") || document.body;
   const taskStrip = $("#taskStrip");
   const bsod = $("#bsod");
@@ -301,7 +309,7 @@
       const artH = Math.round(nh * scale);
       
       if (opts.isInit) {
-         if (work.title === "01") return { x: W * 0.22, y: H * 0.15, w: artW, h: artH, initZ: 1004 };
+         if (work.title === "01") return { x: W * 0.22, y: H * 0.15, w: artW, h: artH, initZ: 1002 };
          if (work.title === "02") return { x: Math.max(10, W - artW - 40), y: H * 0.28, w: artW, h: artH, initZ: 1001 }; 
          if (work.title === "03") return { x: W * 0.02, y: H * 0.42, w: artW, h: artH, initZ: 1001 }; 
       }
@@ -337,7 +345,7 @@
     
     if (windowsEl) windowsEl.appendChild(createWindow(win));
     
-    if (!opts.isInit && kind !== "popup") focusWin(win.id);
+    if (!opts.isInit && kind !== "popup" && kind !== "publi") focusWin(win.id);
     renderTasks();
   }
 
@@ -354,11 +362,12 @@
     renderTasks();
   }
 
+  // Foco dá passe VIP para a Janela: Ela vai para a Camada > 10.000, passando por cima dos ADS
   function focusWin(id) {
     const w = state.wins.find(x => x.id === id);
-    if (!w || w.kind === "popup") return;
+    if (!w || w.kind === "popup" || w.kind === "publi") return;
     
-    w.z = ++state.top; 
+    w.z = ++state.focusedTop; 
     w.min = false; state.active = id; state.menuOpen = false;
     
     if (windowsEl) {
@@ -803,6 +812,7 @@
     
     let extraClass = "";
     if (w.kind === "popup") extraClass = "popup-ad";
+    if (w.kind === "publi") extraClass = "publi-ad";
     if (w.kind === "contact") extraClass = "msn-window";
     if (w.kind === "about") extraClass = "glass-about";
     
@@ -812,7 +822,7 @@
     el.style.width = `${w.w}px`; el.style.height = `${w.h}px`;
     el.style.zIndex = w.z;
     
-    if (w.kind === "popup" || w.kind === "contact") el.style.position = "fixed";
+    if (w.kind === "popup" || w.kind === "publi" || w.kind === "contact") el.style.position = "fixed";
     if (w.kind === "art") el.classList.add("frameless-art");
 
     el.addEventListener("pointerdown", () => focusWin(w.id), { capture: true });
@@ -822,7 +832,7 @@
       const explodeAd = (e) => {
         e.stopPropagation();
         if (!el.classList.contains("explode-anim")) {
-          lastAdCloseTime = Date.now(); // Reseta o relógio do Flood punitivo
+          lastAdCloseTime = Date.now();
           playExplosionSound();
           el.classList.add("explode-anim");
           setTimeout(() => closeWindow(w.id), 450);
@@ -830,6 +840,13 @@
       };
       el.addEventListener("mousedown", explodeAd);
       el.addEventListener("touchstart", explodeAd, { passive: true });
+    } else if (w.kind === "publi") {
+      const closePubli = (e) => {
+         e.stopPropagation();
+         closeWindow(w.id);
+      };
+      el.addEventListener("mousedown", closePubli);
+      el.addEventListener("touchstart", closePubli, { passive: true });
     } else {
       el.addEventListener("pointerdown", e => {
          if (!e.target.closest("button") && !e.target.closest("a") && !e.target.closest("textarea") && !el.classList.contains("frameless-art") && !e.target.closest(".browser-body")) {
@@ -847,11 +864,11 @@
       });
     }
     
-    if (w.kind !== "contact" && w.kind !== "art" && w.kind !== "popup") el.appendChild(titlebar(w));
+    if (w.kind !== "contact" && w.kind !== "art" && w.kind !== "popup" && w.kind !== "publi") el.appendChild(titlebar(w));
 
     const body = document.createElement("div");
     body.className = "window-body";
-    body.innerHTML = w.kind === "popup" ? w.content : windowBodyHTML(w);
+    body.innerHTML = w.kind === "popup" || w.kind === "publi" ? w.content : windowBodyHTML(w);
     el.appendChild(body);
     
     bindWindowBody(el, w); return el;
@@ -860,7 +877,7 @@
   function renderTasks() {
     if (!taskStrip) return;
     taskStrip.innerHTML = "";
-    state.wins.filter(w => w.kind !== "popup").forEach(w => {
+    state.wins.filter(w => w.kind !== "popup" && w.kind !== "publi").forEach(w => {
       const b = document.createElement("button");
       b.className = `task-button ${state.active === w.id && !w.min ? "focused" : ""} ${w.kind === "contact" ? "task-msn" : ""}`;
       b.innerHTML = `${w.iconHtml || ""} ${w.title}`;
@@ -915,24 +932,21 @@
   }
 
   // ==========================================
-  // O NOVO MOTOR DE PROPAGANDAS INTELIGENTES
+  // PROPAGANDAS E PUBLI (ADS)
   // ==========================================
   let totalAdsSpawned = 0;
   let currentAdSequence = 1;
-  let lastAdCloseTime = Date.now(); // Registra o início ou a última vez que explodiu
+  let lastAdCloseTime = Date.now(); 
 
   function spawnAd() {
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
-    
     totalAdsSpawned++;
     let numStr;
     
-    // FASE 1: Segue a ordem 01 a 10 de forma calma
     if (totalAdsSpawned <= 10) {
         numStr = String(currentAdSequence).padStart(2, '0');
         currentAdSequence++;
     } else {
-        // FASE 2: Enlouquece, sorteia aleatório 
         const randomAdIndex = Math.floor(Math.random() * 10) + 1;
         numStr = String(randomAdIndex).padStart(2, '0');
     }
@@ -948,20 +962,17 @@
           const scale = Math.min(140 / img.naturalWidth, 140 / img.naturalHeight, 1);
           const adW = Math.max(60, Math.round(img.naturalWidth * scale));
           const adH = Math.max(60, Math.round(img.naturalHeight * scale));
-          
           const contentHtml = `<img src="${img.src}" style="display:block; width:100%; height:100%; object-fit:contain; pointer-events:none;">`;
           
           const ad = {
              id, kind: "popup", title: "AD", iconHtml: "⚠",
              x: Math.random() * (innerWidth - adW), y: Math.random() * (innerHeight - adH - 20),
-             // Z-Index estratégico: Fica sempre 1 nível ABAIXO da sua janela ativa!
-             w: adW, h: adH, z: Math.max(1000, state.top - 1), min: false, max: false,
+             w: adW, h: adH, z: ++adZCounter, min: false, max: false,
              content: contentHtml, vx: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random()), vy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random())
           };
           
           ad.ratioX = ad.x / innerWidth; ad.ratioY = ad.y / innerHeight;
           state.wins.push(ad); 
-          
           if (windowsEl) windowsEl.appendChild(createWindow(ad)); 
           
           requestAnimationFrame(function bounce() {
@@ -970,9 +981,7 @@
              winData.x += winData.vx; winData.y += winData.vy;
              if (winData.x <= 0 || winData.x + winData.w >= innerWidth) winData.vx *= -1;
              if (winData.y <= 0 || winData.y + winData.h >= innerHeight) winData.vy *= -1;
-             
              winData.ratioX = winData.x / innerWidth; winData.ratioY = winData.y / innerHeight;
-
              if (windowsEl) {
                const currentEl = windowsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
                if (currentEl && !currentEl.classList.contains("explode-anim")) { 
@@ -982,7 +991,6 @@
              requestAnimationFrame(bounce);
           });
        };
-       
        img.onerror = () => { setTimeout(tryLoad, 80); };
        img.src = `assets/ads/${numStr}.${ext}?v=${Date.now()}`;
     };
@@ -993,25 +1001,65 @@
     spawnAd();
     
     let timeSinceLastClose = Date.now() - lastAdCloseTime;
-    let isFlood = timeSinceLastClose > 5 * 60 * 1000; // Punição por 5 minutos ignorados
+    let isFlood = timeSinceLastClose > 5 * 60 * 1000; // Punição se não estourar popups por 5 min
     
-    // Se já passou da Fase 1, começa a vomitar duplas!
-    if (totalAdsSpawned >= 10) {
-        if (Math.random() > 0.6) {
-            setTimeout(spawnAd, 500); 
-        }
+    if (totalAdsSpawned >= 10 && Math.random() > 0.6) {
+        setTimeout(spawnAd, 500); 
     }
     
     let timeToNext;
-    if (isFlood) {
-        // MODO PUNição: Ads jorram na tela a cada 5~13 segundos!
-        timeToNext = Math.floor(Math.random() * 8000) + 5000; 
-    } else {
-        // MODO CALMO: Fluxo diluído de 45~70 segundos entre os ads
-        timeToNext = Math.floor(Math.random() * 25000) + 45000; 
-    }
-    
+    if (isFlood) { timeToNext = Math.floor(Math.random() * 8000) + 5000; } // Modo Caos
+    else { timeToNext = Math.floor(Math.random() * 30000) + 40000; } // 40 a 70 segundos de respiro
     setTimeout(scheduleNextAd, timeToNext);
+  }
+
+  function spawnPubli(forcedIndex = null, forcedX = null, forcedY = null) {
+      const id = "publi_" + Math.random().toString(36).slice(2, 8);
+      const index = forcedIndex !== null ? forcedIndex : (Math.floor(Math.random() * 5) + 1);
+      const numStr = String(index).padStart(2, '0');
+      const extensions = ['gif', 'png', 'jpg', 'webp', 'GIF', 'PNG', 'JPG', 'WEBP'];
+
+      const tryLoad = () => {
+         if (extensions.length === 0) return;
+         const ext = extensions.shift();
+         const img = new Image();
+
+         img.onload = () => {
+            const W = innerWidth, H = innerHeight;
+            const scale = Math.min((W * 0.7) / img.naturalWidth, (H * 0.7) / img.naturalHeight, 1);
+            const adW = Math.max(50, Math.round(img.naturalWidth * scale));
+            const adH = Math.max(50, Math.round(img.naturalHeight * scale));
+
+            let posX = forcedX !== null ? forcedX : (W * 0.4 + Math.random() * (W * 0.5 - adW)); 
+            let posY = forcedY !== null ? forcedY : (Math.random() * (H - adH - 20));
+
+            posX = clamp(posX, 10, W - adW - 10);
+            posY = clamp(posY, 10, H - adH - 10);
+
+            const contentHtml = `<img src="${img.src}" style="display:block; width:100%; height:100%; object-fit:contain; pointer-events:none;">`;
+
+            const ad = {
+               id, kind: "publi", title: "PUBLI", iconHtml: "",
+               x: posX, y: posY, w: adW, h: adH, z: ++adZCounter, min: false, max: false,
+               content: contentHtml
+            };
+
+            ad.ratioX = ad.x / innerWidth; ad.ratioY = ad.y / innerHeight;
+            state.wins.push(ad);
+            if (windowsEl) windowsEl.appendChild(createWindow(ad));
+         };
+         img.onerror = () => { setTimeout(tryLoad, 80); };
+         img.src = `assets/ads/publi/${numStr}.${ext}?v=${Date.now()}`;
+      };
+      tryLoad();
+  }
+
+  function scheduleNextPubli() {
+      let timeToNext = Math.floor(Math.random() * 60000) + 90000; // Bem raro: 1.5 a 2.5 min
+      setTimeout(() => {
+          spawnPubli();
+          scheduleNextPubli();
+      }, timeToNext);
   }
 
   function scheduleNextLogoShake() {
@@ -1039,29 +1087,40 @@
         const w2 = state.manifest.archives[1];
         const w3 = state.manifest.archives[2];
 
+        // 1. Obras Laterais
         loadDimensions(w3).then(() => { addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 }); }).catch(()=>{});
         loadDimensions(w2).then(() => { addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 }); }).catch(()=>{});
 
-        setTimeout(() => addWindow("folder", null, { z: 1002 }), 100);
-        setTimeout(() => addWindow("about", null, { z: 1003 }), 200);
+        // 2. Obra Central
+        setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { isInit: true, x: W * 0.22, y: H * 0.15, z: 1002 }); }).catch(()=>{}); }, 150);
+
+        // 3. About
+        setTimeout(() => addWindow("about", null, { z: 1003 }), 300);
         
-        setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { isInit: true, x: W * 0.22, y: H * 0.15, z: 1004 }); }).catch(()=>{}); }, 300);
+        // 4. Explorador AGORA POR CIMA de todos (Z-index 1005)
+        setTimeout(() => addWindow("folder", null, { z: 1005 }), 500);
+
       } else {
-        addWindow("folder"); addWindow("about");
+        addWindow("folder", null, { z: 1005 }); addWindow("about", null, { z: 1003 });
       }
 
       setTimeout(() => {
-         addWindow("contact", null, { anchor: "bottom-right", x: W - 270, y: H - 205, z: 1005 });
+         addWindow("contact", null, { anchor: "bottom-right", x: W - 270, y: H - 205, z: 1006 });
       }, 1000);
 
-      // Inicia o ciclo narrativo dos Ads!
-      setTimeout(scheduleNextAd, 15000); 
+      // 5. APARIÇÕES IMEDIATAS (Ads e Publi no carregamento)
+      setTimeout(spawnAd, 1500); 
+      setTimeout(() => spawnPubli(1, W * 0.65, H * 0.25), 2000); 
+
+      // 6. Agenda os Loops
+      setTimeout(scheduleNextAd, 15000);
+      setTimeout(scheduleNextPubli, 90000);
       setTimeout(scheduleNextGlitch, 40000);
       setTimeout(scheduleNextCrash, 60000);
       setTimeout(scheduleNextLogoShake, 4000);
       
     } catch(err) {
-      console.error("Erro inicial tratado em background:", err);
+      console.error("Erro inicial tratado:", err);
     }
   }
 
