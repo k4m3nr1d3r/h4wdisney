@@ -1,6 +1,15 @@
 (() => {
   "use strict";
 
+  // MAPA DOS ÍCONES (01 a 05)
+  const iconMap = {
+      "folder": "01",
+      "about": "02",
+      "contact": "03",
+      "crash": "04",
+      "art": "05"
+  };
+
   // ==========================================
   // O RADAR NÍVEL DEUS
   // ==========================================
@@ -98,7 +107,7 @@
     
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
-    /* ABOUT PRESERVADO */
+    /* ABOUT */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
     .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; height: 100% !important; text-align: left !important; overflow: hidden; }
     .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); text-align: left !important; }
@@ -109,25 +118,27 @@
     .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.5; text-align: left !important; width: 100%; display: block; }
     .about-content-box .chronology { font-family: monospace; font-size: 13px; line-height: 1.8; background: transparent; padding: 0; border-radius: 0; text-align: left !important; display: block; width: 100%; }
     
-    /* ESTILOS DE PROPAGANDAS E PUBLI (ADS) */
+    /* ======================================================= */
+    /* ESTILOS DE PROPAGANDAS E PUBLI (ADS) E HOLOGRAMA MÁGICO */
+    /* ======================================================= */
     .popup-ad { cursor: crosshair; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
     
     .publi-ad { cursor: pointer; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; position: fixed !important; }
     .publi-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
-    .publi-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(3px 3px 10px rgba(0,0,0,0.6)); pointer-events: none; }
     
-    /* EFEITO HOLOGRAMA (FLUTUANDO E BRILHANDO) PARA A PUBLI 01 */
-    @keyframes floatAndShine {
-      0% { transform: translateY(0px); filter: drop-shadow(0 0 8px rgba(255,255,255,0.6)); }
-      50% { transform: translateY(18px); filter: drop-shadow(0 0 25px rgba(255,255,255,1)); }
-      100% { transform: translateY(0px); filter: drop-shadow(0 0 8px rgba(255,255,255,0.6)); }
+    @keyframes publiFloat {
+        0% { transform: translateY(0px); filter: drop-shadow(3px 3px 15px rgba(255,255,255,0.3)); }
+        50% { transform: translateY(18px); filter: drop-shadow(3px 3px 35px rgba(255,255,255,1)); }
+        100% { transform: translateY(0px); filter: drop-shadow(3px 3px 15px rgba(255,255,255,0.3)); }
     }
-    .special-publi-01 {
-      animation: floatAndShine 4.5s ease-in-out infinite !important;
+    .publi-ad .window-body img {
+        display: block; width: 100%; height: 100%; object-fit: contain !important; 
+        background: transparent !important; pointer-events: none;
+        animation: publiFloat 4.5s ease-in-out infinite;
     }
-
+    
     @keyframes realisticPixelExplosion {
       0% { box-shadow: 0 0 0 4px #fff, 0 0 0 8px #ffeb3b; background: transparent; transform: scale(0.6); opacity: 1; }
       35% { box-shadow: 0 -16px 0 3px #fff, 0 16px 0 3px #fff, 16px 0 0 3px #fff, -16px 0 0 3px #fff, -12px -12px 0 4px #ffeb3b, 12px 12px 0 4px #ffeb3b, -12px 12px 0 4px #ffeb3b, 12px -12px 0 4px #ffeb3b, 0 -25px 0 3px #ff9800, 0 25px 0 3px #ff9800; transform: scale(1.1); opacity: 1; border: none; }
@@ -224,8 +235,42 @@
     if (!msnNotified) { playMsnSound(); msnNotified = true; }
   }, { once: true });
 
+  // ÍCONES DAS JANELAS PUXADOS DO MAPA DINÂMICO
   function getIcon(name, fallbackEmoji) {
-    return `<img src="assets/icons/${name}.png" onerror="this.outerHTML='<span>${fallbackEmoji}</span>'" alt="" style="width:16px; height:16px; object-fit:contain; vertical-align:middle; margin-right:4px;">`;
+    const num = iconMap[name] || "01";
+    return `<img src="assets/icons/${num}.png" data-filepath="assets/icons/${num}.png" onerror="window.handleThumbErr(this)" alt="" style="width:16px; height:16px; object-fit:contain; vertical-align:middle; margin-right:4px;">`;
+  }
+
+  // ==========================================
+  // O ORGANIZADOR DE ÍCONES DO DESKTOP (AUTO-FIX)
+  // Espalha os ícones no canto superior esquerdo aleatoriamente e troca os nomes
+  // ==========================================
+  function arrangeDesktopIcons() {
+      const icons = document.querySelectorAll('[data-open]');
+      const positions = [
+          { top: '30px', left: '40px' },
+          { top: '150px', left: '20px' },
+          { top: '260px', left: '60px' },
+          { top: '380px', left: '30px' },
+          { top: '500px', left: '50px' }
+      ];
+      
+      Array.from(icons).forEach((icon, idx) => {
+          icon.style.position = 'absolute';
+          icon.style.top = positions[idx % positions.length].top;
+          icon.style.left = positions[idx % positions.length].left;
+          
+          const kind = icon.dataset.open;
+          const num = iconMap[kind] || String(idx+1).padStart(2, '0');
+          
+          const img = icon.querySelector('img');
+          if (img) {
+              img.dataset.filepath = `assets/icons/${num}.png`;
+              img.dataset.step = "0";
+              img.src = `assets/icons/${num}.png`;
+              img.setAttribute("onerror", "window.handleThumbErr(this)");
+          }
+      });
   }
 
   function asset(file) { return String(file).split("/").map(encodeURIComponent).join("/"); }
@@ -318,6 +363,7 @@
       const artH = Math.round(nh * scale);
       
       if (opts.isInit) {
+         // Obras iniciais
          if (work.title === "01") return { x: W * 0.22, y: H * 0.15, w: artW, h: artH, initZ: 1002 };
          if (work.title === "02") return { x: Math.max(10, W - artW - 40), y: H * 0.28, w: artW, h: artH, initZ: 1001 }; 
          if (work.title === "03") return { x: W * 0.02, y: H * 0.42, w: artW, h: artH, initZ: 1001 }; 
@@ -346,7 +392,6 @@
       work, browserPath: [], browserHistory: [[]],
       ratioX: geom.x / innerWidth, ratioY: geom.y / innerHeight,
       anchor: opts.anchor || null,
-      isSpecial: opts.isSpecial || false,
       ...opts
     };
 
@@ -821,10 +866,7 @@
     
     let extraClass = "";
     if (w.kind === "popup") extraClass = "popup-ad";
-    if (w.kind === "publi") {
-       extraClass = "publi-ad";
-       if (w.isSpecial) extraClass += " special-publi-01"; // Aciona o holograma
-    }
+    if (w.kind === "publi") extraClass = "publi-ad";
     if (w.kind === "contact") extraClass = "msn-window";
     if (w.kind === "about") extraClass = "glass-about";
     
@@ -1026,9 +1068,9 @@
   }
 
   // ==========================================
-  // FUNÇÃO PUBLI COM POSICIONAMENTO E EFEITOS
+  // FUNÇÃO PUBLI COM EFEITO UNIVERSAL DE HOLOGRAMA
   // ==========================================
-  function spawnPubli(forcedIndex = null, forcedX = null, forcedY = null, isSpecial = false) {
+  function spawnPubli(forcedIndex = null, forcedX = null, forcedY = null) {
       const id = "publi_" + Math.random().toString(36).slice(2, 8);
       const index = forcedIndex !== null ? forcedIndex : (Math.floor(Math.random() * 5) + 1);
       const numStr = String(index).padStart(2, '0');
@@ -1048,16 +1090,12 @@
             let posX = forcedX !== null ? forcedX : (W * 0.4 + Math.random() * (W * 0.5 - adW)); 
             let posY = forcedY !== null ? forcedY : (Math.random() * (H - adH - 20));
 
-            // Permite ficar colado no teto ignorando bordas se for forçado
-            if (forcedY === null) posY = clamp(posY, 10, H - adH - 10);
-            posX = clamp(posX, 10, W - adW - 10);
-
             const contentHtml = `<img src="${img.src}" style="display:block; width:100%; height:100%; object-fit:contain; pointer-events:none;">`;
 
             const ad = {
                id, kind: "publi", title: "PUBLI", iconHtml: "",
                x: posX, y: posY, w: adW, h: adH, z: ++adZCounter, min: false, max: false,
-               content: contentHtml, isSpecial
+               content: contentHtml
             };
 
             ad.ratioX = ad.x / innerWidth; ad.ratioY = ad.y / innerHeight;
@@ -1071,7 +1109,7 @@
   }
 
   function scheduleNextPubli() {
-      let timeToNext = Math.floor(Math.random() * 60000) + 90000; // 1.5 a 2.5 min
+      let timeToNext = Math.floor(Math.random() * 60000) + 90000; 
       setTimeout(() => {
           spawnPubli();
           scheduleNextPubli();
@@ -1097,6 +1135,7 @@
       state.manifest = generateAutomaticManifest();
       nowClock(); setInterval(nowClock, 1000);
       fixBackgroundCache();
+      arrangeDesktopIcons(); // Executa a mágica de remapear os ícones!
 
       if (state.manifest.archives && state.manifest.archives.length >= 3) {
         const w1 = state.manifest.archives[0];
@@ -1113,11 +1152,16 @@
         // About
         setTimeout(() => addWindow("about", null, { z: 1003 }), 300);
         
-        // Explorador POR CIMA DE TUDO
-        setTimeout(() => addWindow("folder", null, { z: 1005 }), 500);
+        // Explorador POR CIMA DE TUDO (Z-Index garantido nas estrelas: 1010)
+        setTimeout(() => {
+            addWindow("folder", null, { z: 1010 });
+            // Força o foco absoluto no explorador
+            const folderWin = state.wins.find(w => w.kind === "folder");
+            if (folderWin) focusWin(folderWin.id);
+        }, 1200);
 
       } else {
-        addWindow("folder", null, { z: 1005 }); addWindow("about", null, { z: 1003 });
+        addWindow("folder", null, { z: 1010 }); addWindow("about", null, { z: 1003 });
       }
 
       setTimeout(() => {
@@ -1125,11 +1169,11 @@
       }, 1000);
 
       // APARIÇÕES IMEDIATAS:
-      // O Ad que rebate nasce assim que o site abre
       setTimeout(spawnAd, 1500); 
       
-      // O Publi 01.png nasce colado no teto (Y = 0), puxado pra esquerda (W * 0.52) e com o holograma ativado (true)
-      setTimeout(() => spawnPubli(1, W * 0.52, 0, true), 2000); 
+      // O Publi 01.png nasce "abaixo da obra do centro porem a parte de cima sobrepondo" 
+      // Calculamos o Y para ser na altura média-baixa da tela (H * 0.55), do lado direito
+      setTimeout(() => spawnPubli(1, W * 0.55, H * 0.55), 2000); 
 
       // Agenda os Loops
       setTimeout(scheduleNextAd, 15000);
