@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  // MAPA DOS ÍCONES (01 a 05) - Para buscar os nomes novos nas pastas!
+  // MAPA DOS ÍCONES (01 a 05)
   const iconMap = {
       "folder": "01",
       "about": "02",
@@ -107,7 +107,6 @@
     
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
-    /* ABOUT PRESERVADO */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
     .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; height: 100% !important; text-align: left !important; overflow: hidden; }
     .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); text-align: left !important; }
@@ -118,9 +117,7 @@
     .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.5; text-align: left !important; width: 100%; display: block; }
     .about-content-box .chronology { font-family: monospace; font-size: 13px; line-height: 1.8; background: transparent; padding: 0; border-radius: 0; text-align: left !important; display: block; width: 100%; }
     
-    /* ======================================================= */
     /* ESTILOS DE PROPAGANDAS E PUBLI (ADS) E HOLOGRAMA MÁGICO */
-    /* ======================================================= */
     .popup-ad { cursor: crosshair; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
@@ -128,16 +125,33 @@
     .publi-ad { cursor: pointer; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; position: fixed !important; }
     .publi-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     
-    /* TODAS AS PUBLIS AGORA TÊM O EFEITO HOLOGRAMA */
+    /* EFEITO HOLOGRAMA E REFLEXO DE VIDRO */
     @keyframes publiFloat {
         0% { transform: translateY(0px); filter: drop-shadow(3px 3px 15px rgba(255,255,255,0.3)); }
         50% { transform: translateY(18px); filter: drop-shadow(3px 3px 35px rgba(255,255,255,1)); }
         100% { transform: translateY(0px); filter: drop-shadow(3px 3px 15px rgba(255,255,255,0.3)); }
     }
-    .publi-ad .window-body img {
+    .publi-container {
+        position: relative; width: 100%; height: 100%; 
+        animation: publiFloat 4.5s ease-in-out infinite;
+    }
+    .publi-container img {
         display: block; width: 100%; height: 100%; object-fit: contain !important; 
         background: transparent !important; pointer-events: none;
-        animation: publiFloat 4.5s ease-in-out infinite;
+    }
+    @keyframes glassReflect {
+        0% { left: -80%; opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { left: 150%; opacity: 0; }
+    }
+    .glass-reflection {
+        position: absolute; top: 0; left: -100%; width: 40%; height: 100%;
+        background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.65) 50%, rgba(255,255,255,0) 100%);
+        transform: skewX(-25deg);
+        animation: glassReflect 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        animation-delay: 1.2s; /* Reflexo passa 1 segundo após a imagem carregar */
+        pointer-events: none; z-index: 10;
     }
     
     @keyframes realisticPixelExplosion {
@@ -237,16 +251,15 @@
   }, { once: true });
 
   // ==========================================
-  // O ORGANIZADOR DE ÍCONES DO DESKTOP 
-  // Espalha os ícones no canto superior esquerdo para nada cobrir eles
+  // O ORGANIZADOR DE ÍCONES DO DESKTOP (No topo esquerdo)
   // ==========================================
   function arrangeDesktopIcons() {
       const icons = document.querySelectorAll('[data-open]');
       const positions = [
           { top: '20px', left: '20px' },
-          { top: '100px', left: '40px' },
-          { top: '180px', left: '25px' },
-          { top: '260px', left: '45px' },
+          { top: '100px', left: '20px' },
+          { top: '180px', left: '20px' },
+          { top: '260px', left: '20px' },
           { top: '340px', left: '20px' }
       ];
       
@@ -342,8 +355,8 @@
     const W = innerWidth, H = innerHeight;
     const n = state.cascade++;
     
-    // O Explorador foi movido ligeiramente para a direita para deixar os ícones livres
-    if (kind === "folder") return { x: W * 0.15, y: H * 0.23, w: Math.min(600, W * 0.8), h: Math.min(420, H * 0.7) };
+    // Explorador de arquivos no exato lugar original
+    if (kind === "folder") return { x: W * 0.05, y: H * 0.23, w: Math.min(600, W * 0.8), h: Math.min(420, H * 0.7) };
     
     if (kind === "about") {
        const aW = Math.min(320, W * 0.9);
@@ -366,8 +379,8 @@
       if (opts.isInit) {
          if (work.title === "01") return { x: W * 0.22, y: H * 0.15, w: artW, h: artH, initZ: 1002 };
          if (work.title === "02") return { x: Math.max(10, W - artW - 40), y: H * 0.28, w: artW, h: artH, initZ: 1001 }; 
-         // Imagem da esquerda recuada para proteger a Área dos Ícones
-         if (work.title === "03") return { x: W * 0.12, y: H * 0.42, w: artW, h: artH, initZ: 1001 }; 
+         // Imagem 03 (esquerda) no lugar original
+         if (work.title === "03") return { x: W * 0.02, y: H * 0.42, w: artW, h: artH, initZ: 1001 }; 
       }
       return { x: clamp((W - artW) / 2, 0, W), y: clamp((H - artH) / 2, 0, H), w: artW, h: artH };
     }
@@ -923,9 +936,20 @@
 
     const body = document.createElement("div");
     body.className = "window-body";
-    body.innerHTML = w.kind === "popup" || w.kind === "publi" ? w.content : windowBodyHTML(w);
-    el.appendChild(body);
     
+    // ESTRUTURA NOVA PARA O REFLEXO DE VIDRO NA PUBLI
+    if (w.kind === "publi") {
+       body.innerHTML = `
+         <div class="publi-container">
+            ${w.content}
+            <div class="glass-reflection"></div>
+         </div>
+       `;
+    } else {
+       body.innerHTML = w.kind === "popup" ? w.content : windowBodyHTML(w);
+    }
+    
+    el.appendChild(body);
     bindWindowBody(el, w); return el;
   }
 
@@ -986,9 +1010,6 @@
     setTimeout(scheduleNextCrash, 60000 * crashMultiplier);
   }
 
-  // ==========================================
-  // PROPAGANDAS E PUBLI (ADS)
-  // ==========================================
   let totalAdsSpawned = 0;
   let currentAdSequence = 1;
   let lastAdCloseTime = Date.now(); 
@@ -1054,7 +1075,6 @@
 
   function scheduleNextAd() {
     spawnAd();
-    
     let timeSinceLastClose = Date.now() - lastAdCloseTime;
     let isFlood = timeSinceLastClose > 5 * 60 * 1000; 
     
@@ -1087,6 +1107,9 @@
 
             let posX = forcedX !== null ? forcedX : (W * 0.4 + Math.random() * (W * 0.5 - adW)); 
             let posY = forcedY !== null ? forcedY : (Math.random() * (H - adH - 20));
+
+            if (forcedY === null) posY = clamp(posY, 10, H - adH - 10);
+            posX = clamp(posX, 10, W - adW - 10);
 
             const contentHtml = `<img src="${img.src}" style="display:block; width:100%; height:100%; object-fit:contain; pointer-events:none;">`;
 
@@ -1140,39 +1163,35 @@
         const w2 = state.manifest.archives[1];
         const w3 = state.manifest.archives[2];
 
-        // Obras Laterais (Recuadas levemente pra não cobrir a área de trabalho)
-        loadDimensions(w3).then(() => { addWindow("art", w3, { isInit: true, x: W * 0.12, y: H * 0.42, z: 1001 }); }).catch(()=>{});
+        loadDimensions(w3).then(() => { addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 }); }).catch(()=>{});
         loadDimensions(w2).then(() => { addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 }); }).catch(()=>{});
 
-        // Obra Central
         setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { isInit: true, x: W * 0.22, y: H * 0.15, z: 1002 }); }).catch(()=>{}); }, 150);
 
-        // About
         setTimeout(() => addWindow("about", null, { z: 1003 }), 300);
         
-        // Explorador POR CIMA DE TUDO
+        // Explorador volta para o x original de 0.05 e com Z-index no topo
         setTimeout(() => {
-            addWindow("folder", null, { z: 1010 });
+            addWindow("folder", null, { x: W * 0.05, y: H * 0.23, z: 1010 });
             const folderWin = state.wins.find(w => w.kind === "folder");
             if (folderWin) focusWin(folderWin.id);
         }, 1200);
 
       } else {
-        addWindow("folder", null, { z: 1010 }); addWindow("about", null, { z: 1003 });
+        addWindow("folder", null, { x: W * 0.05, y: H * 0.23, z: 1010 }); addWindow("about", null, { z: 1003 });
       }
 
       setTimeout(() => {
          addWindow("contact", null, { anchor: "bottom-right", x: W - 270, y: H - 205, z: 1006 });
       }, 1000);
 
-      // APARIÇÕES IMEDIATAS:
-      setTimeout(spawnAd, 1000); 
+      // AD MENOR QUE REBATE SÓ ABRE APÓS 10 SEGUNDOS (LATÊNCIA)
+      setTimeout(spawnAd, 10000); 
       
-      // O Publi 01.png nasce bem no meio da tela (W * 0.45, H * 0.35), mordendo a obra central!
-      setTimeout(() => spawnPubli(1, W * 0.45, H * 0.35), 2000); 
+      // A PUBLI 01 DESLOCADA (Meio da imagem alinhado com o final do quadro, X em 0.58) 
+      setTimeout(() => spawnPubli(1, W * 0.58, H * 0.35), 2000); 
 
-      // Agenda os Loops
-      setTimeout(scheduleNextAd, 15000);
+      setTimeout(scheduleNextAd, 20000);
       setTimeout(scheduleNextPubli, 90000);
       setTimeout(scheduleNextGlitch, 40000);
       setTimeout(scheduleNextCrash, 60000);
