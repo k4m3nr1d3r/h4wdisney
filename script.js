@@ -10,6 +10,13 @@
       "art": "05" 
   };
 
+  // BANCO DE DADOS EXTERNO DO ACERVO
+  window.acervoMeta = {};
+  fetch('acervo-data.json')
+      .then(response => response.json())
+      .then(data => { window.acervoMeta = data; })
+      .catch(() => console.log("Arquivo acervo-data.json não encontrado. Usando dados padrão."));
+
   // ==========================================
   // O RADAR NÍVEL DEUS
   // ==========================================
@@ -117,7 +124,7 @@
     .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.5; text-align: left !important; width: 100%; display: block; }
     .about-content-box .chronology { font-family: monospace; font-size: 13px; line-height: 1.8; background: transparent; padding: 0; border-radius: 0; text-align: left !important; display: block; width: 100%; }
     
-    /* ESTILOS DE PROPAGANDAS E PUBLI (ADS) E HOLOGRAMA MÁGICO */
+    /* ESTILOS DE PROPAGANDAS E PUBLI */
     .popup-ad { cursor: crosshair; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
@@ -125,7 +132,7 @@
     .publi-ad { cursor: pointer; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; position: fixed !important; }
     .publi-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     
-    /* EFEITO HOLOGRAMA E REFLEXO DE VIDRO */
+    /* APENAS EFEITO HOLOGRAMA (SEM REFLEXO DE VIDRO) */
     @keyframes publiFloat {
         0% { transform: translateY(0px); filter: drop-shadow(3px 3px 15px rgba(255,255,255,0.3)); }
         50% { transform: translateY(18px); filter: drop-shadow(3px 3px 35px rgba(255,255,255,1)); }
@@ -138,20 +145,6 @@
     .publi-container img {
         display: block; width: 100%; height: 100%; object-fit: contain !important; 
         background: transparent !important; pointer-events: none;
-    }
-    @keyframes glassReflect {
-        0% { left: -80%; opacity: 0; }
-        10% { opacity: 1; }
-        90% { opacity: 1; }
-        100% { left: 150%; opacity: 0; }
-    }
-    .glass-reflection {
-        position: absolute; top: 0; left: -100%; width: 40%; height: 100%;
-        background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.65) 50%, rgba(255,255,255,0) 100%);
-        transform: skewX(-25deg);
-        animation: glassReflect 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        animation-delay: 1.2s; /* Reflexo passa 1 segundo após a imagem carregar */
-        pointer-events: none; z-index: 10;
     }
     
     @keyframes realisticPixelExplosion {
@@ -251,7 +244,7 @@
   }, { once: true });
 
   // ==========================================
-  // O ORGANIZADOR DE ÍCONES DO DESKTOP (No topo esquerdo)
+  // O ORGANIZADOR DE ÍCONES DO DESKTOP 
   // ==========================================
   function arrangeDesktopIcons() {
       const icons = document.querySelectorAll('[data-open]');
@@ -355,7 +348,7 @@
     const W = innerWidth, H = innerHeight;
     const n = state.cascade++;
     
-    // Explorador de arquivos no exato lugar original
+    // Explorador volta para o lugar original
     if (kind === "folder") return { x: W * 0.05, y: H * 0.23, w: Math.min(600, W * 0.8), h: Math.min(420, H * 0.7) };
     
     if (kind === "about") {
@@ -379,7 +372,7 @@
       if (opts.isInit) {
          if (work.title === "01") return { x: W * 0.22, y: H * 0.15, w: artW, h: artH, initZ: 1002 };
          if (work.title === "02") return { x: Math.max(10, W - artW - 40), y: H * 0.28, w: artW, h: artH, initZ: 1001 }; 
-         // Imagem 03 (esquerda) no lugar original
+         // Imagem da esquerda no lugar original
          if (work.title === "03") return { x: W * 0.02, y: H * 0.42, w: artW, h: artH, initZ: 1001 }; 
       }
       return { x: clamp((W - artW) / 2, 0, W), y: clamp((H - artH) / 2, 0, H), w: artW, h: artH };
@@ -586,20 +579,29 @@
     if (w.kind === "folder") return browserBodyHTML(w);
 
     if (w.kind === "art") {
+      const rawPath = escapeHtml(w.work.file);
+      
+      // NOVA INTEGRAÇÃO: Lendo os dados de acervo-data.json
+      const meta = window.acervoMeta[w.work.title] || {};
+      const mStatus = meta.status || "[ SOLICITAR INFO ]";
+      const mAno = meta.ano || "2026";
+      const mMat = meta.material || "---";
+      const mDim = meta.dimensoes || "---";
+      const mLoc = meta.local || "CARIRI/PB";
+
       const acervoPanel = w.work.type === "ACERVO" ? `
         <div class="acervo-toast" style="position: absolute; left: calc(100% + 60px); top: 20px; background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 15px; border: 1px solid rgba(255,255,255,0.4); border-radius: 4px; color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; width: max-content; min-width: 220px; box-shadow: 2px 2px 10px rgba(0,0,0,0.5); text-align: left; cursor: default; touch-action: auto;">
            <div style="font-size: 16px; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px; text-transform: uppercase;">OBRA ${escapeHtml(w.title)}</div>
            <div style="font-size: 12px; line-height: 1.8;">
-             <strong style="color:#A4CBF0; display:inline-block; width:80px;">STATUS:</strong> <a href="mailto:h4wnee@gmail.com?subject=Interesse%20na%20obra%20${escapeHtml(w.work.id)}" target="_blank" style="color:#F4D03F; text-decoration:none; border-bottom:1px dashed #F4D03F;">[ SOLICITAR INFO ]</a><br>
-             <strong style="color:#A4CBF0; display:inline-block; width:80px;">ANO:</strong> 2026<br>
-             <strong style="color:#A4CBF0; display:inline-block; width:80px;">MATERIAL:</strong> ...<br>
-             <strong style="color:#A4CBF0; display:inline-block; width:80px;">DIMENSÕES:</strong> ...<br>
-             <strong style="color:#A4CBF0; display:inline-block; width:80px;">LOCAL:</strong> CARIRI/PB
+             <strong style="color:#A4CBF0; display:inline-block; width:80px;">STATUS:</strong> <a href="mailto:h4wnee@gmail.com?subject=Interesse%20na%20obra%20${escapeHtml(w.work.id)}" target="_blank" style="color:#F4D03F; text-decoration:none; border-bottom:1px dashed #F4D03F;">${escapeHtml(mStatus)}</a><br>
+             <strong style="color:#A4CBF0; display:inline-block; width:80px;">ANO:</strong> ${escapeHtml(mAno)}<br>
+             <strong style="color:#A4CBF0; display:inline-block; width:80px;">MATERIAL:</strong> ${escapeHtml(mMat)}<br>
+             <strong style="color:#A4CBF0; display:inline-block; width:80px;">DIMENSÕES:</strong> ${escapeHtml(mDim)}<br>
+             <strong style="color:#A4CBF0; display:inline-block; width:80px;">LOCAL:</strong> ${escapeHtml(mLoc)}
            </div>
         </div>
       ` : '';
 
-      const rawPath = escapeHtml(w.work.file);
       return `
         <div class="art-plate">
           <div class="img-wrapper">
@@ -937,12 +939,10 @@
     const body = document.createElement("div");
     body.className = "window-body";
     
-    // ESTRUTURA NOVA PARA O REFLEXO DE VIDRO NA PUBLI
     if (w.kind === "publi") {
        body.innerHTML = `
          <div class="publi-container">
             ${w.content}
-            <div class="glass-reflection"></div>
          </div>
        `;
     } else {
@@ -1010,22 +1010,19 @@
     setTimeout(scheduleNextCrash, 60000 * crashMultiplier);
   }
 
+  // ==========================================
+  // PROPAGANDAS E PUBLI (ADS)
+  // ==========================================
   let totalAdsSpawned = 0;
-  let currentAdSequence = 1;
   let lastAdCloseTime = Date.now(); 
 
   function spawnAd() {
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
     totalAdsSpawned++;
-    let numStr;
     
-    if (totalAdsSpawned <= 10) {
-        numStr = String(currentAdSequence).padStart(2, '0');
-        currentAdSequence++;
-    } else {
-        const randomAdIndex = Math.floor(Math.random() * 10) + 1;
-        numStr = String(randomAdIndex).padStart(2, '0');
-    }
+    // Totalmente aleatório desde o começo
+    const randomAdIndex = Math.floor(Math.random() * 10) + 1;
+    const numStr = String(randomAdIndex).padStart(2, '0');
 
     const extensions = ['gif', 'png', 'jpg', 'webp', 'GIF', 'PNG', 'JPG', 'WEBP'];
     
@@ -1078,13 +1075,13 @@
     let timeSinceLastClose = Date.now() - lastAdCloseTime;
     let isFlood = timeSinceLastClose > 5 * 60 * 1000; 
     
-    if (totalAdsSpawned >= 10 && Math.random() > 0.6) {
-        setTimeout(spawnAd, 500); 
+    if (Math.random() > 0.8) {
+        setTimeout(spawnAd, 1500); 
     }
     
     let timeToNext;
-    if (isFlood) { timeToNext = Math.floor(Math.random() * 8000) + 5000; } 
-    else { timeToNext = Math.floor(Math.random() * 30000) + 40000; } 
+    if (isFlood) { timeToNext = Math.floor(Math.random() * 15000) + 15000; } // Flood: 15s a 30s
+    else { timeToNext = Math.floor(Math.random() * 45000) + 60000; } // Normal diluído: 1m a 1m45s
     setTimeout(scheduleNextAd, timeToNext);
   }
 
@@ -1163,6 +1160,7 @@
         const w2 = state.manifest.archives[1];
         const w3 = state.manifest.archives[2];
 
+        // Obra Esquerda no LUGAR ORIGINAL
         loadDimensions(w3).then(() => { addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 }); }).catch(()=>{});
         loadDimensions(w2).then(() => { addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 }); }).catch(()=>{});
 
@@ -1170,7 +1168,7 @@
 
         setTimeout(() => addWindow("about", null, { z: 1003 }), 300);
         
-        // Explorador volta para o x original de 0.05 e com Z-index no topo
+        // Explorador NO LUGAR ORIGINAL e por cima de tudo
         setTimeout(() => {
             addWindow("folder", null, { x: W * 0.05, y: H * 0.23, z: 1010 });
             const folderWin = state.wins.find(w => w.kind === "folder");
@@ -1185,13 +1183,14 @@
          addWindow("contact", null, { anchor: "bottom-right", x: W - 270, y: H - 205, z: 1006 });
       }, 1000);
 
-      // AD MENOR QUE REBATE SÓ ABRE APÓS 10 SEGUNDOS (LATÊNCIA)
-      setTimeout(spawnAd, 10000); 
+      // Ping-pong Ad abre JÁ na largada do site (1.5 segundos)
+      setTimeout(spawnAd, 1500); 
       
-      // A PUBLI 01 DESLOCADA (Meio da imagem alinhado com o final do quadro, X em 0.58) 
-      setTimeout(() => spawnPubli(1, W * 0.58, H * 0.35), 2000); 
+      // Publi 01 com 10 seg de latência e deslocada para ficar alinhada no final da imagem central
+      setTimeout(() => spawnPubli(1, W * 0.58, H * 0.35), 10000); 
 
-      setTimeout(scheduleNextAd, 20000);
+      // Agenda os Loops
+      setTimeout(scheduleNextAd, 60000);
       setTimeout(scheduleNextPubli, 90000);
       setTimeout(scheduleNextGlitch, 40000);
       setTimeout(scheduleNextCrash, 60000);

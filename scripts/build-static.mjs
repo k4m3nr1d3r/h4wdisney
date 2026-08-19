@@ -15,12 +15,14 @@ try {
   console.log('Ignorando gerador antigo.');
 }
 
+// Arquivos soltos na raiz que vão para o servidor
 const files = [
   'index.html',
   'style.css',
   'script.js',
   'gallery-index.json',
-  'gallery-data.js'
+  'gallery-data.js',
+  'acervo-data.json'
 ];
 
 for (const file of files) {
@@ -33,7 +35,7 @@ for (const file of files) {
   }
 }
 
-// Porteiro atualizado: Troca 'beck_END' por 'archives'
+// Pastas que vão para o servidor
 for (const dir of ['assets', 'ACERVO', 'exhibiti0ns', 'archives']) {
   const src = path.join(ROOT, dir);
   const dest = path.join(DIST, dir);

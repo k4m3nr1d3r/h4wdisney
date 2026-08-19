@@ -1,0 +1,23 @@
+{
+  "01": {
+    "status": "[ SOLICITAR INFO ]",
+    "ano": "2026",
+    "material": "Digital / Mixed Media",
+    "dimensoes": "1920x1080px",
+    "local": "CARIRI/PB"
+  },
+  "02": {
+    "status": "[ VENDIDO ]",
+    "ano": "2025",
+    "material": "Acrílica sobre Tela",
+    "dimensoes": "100x100cm",
+    "local": "SÃO PAULO/SP"
+  },
+  "03": {
+    "status": "[ DISPONÍVEL ]",
+    "ano": "2024",
+    "material": "Óleo e Spray",
+    "dimensoes": "50x70cm",
+    "local": "CARIRI/PB"
+  }
+}
