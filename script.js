@@ -98,7 +98,7 @@
     
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
-    /* ABOUT */
+    /* ABOUT PRESERVADO */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
     .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; height: 100% !important; text-align: left !important; overflow: hidden; }
     .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); text-align: left !important; }
@@ -118,6 +118,16 @@
     .publi-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .publi-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(3px 3px 10px rgba(0,0,0,0.6)); pointer-events: none; }
     
+    /* EFEITO HOLOGRAMA (FLUTUANDO E BRILHANDO) PARA A PUBLI 01 */
+    @keyframes floatAndShine {
+      0% { transform: translateY(0px); filter: drop-shadow(0 0 8px rgba(255,255,255,0.6)); }
+      50% { transform: translateY(18px); filter: drop-shadow(0 0 25px rgba(255,255,255,1)); }
+      100% { transform: translateY(0px); filter: drop-shadow(0 0 8px rgba(255,255,255,0.6)); }
+    }
+    .special-publi-01 {
+      animation: floatAndShine 4.5s ease-in-out infinite !important;
+    }
+
     @keyframes realisticPixelExplosion {
       0% { box-shadow: 0 0 0 4px #fff, 0 0 0 8px #ffeb3b; background: transparent; transform: scale(0.6); opacity: 1; }
       35% { box-shadow: 0 -16px 0 3px #fff, 0 16px 0 3px #fff, 16px 0 0 3px #fff, -16px 0 0 3px #fff, -12px -12px 0 4px #ffeb3b, 12px 12px 0 4px #ffeb3b, -12px 12px 0 4px #ffeb3b, 12px -12px 0 4px #ffeb3b, 0 -25px 0 3px #ff9800, 0 25px 0 3px #ff9800; transform: scale(1.1); opacity: 1; border: none; }
@@ -170,9 +180,8 @@
   const $ = (s, root = document) => root.querySelector(s);
   const $$ = (s, root = document) => [...root.querySelectorAll(s)];
 
-  // ENGENHARIA DE CAMADAS (Z-INDEX)
   const state = { wins: [], top: 1000, focusedTop: 10000, active: null, menuOpen: false, cascade: 0, manifest: null, browserPath: [] };
-  let adZCounter = 5000; // Propagandas ficam presas na camada 5000 (abaixo das Obras ativas)
+  let adZCounter = 5000; 
   
   const windowsEl = $("#windows") || document.body;
   const taskStrip = $("#taskStrip");
@@ -337,6 +346,7 @@
       work, browserPath: [], browserHistory: [[]],
       ratioX: geom.x / innerWidth, ratioY: geom.y / innerHeight,
       anchor: opts.anchor || null,
+      isSpecial: opts.isSpecial || false,
       ...opts
     };
 
@@ -362,7 +372,6 @@
     renderTasks();
   }
 
-  // Foco dá passe VIP para a Janela: Ela vai para a Camada > 10.000, passando por cima dos ADS
   function focusWin(id) {
     const w = state.wins.find(x => x.id === id);
     if (!w || w.kind === "popup" || w.kind === "publi") return;
@@ -812,7 +821,10 @@
     
     let extraClass = "";
     if (w.kind === "popup") extraClass = "popup-ad";
-    if (w.kind === "publi") extraClass = "publi-ad";
+    if (w.kind === "publi") {
+       extraClass = "publi-ad";
+       if (w.isSpecial) extraClass += " special-publi-01"; // Aciona o holograma
+    }
     if (w.kind === "contact") extraClass = "msn-window";
     if (w.kind === "about") extraClass = "glass-about";
     
@@ -1001,19 +1013,22 @@
     spawnAd();
     
     let timeSinceLastClose = Date.now() - lastAdCloseTime;
-    let isFlood = timeSinceLastClose > 5 * 60 * 1000; // Punição se não estourar popups por 5 min
+    let isFlood = timeSinceLastClose > 5 * 60 * 1000; 
     
     if (totalAdsSpawned >= 10 && Math.random() > 0.6) {
         setTimeout(spawnAd, 500); 
     }
     
     let timeToNext;
-    if (isFlood) { timeToNext = Math.floor(Math.random() * 8000) + 5000; } // Modo Caos
-    else { timeToNext = Math.floor(Math.random() * 30000) + 40000; } // 40 a 70 segundos de respiro
+    if (isFlood) { timeToNext = Math.floor(Math.random() * 8000) + 5000; } 
+    else { timeToNext = Math.floor(Math.random() * 30000) + 40000; } 
     setTimeout(scheduleNextAd, timeToNext);
   }
 
-  function spawnPubli(forcedIndex = null, forcedX = null, forcedY = null) {
+  // ==========================================
+  // FUNÇÃO PUBLI COM POSICIONAMENTO E EFEITOS
+  // ==========================================
+  function spawnPubli(forcedIndex = null, forcedX = null, forcedY = null, isSpecial = false) {
       const id = "publi_" + Math.random().toString(36).slice(2, 8);
       const index = forcedIndex !== null ? forcedIndex : (Math.floor(Math.random() * 5) + 1);
       const numStr = String(index).padStart(2, '0');
@@ -1033,15 +1048,16 @@
             let posX = forcedX !== null ? forcedX : (W * 0.4 + Math.random() * (W * 0.5 - adW)); 
             let posY = forcedY !== null ? forcedY : (Math.random() * (H - adH - 20));
 
+            // Permite ficar colado no teto ignorando bordas se for forçado
+            if (forcedY === null) posY = clamp(posY, 10, H - adH - 10);
             posX = clamp(posX, 10, W - adW - 10);
-            posY = clamp(posY, 10, H - adH - 10);
 
             const contentHtml = `<img src="${img.src}" style="display:block; width:100%; height:100%; object-fit:contain; pointer-events:none;">`;
 
             const ad = {
                id, kind: "publi", title: "PUBLI", iconHtml: "",
                x: posX, y: posY, w: adW, h: adH, z: ++adZCounter, min: false, max: false,
-               content: contentHtml
+               content: contentHtml, isSpecial
             };
 
             ad.ratioX = ad.x / innerWidth; ad.ratioY = ad.y / innerHeight;
@@ -1055,7 +1071,7 @@
   }
 
   function scheduleNextPubli() {
-      let timeToNext = Math.floor(Math.random() * 60000) + 90000; // Bem raro: 1.5 a 2.5 min
+      let timeToNext = Math.floor(Math.random() * 60000) + 90000; // 1.5 a 2.5 min
       setTimeout(() => {
           spawnPubli();
           scheduleNextPubli();
@@ -1087,17 +1103,17 @@
         const w2 = state.manifest.archives[1];
         const w3 = state.manifest.archives[2];
 
-        // 1. Obras Laterais
+        // Obras Laterais
         loadDimensions(w3).then(() => { addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 }); }).catch(()=>{});
         loadDimensions(w2).then(() => { addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 }); }).catch(()=>{});
 
-        // 2. Obra Central
+        // Obra Central
         setTimeout(() => { loadDimensions(w1).then(() => { addWindow("art", w1, { isInit: true, x: W * 0.22, y: H * 0.15, z: 1002 }); }).catch(()=>{}); }, 150);
 
-        // 3. About
+        // About
         setTimeout(() => addWindow("about", null, { z: 1003 }), 300);
         
-        // 4. Explorador AGORA POR CIMA de todos (Z-index 1005)
+        // Explorador POR CIMA DE TUDO
         setTimeout(() => addWindow("folder", null, { z: 1005 }), 500);
 
       } else {
@@ -1108,11 +1124,14 @@
          addWindow("contact", null, { anchor: "bottom-right", x: W - 270, y: H - 205, z: 1006 });
       }, 1000);
 
-      // 5. APARIÇÕES IMEDIATAS (Ads e Publi no carregamento)
+      // APARIÇÕES IMEDIATAS:
+      // O Ad que rebate nasce assim que o site abre
       setTimeout(spawnAd, 1500); 
-      setTimeout(() => spawnPubli(1, W * 0.65, H * 0.25), 2000); 
+      
+      // O Publi 01.png nasce colado no teto (Y = 0), puxado pra esquerda (W * 0.52) e com o holograma ativado (true)
+      setTimeout(() => spawnPubli(1, W * 0.52, 0, true), 2000); 
 
-      // 6. Agenda os Loops
+      // Agenda os Loops
       setTimeout(scheduleNextAd, 15000);
       setTimeout(scheduleNextPubli, 90000);
       setTimeout(scheduleNextGlitch, 40000);
