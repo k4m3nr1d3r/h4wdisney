@@ -34,8 +34,8 @@ for (const file of files) {
   }
 }
 
-// A MÁGICA ACONTECE AQUI: A lista nova do porteiro da Vercel!
-for (const dir of ['assets', 'ACERVO', 'exhibiti0ns', 'beck_END']) {
+// A lista do porteiro atualizada com 'archives'
+for (const dir of ['assets', 'ACERVO', 'exhibiti0ns', 'archives']) {
   const src = path.join(ROOT, dir);
   const dest = path.join(DIST, dir);
   try {

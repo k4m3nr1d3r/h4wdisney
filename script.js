@@ -15,7 +15,6 @@
 
       let folders = [folder, 'assets/' + folder, folder.toLowerCase(), folder.toUpperCase()];
       
-      // Variações para quebrar o cache de nomes antigos
       if (folder.includes('exhibiti0ns')) {
           folders.push(folder.replace('exhibiti0ns', 'exhibiti0n'));
           folders.push(folder.replace('exhibiti0ns', 'exhibitions'));
@@ -27,14 +26,15 @@
           folders.push(folder.replace('ACERVO', 'Obras'));
           folders.push(folder.replace('ACERVO', 'obras'));
       }
-      if (folder.includes('beck_END')) {
-          folders.push(folder.replace('beck_END', 'beck_end'));
-          folders.push(folder.replace('beck_END', 'backend'));
+      if (folder.includes('archives')) {
+          folders.push(folder.replace('archives', 'Archives'));
+          folders.push(folder.replace('archives', 'ARCHIVES'));
+          folders.push(folder.replace('archives', 'beck_END'));
       }
 
       let files = [filename];
-      if (filename.startsWith('0')) files.push(filename.substring(1)); // Testa '1' em vez de '01'
-      else if (filename.length === 1) files.push('0' + filename); // Testa '01' em vez de '1'
+      if (filename.startsWith('0')) files.push(filename.substring(1));
+      else if (filename.length === 1) files.push('0' + filename);
       
       let paths = [];
       [...new Set(folders)].forEach(f => {
@@ -71,8 +71,6 @@
       document.head.appendChild(metaViewport);
   }
   metaViewport.setAttribute('content', 'width=1280, user-scalable=yes');
-
-  let currentAdIndex = 1; 
   
   const extraStyles = document.createElement('style');
   extraStyles.textContent = `
@@ -106,9 +104,7 @@
     
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
-    /* ======================================================= */
-    /* ABOUT PRESERVADO: COMPACTO, SIMÉTRICO E ALINHADO */
-    /* ======================================================= */
+    /* ABOUT PRESERVADO */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
     .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; height: 100% !important; text-align: left !important; overflow: hidden; }
     .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); text-align: left !important; }
@@ -119,7 +115,6 @@
     .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.5; text-align: left !important; width: 100%; display: block; }
     .about-content-box .chronology { font-family: monospace; font-size: 13px; line-height: 1.8; background: transparent; padding: 0; border-radius: 0; text-align: left !important; display: block; width: 100%; }
     
-    /* POPUP ADS NÚS */
     .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
@@ -185,7 +180,6 @@
   const logoEl = $(".brand-logo");
 
   let crashMultiplier = 1;
-  let adMultiplier = 1;
   let msnNotified = false;
 
   function playMsnSound() {
@@ -232,7 +226,6 @@
     const buildItems = (folderPath, type) => {
       return Array.from({ length: 15 }, (_, i) => {
         const num = String(i + 1).padStart(2, '0');
-        // Agora apontando exatamente para exhibiti0ns (com o S)
         return { id: `${folderPath}/${num}.png`, file: `${folderPath}/${num}.png`, title: `${num}`, type: type };
       });
     };
@@ -244,11 +237,11 @@
         { id: "exhibiti0ns:RAW 2025 (HOA+FDAG)", name: "RAW 2025 (HOA+FDAG)", year: 2025, items: buildItems("exhibiti0ns/RAW 2025 (HOA+FDAG)", "exhibiti0ns") }
       ],
       acervo: buildItems("ACERVO", "ACERVO"),
-      beckEnd: buildItems("beck_END", "beck_END")
+      archives: buildItems("archives", "archives") // Substituído beck_END por archives
     };
   }
 
-  function allItems() { return [...state.manifest.exhibitions.flatMap(g => g.items), ...state.manifest.acervo, ...state.manifest.beckEnd]; }
+  function allItems() { return [...state.manifest.exhibitions.flatMap(g => g.items), ...state.manifest.acervo, ...state.manifest.archives]; }
   function findItem(id) { return allItems().find(item => item.id === id); }
   
   function getSiblings(id) {
@@ -260,8 +253,8 @@
     let idx = state.manifest.acervo.findIndex(i => i.id === id);
     if (idx !== -1) return { list: state.manifest.acervo, index: idx };
     
-    idx = state.manifest.beckEnd.findIndex(i => i.id === id);
-    if (idx !== -1) return { list: state.manifest.beckEnd, index: idx };
+    idx = state.manifest.archives.findIndex(i => i.id === id);
+    if (idx !== -1) return { list: state.manifest.archives, index: idx };
     return null;
   }
 
@@ -277,7 +270,7 @@
       return group ? { kind: "exhibition", name: group.name, path, group } : { kind: "exhibiti0ns", name: "exhibiti0ns", path: ["exhibiti0ns"] };
     }
     if (path[0] === "ACERVO") return { kind: "ACERVO", name: "ACERVO", path };
-    if (path[0] === "beck_END") return { kind: "beck_END", name: "beck_END", path };
+    if (path[0] === "archives") return { kind: "archives", name: "archives", path };
     win.browserPath = []; return browserRoot();
   }
 
@@ -285,7 +278,7 @@
     return [
       { type: "folder", id: "exhibiti0ns", name: "exhibiti0ns", subtitle: `3 exposições` },
       { type: "folder", id: "ACERVO", name: "ACERVO", subtitle: `15 arquivos` },
-      { type: "folder", id: "beck_END", name: "beck_END", subtitle: `15 arquivos` }
+      { type: "folder", id: "archives", name: "archives", subtitle: `15 arquivos` }
     ];
   }
 
@@ -492,8 +485,8 @@
     else if (current.kind === "ACERVO") {
       content = `<div class="file-grid">${state.manifest.acervo.map(item => imageCard(item)).join("")}</div>`;
     }
-    else if (current.kind === "beck_END") {
-      content = `<div class="file-grid">${state.manifest.beckEnd.map(item => imageCard(item)).join("")}</div>`;
+    else if (current.kind === "archives") {
+      content = `<div class="file-grid">${state.manifest.archives.map(item => imageCard(item)).join("")}</div>`;
     }
 
     return `
@@ -610,7 +603,7 @@
                loadDimensions(work).then(() => {
                   addWindow("art", work, { isInit: false }); 
                }).catch(() => {
-                  alert("IMAGEM NÃO LOCALIZADA NO SERVIDOR VERCEL\n\nO código testou mais de 100 variações e ela não existe. Verifique no seu PC:\n1. A pasta chama-se exatamente '" + work.type + "'?\n2. A imagem foi apagada?\n3. A Vercel travou no cache?");
+                  alert("IMAGEM NÃO LOCALIZADA NO SERVIDOR VERCEL\n\nO código testou mais de 100 variações e ela não existe.");
                });
             }
           } else if (btn.dataset.folder) {
@@ -934,10 +927,14 @@
     setTimeout(scheduleNextCrash, 60000 * crashMultiplier);
   }
 
+  // ==========================================
+  // O NOVO INFERNO DE ADS (Surgem em loop aleatório e infinito)
+  // ==========================================
   function spawnAd() {
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
-    const numStr = String(currentAdIndex).padStart(2, '0');
-    currentAdIndex = (currentAdIndex % 10) + 1; 
+    // Sorteia um número de 1 a 10 aleatoriamente toda vez
+    const randomAdIndex = Math.floor(Math.random() * 10) + 1;
+    const numStr = String(randomAdIndex).padStart(2, '0');
 
     const extensions = ['gif', 'png', 'jpg', 'webp', 'GIF', 'PNG', 'JPG', 'WEBP'];
     
@@ -991,9 +988,17 @@
   }
 
   function scheduleNextAd() {
-    if (state.wins.filter(w => w.kind === "popup").length < 4) spawnAd();
-    adMultiplier++;
-    setTimeout(scheduleNextAd, 45000 * adMultiplier);
+    spawnAd();
+    
+    // 40% de chance de nascer DUAS propagandas de uma vez só!
+    if (Math.random() > 0.6) {
+        setTimeout(spawnAd, 400); // Dá um atraso mínimo para não sobrepor perfeitamente
+    }
+
+    // Retirada a trava de "no máximo 4". Agora eles vão empilhar até você clicar.
+    // Nasce uma nova rodada entre 15 e 35 segundos
+    let timeToNext = Math.floor(Math.random() * 20000) + 15000;
+    setTimeout(scheduleNextAd, timeToNext);
   }
 
   function scheduleNextLogoShake() {
@@ -1016,10 +1021,11 @@
       nowClock(); setInterval(nowClock, 1000);
       fixBackgroundCache();
 
-      if (state.manifest.beckEnd && state.manifest.beckEnd.length >= 3) {
-        const w1 = state.manifest.beckEnd[0];
-        const w2 = state.manifest.beckEnd[1];
-        const w3 = state.manifest.beckEnd[2];
+      // Puxa as 3 imagens iniciais agora da pasta 'archives'
+      if (state.manifest.archives && state.manifest.archives.length >= 3) {
+        const w1 = state.manifest.archives[0];
+        const w2 = state.manifest.archives[1];
+        const w3 = state.manifest.archives[2];
 
         loadDimensions(w3).then(() => { addWindow("art", w3, { isInit: true, x: W * 0.02, y: H * 0.42, z: 1001 }); }).catch(()=>{});
         loadDimensions(w2).then(() => { addWindow("art", w2, { isInit: true, x: Math.max(10, W - 580), y: H * 0.28, z: 1001 }); }).catch(()=>{});
@@ -1037,13 +1043,13 @@
       }, 1000);
 
       setTimeout(spawnAd, 5000); 
-      setTimeout(scheduleNextAd, 45000);
+      setTimeout(scheduleNextAd, 30000); // Primeira chamada do loop de Ad
       setTimeout(scheduleNextGlitch, 40000);
       setTimeout(scheduleNextCrash, 60000);
       setTimeout(scheduleNextLogoShake, 4000);
       
     } catch(err) {
-      console.error("Erro inicial tratado em background:", err);
+      console.error("Erro inicial:", err);
     }
   }
 
