@@ -2,7 +2,7 @@
   "use strict";
 
   // ==========================================
-  // O RADAR NÍVEL DEUS (Buscador Absoluto)
+  // O RADAR NÍVEL DEUS (Agora apontando para 'archives')
   // ==========================================
   window.getPathsToTest = function(baseFile) {
       const exts = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'PNG', 'JPG', 'JPEG', 'GIF', 'WEBP'];
@@ -18,13 +18,10 @@
       if (folder.includes('exhibiti0ns')) {
           folders.push(folder.replace('exhibiti0ns', 'exhibiti0n'));
           folders.push(folder.replace('exhibiti0ns', 'exhibitions'));
-          folders.push(folder.replace('exhibiti0ns', 'vernissagem'));
-          folders.push(folder.replace('exhibiti0ns', 'Vernissages'));
       }
       if (folder.includes('ACERVO')) {
           folders.push(folder.replace('ACERVO', 'acervo'));
           folders.push(folder.replace('ACERVO', 'Obras'));
-          folders.push(folder.replace('ACERVO', 'obras'));
       }
       if (folder.includes('archives')) {
           folders.push(folder.replace('archives', 'Archives'));
@@ -61,9 +58,6 @@
      }
   };
 
-  // ==========================================
-  // FORÇAR MODO DESKTOP NO CELULAR
-  // ==========================================
   let metaViewport = document.querySelector('meta[name="viewport"]');
   if (!metaViewport) {
       metaViewport = document.createElement('meta');
@@ -71,7 +65,7 @@
       document.head.appendChild(metaViewport);
   }
   metaViewport.setAttribute('content', 'width=1280, user-scalable=yes');
-  
+
   const extraStyles = document.createElement('style');
   extraStyles.textContent = `
     .file-grid { display: flex; flex-wrap: wrap; gap: 10px; padding: 15px; justify-content: flex-start; align-items: flex-end; background: #ffffff; min-height: 100%; }
@@ -104,7 +98,6 @@
     
     .art-instruction { margin-top: 8px; font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; pointer-events: none; text-align: center; width: 100%; }
     
-    /* ABOUT PRESERVADO */
     .glass-about { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; }
     .glass-about .window-body { background: transparent !important; border: none !important; display: block !important; width: 100% !important; height: 100% !important; text-align: left !important; overflow: hidden; }
     .glass-about .titlebar { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.3) !important; color: #000 !important; text-shadow: 0 0 5px rgba(255,255,255,0.8); text-align: left !important; }
@@ -115,7 +108,8 @@
     .about-content-box p { font-size: 14px; margin-bottom: 20px; line-height: 1.5; text-align: left !important; width: 100%; display: block; }
     .about-content-box .chronology { font-family: monospace; font-size: 13px; line-height: 1.8; background: transparent; padding: 0; border-radius: 0; text-align: left !important; display: block; width: 100%; }
     
-    .popup-ad { cursor: crosshair; z-index: 999999 !important; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
+    /* Z-Index Removido para permitir que fiquem embaixo das Obras! */
+    .popup-ad { cursor: crosshair; overflow: visible !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
     .popup-ad .window-body { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; overflow: visible; pointer-events: none; background: transparent !important; border: none !important; display: flex; align-items: center; justify-content: center; }
     .popup-ad .window-body img { display: block; width: 100%; height: 100%; object-fit: contain !important; background: transparent !important; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5)); }
     
@@ -237,7 +231,7 @@
         { id: "exhibiti0ns:RAW 2025 (HOA+FDAG)", name: "RAW 2025 (HOA+FDAG)", year: 2025, items: buildItems("exhibiti0ns/RAW 2025 (HOA+FDAG)", "exhibiti0ns") }
       ],
       acervo: buildItems("ACERVO", "ACERVO"),
-      archives: buildItems("archives", "archives") // Substituído beck_END por archives
+      archives: buildItems("archives", "archives")
     };
   }
 
@@ -544,9 +538,6 @@
 
     if (w.kind === "about") {
       return `
-        <!-- ============================================================== -->
-        <!-- EDITE O TEXTO DO ABOUT AQUI ABAIXO -->
-        <!-- ============================================================== -->
         <div class="about-content-box" style="text-align: left !important; display: block !important;">
           <h2 style="text-align: left !important; margin: 0 0 10px 0; font-size: 24px;">h4wnee</h2>
           <p style="text-align: left !important; margin: 0; line-height: 1.5; font-size: 14px;">
@@ -559,7 +550,6 @@
             </span>
           </p>
         </div>
-        <!-- ============================================================== -->
       `;
     }
 
@@ -602,9 +592,7 @@
             if (work) {
                loadDimensions(work).then(() => {
                   addWindow("art", work, { isInit: false }); 
-               }).catch(() => {
-                  alert("IMAGEM NÃO LOCALIZADA NO SERVIDOR VERCEL\n\nO código testou mais de 100 variações e ela não existe.");
-               });
+               }).catch(() => {});
             }
           } else if (btn.dataset.folder) {
             navigateBrowser(w, btn.dataset.folder);
@@ -682,9 +670,7 @@
                   const body = el.querySelector(".window-body");
                   if(body) body.innerHTML = windowBodyHTML(w);
                   bindWindowBody(el, w);
-               }).catch(() => {
-                  alert("Você chegou no fim da galeria ou o arquivo não existe.");
-               });
+               }).catch(() => {});
             }
          });
          btn.addEventListener("pointerdown", e => { e.stopPropagation(); focusWin(w.id); });
@@ -836,6 +822,7 @@
       const explodeAd = (e) => {
         e.stopPropagation();
         if (!el.classList.contains("explode-anim")) {
+          lastAdCloseTime = Date.now(); // Reseta o relógio do Flood punitivo
           playExplosionSound();
           el.classList.add("explode-anim");
           setTimeout(() => closeWindow(w.id), 450);
@@ -928,13 +915,27 @@
   }
 
   // ==========================================
-  // O NOVO INFERNO DE ADS (Surgem em loop aleatório e infinito)
+  // O NOVO MOTOR DE PROPAGANDAS INTELIGENTES
   // ==========================================
+  let totalAdsSpawned = 0;
+  let currentAdSequence = 1;
+  let lastAdCloseTime = Date.now(); // Registra o início ou a última vez que explodiu
+
   function spawnAd() {
     const id = "popup_" + Math.random().toString(36).slice(2, 8);
-    // Sorteia um número de 1 a 10 aleatoriamente toda vez
-    const randomAdIndex = Math.floor(Math.random() * 10) + 1;
-    const numStr = String(randomAdIndex).padStart(2, '0');
+    
+    totalAdsSpawned++;
+    let numStr;
+    
+    // FASE 1: Segue a ordem 01 a 10 de forma calma
+    if (totalAdsSpawned <= 10) {
+        numStr = String(currentAdSequence).padStart(2, '0');
+        currentAdSequence++;
+    } else {
+        // FASE 2: Enlouquece, sorteia aleatório 
+        const randomAdIndex = Math.floor(Math.random() * 10) + 1;
+        numStr = String(randomAdIndex).padStart(2, '0');
+    }
 
     const extensions = ['gif', 'png', 'jpg', 'webp', 'GIF', 'PNG', 'JPG', 'WEBP'];
     
@@ -953,7 +954,8 @@
           const ad = {
              id, kind: "popup", title: "AD", iconHtml: "⚠",
              x: Math.random() * (innerWidth - adW), y: Math.random() * (innerHeight - adH - 20),
-             w: adW, h: adH, z: 999999, min: false, max: false,
+             // Z-Index estratégico: Fica sempre 1 nível ABAIXO da sua janela ativa!
+             w: adW, h: adH, z: Math.max(1000, state.top - 1), min: false, max: false,
              content: contentHtml, vx: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random()), vy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random())
           };
           
@@ -990,14 +992,25 @@
   function scheduleNextAd() {
     spawnAd();
     
-    // 40% de chance de nascer DUAS propagandas de uma vez só!
-    if (Math.random() > 0.6) {
-        setTimeout(spawnAd, 400); // Dá um atraso mínimo para não sobrepor perfeitamente
+    let timeSinceLastClose = Date.now() - lastAdCloseTime;
+    let isFlood = timeSinceLastClose > 5 * 60 * 1000; // Punição por 5 minutos ignorados
+    
+    // Se já passou da Fase 1, começa a vomitar duplas!
+    if (totalAdsSpawned >= 10) {
+        if (Math.random() > 0.6) {
+            setTimeout(spawnAd, 500); 
+        }
     }
-
-    // Retirada a trava de "no máximo 4". Agora eles vão empilhar até você clicar.
-    // Nasce uma nova rodada entre 15 e 35 segundos
-    let timeToNext = Math.floor(Math.random() * 20000) + 15000;
+    
+    let timeToNext;
+    if (isFlood) {
+        // MODO PUNição: Ads jorram na tela a cada 5~13 segundos!
+        timeToNext = Math.floor(Math.random() * 8000) + 5000; 
+    } else {
+        // MODO CALMO: Fluxo diluído de 45~70 segundos entre os ads
+        timeToNext = Math.floor(Math.random() * 25000) + 45000; 
+    }
+    
     setTimeout(scheduleNextAd, timeToNext);
   }
 
@@ -1021,7 +1034,6 @@
       nowClock(); setInterval(nowClock, 1000);
       fixBackgroundCache();
 
-      // Puxa as 3 imagens iniciais agora da pasta 'archives'
       if (state.manifest.archives && state.manifest.archives.length >= 3) {
         const w1 = state.manifest.archives[0];
         const w2 = state.manifest.archives[1];
@@ -1042,14 +1054,14 @@
          addWindow("contact", null, { anchor: "bottom-right", x: W - 270, y: H - 205, z: 1005 });
       }, 1000);
 
-      setTimeout(spawnAd, 5000); 
-      setTimeout(scheduleNextAd, 30000); // Primeira chamada do loop de Ad
+      // Inicia o ciclo narrativo dos Ads!
+      setTimeout(scheduleNextAd, 15000); 
       setTimeout(scheduleNextGlitch, 40000);
       setTimeout(scheduleNextCrash, 60000);
       setTimeout(scheduleNextLogoShake, 4000);
       
     } catch(err) {
-      console.error("Erro inicial:", err);
+      console.error("Erro inicial tratado em background:", err);
     }
   }
 
